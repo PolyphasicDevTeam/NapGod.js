@@ -8,8 +8,3 @@ TC2 (Tri Core 2)
 **Adaptation difficulty**: Moderate- 
 **Ideal scheduling**: Evening core, graveyard core, dawn core and 2 daytime naps
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 2 / 1062 (0.19%)  
-
-Adapted: 1 / 1062 (0.09% of members, 50.00% of attempted):LichTerLoh

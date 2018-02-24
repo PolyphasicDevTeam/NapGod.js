@@ -11,8 +11,3 @@ This schedule is below the minimum sleep threshold of most people and consequent
 **Adaptation difficulty**: Insanely hard- 
 **Ideal scheduling**: Time slots free for rotation, and equidistant sleep is recommended
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 32 / 1081 (2.96%) 
-
-Currently on this schedule: 2 / 1081 (0.19% of members, 6.25% of attempted):JediBurrell, stanton1299Adapted: 1 / 1081 (0.09% of members, 3.13% of attempted):DontPanic

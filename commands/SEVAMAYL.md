@@ -10,8 +10,3 @@ This schedule is experimental and not well tested, with the specifics still bein
 **Adaptation difficulty**: Variable- 
 **Ideal scheduling**: Around a 4 hour core (3 x 80 mins) with up to 6 naps of 10-20 minutes in length. Nap spacing should take into account natural periods of tiredness. Some longer naps might be plausible if all SWS has already been accounted for
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 3 / 1082 (0.28%) 
-
-Currently on this schedule: 2 / 1082 (0.18% of members, 66.67% of attempted):aethermind, ShayAdapted: 1 / 1082 (0.09% of members, 33.33% of attempted):aethermind

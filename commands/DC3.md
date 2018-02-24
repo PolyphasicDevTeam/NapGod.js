@@ -8,10 +8,3 @@ DC3 (Dual Core 3)
 **Adaptation difficulty**: Hard- 
 **Ideal scheduling**: 3-hour wake between 2 cores, dawn nap, noon nap and afternoon nap
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 6 / 1078 (0.56%) 
-
-Currently on this schedule: 2 / 1078 (0.19% of members, 33.33% of attempted):fuledbyramen, midnightshot 
-
-Adapted: 1 / 1078 (0.09% of members, 16.67% of attempted):GeneralNguyen

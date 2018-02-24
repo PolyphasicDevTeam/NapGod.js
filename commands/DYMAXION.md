@@ -11,8 +11,3 @@ This schedule is below the minimum sleep threshold of most people and consequent
 **Adaptation difficulty**: Insanely hard- 
 **Ideal scheduling**: Arranging naps to fit in 4 aforementioned circadian needs to rest
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 13 / 1079 (1.20%) 
-
-Currently on this schedule: 2 / 1079 (0.19% of members, 15.38% of attempted):insain, SamuelAdapted: 1 / 1079 (0.09% of members, 7.69% of attempted):insain

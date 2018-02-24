@@ -1,0 +1,1 @@
+Pie chart, donut chart, line chart, scatterplot, radial chart, polar chart, bar chart, vertical bar chart, vertical stacked bar chart, vertical stacked barchart with gradient, bar chart with line average overlay, node chart, medical chart, table of elements.  Yeah, this is broken.

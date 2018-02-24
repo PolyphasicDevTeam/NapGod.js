@@ -9,8 +9,3 @@ Triphasic (Triphasic)
 **Adaptation difficulty**: Somewhat hard- 
 **Ideal scheduling**: One core sleep around 21:00, one around 05:30, one around noon
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 30 / 1082 (2.77%) 
-
-Currently on this schedule: 15 / 1082 (1.39% of members, 50.00% of attempted):0verth1nker l, Aetoro, bleutoon, Deathdude, Heinrich, honpray, Hyperbolic, johnyu88, kamenomagic, mctiernan, Reindeer, TacoTamer, thequantumlady, Z0L1DK3K, ZelioxAdapted: 5 / 1082 (0.46% of members, 16.67% of attempted):Aetoro, Charlaxy, GeneralNguyen, Hakaisha, Zensuu

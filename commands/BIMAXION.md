@@ -11,8 +11,3 @@ This schedule is intended for people attempting to transition to Dymaxion or ret
 **Adaptation difficulty**: Hard- 
 **Ideal scheduling**: The whole schedule's sleep distribution looks like Dymaxion, with one core before midnight, one core around dawn, one noon nap, one afternoon/evening nap.
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 10 / 1079 (0.93%) 
-
-Currently on this schedule: 4 / 1079 (0.37% of members, 40.00% of attempted):aekarin, dr. soulja, QuadphasicMan, SeverAdapted: 3 / 1079 (0.28% of members, 30.00% of attempted):Charlaxy, GeneralNguyen, Normbo

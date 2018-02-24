@@ -8,8 +8,3 @@ DC2 (Dual Core 2)
 **Adaptation difficulty**: Somewhat hard- 
 **Ideal scheduling**: First core around 22:00, second core around 05:40, noon nap and afternoon nap
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 31 / 1089 (2.85%) 
-
-Currently on this schedule: 14 / 1089 (1.29% of members, 45.16% of attempted):dewek, Dnil, Flexi, Galaxinator, Gzar, jaknator, Laer, MAU MAU, Optional, rzfzr, Spitterkat, thethingamabob, xptboy, zetrozkyAdapted: 5 / 1089 (0.46% of members, 16.13% of attempted):LichTerLoh, MAU MAU, mdngls, Saska, sooperwoman11

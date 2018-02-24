@@ -10,8 +10,3 @@ This schedule is intended for people attempting to transition to Dymaxion or ret
 **Adaptation difficulty**: Very hard- 
 **Ideal scheduling**: Distribution of sleep resembles Dymaxion. Transition step to Dymaxion and also as a fallback from Dymaxion should adaptation fail.
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 3 / 1079 (0.28%) 
-
-Currently on this schedule: 1 / 1079 (0.09% of members, 33.33% of attempted):ZensuuAdapted: 0 / 1079 (0.00% of members, 0.00% of attempted)

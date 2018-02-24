@@ -10,8 +10,3 @@ This schedule is below the minimum sleep threshold of most people and consequent
 **Adaptation difficulty**: Insanely hard- 
 **Ideal scheduling**: Most naps should be spread during graveyard hours to avoid the need to nap during the day with work, social life, etc
 -----------------------------------------------
----Schedule Statistics ----
-
-Attempted: 8 / 1066 (0.75%) 
-
-Currently on this schedule: 3 / 1066 (0.28% of members, 37.50% of attempted):Charlaxy, Iminica, NormboAdapted: 1 / 1066 (0.09% of members, 12.50% of attempted):Iminica

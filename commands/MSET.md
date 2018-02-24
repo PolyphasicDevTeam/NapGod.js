@@ -1,0 +1,1 @@
+Laying out dishes...preparing forks...spreading napkins...The table is ready

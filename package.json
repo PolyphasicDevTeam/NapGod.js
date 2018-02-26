@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/PolyphasicDevTeam/NapGod.js#readme",
   "dependencies": {
-    "discord.js": "^11.3.0"
+    "discord.js": "^11.3.0",
+    "flat": "^4.0.0",
+    "lodash": "^4.17.5",
+    "require-all": "^2.2.0"
   }
 }

@@ -19,7 +19,9 @@
   "dependencies": {
     "discord.js": "^11.3.0",
     "flat": "^4.0.0",
+    "imgur": "^0.2.1",
     "lodash": "^4.17.5",
+    "mongoose": "^5.0.7",
     "require-all": "^2.2.0"
   }
 }

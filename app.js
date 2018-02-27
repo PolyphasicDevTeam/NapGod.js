@@ -1,9 +1,13 @@
 const Discord = require("discord.js");
-const { URL } = require("url");
 const client = new Discord.Client();
 const config = require("./config.json");
 
-const {  processCommands } = require("./server/commandCtrl");
+var mongoose = require('mongoose');
+// mongoose.connect('mongodb://database:27017/napgod');
+mongoose.connect('mongodb://localhost:27017/napgod');
+
+const { processCommands } = require("./server/command.ctrl");
+const { processDevCommands } = require("./server/devCommand.ctrl")(client);
 
 client.on("message", message => {
   //Ignore other bots and messages that do not start with prefix

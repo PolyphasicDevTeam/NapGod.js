@@ -1,1 +1,0 @@
-What comes after bump and before spike? Thank you Alex. I now return to being broken.

@@ -3,7 +3,6 @@ const fs = require("fs");
 let commands = {};
 
 async function bootstrapCommands() {
-  let commands = {};
   let cmds = await fs.readdirSync("./commands");
   cmds.forEach(async function(d) {
     if (!d.endsWith(".md")) return;
@@ -25,8 +24,8 @@ async function bootstrapCommands() {
 bootstrapCommands();
 
 module.exports = {
-  processMarkdownCommands: function(message, command, args) {
-    if (commands.hasOwnProperty(command)) {
+  processMarkdownCommands: function(command,message, args) {
+  if (commands.hasOwnProperty(command)) {
       let mVal = commands[command];
       if (Array.isArray(mVal)) {
         mVal.forEach(m => message.channel.send(m));

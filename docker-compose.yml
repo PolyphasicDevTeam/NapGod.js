@@ -1,0 +1,15 @@
+version: '2'
+
+# Define the services/containers to be run
+services:
+  myapp: #napgod.js
+    build: ./ # specify the directory of the Dockerfile
+    links:
+      - database # link this service to the database service
+    volumes:
+      - .:/usr/src/napgodjs-build
+    depends_on:
+      - database
+      
+  database: # name of the service
+    image: mongo # specify image to build container from

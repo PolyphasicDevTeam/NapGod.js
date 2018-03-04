@@ -13,7 +13,8 @@ module.exports = {
 
 		ImgModel.findOne({ napchartid: napChartId })
 			.then(async res => {
-				console.log("INFO  : ","Image search res", res);
+				if(res==null){console.log("INFO  : ","Image search res", res);}
+				else{console.log("INFO  : ","Image search res", res.url);}
 				let msgImg = null;
 				if (!res) {
 					let json = await imgur.uploadUrl(imgurl);

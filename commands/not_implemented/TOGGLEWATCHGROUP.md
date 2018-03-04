@@ -1,1 +1,0 @@
-I'll stuff you in the crust! And then cry myself to sleep on the physical manisfestation on how utterly broken I am.

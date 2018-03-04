@@ -21,6 +21,8 @@ module.exports = {
 };
 
 async function create(args, message, dry) {
+	console.log("CMD   : CREATE")
+	console.log("ARGS  : ", arg)
 	timeelems = []
 	i = 0
 	try {

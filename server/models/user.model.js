@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 let schema = {
   tag: { type: String, required: true },
   userName: { type: String, required: true },
-  id: { type: Number, required: true },
+  id: { type: String, required: true },
   currentScheduleName: { type: String},
   currentScheduleChart: { type: String },
   historicSchedules: [

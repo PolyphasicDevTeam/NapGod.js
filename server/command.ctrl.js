@@ -13,7 +13,7 @@ module.exports = {
 		handled = false
 		c2.forEach(fn => {handled = handled || fn(command, message, args)});
 		if(!handled){
-		console.error("ERR>>>: ", "Command was handled:", command, args)
+		console.error("ERR>>>: ", "Command was not handled:", command, args)
 		}
 	}
 };

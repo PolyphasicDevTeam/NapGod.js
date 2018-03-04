@@ -24,7 +24,7 @@ module.exports = {
 async function get(args, message, dry) {
 	let msg = "";
 	arg = message.content.slice(config.prefix.length+3,message.content.length).trim()
-	console.log("CMD   : SET")
+	console.log("CMD   : GET")
 	console.log("ARGS  : ", arg)
 	var uid = arg.replace(/[<@!>]/g, '');
 	if (args.length === 1) {

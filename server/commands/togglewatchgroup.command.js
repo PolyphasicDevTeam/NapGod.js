@@ -4,6 +4,8 @@ const _ = require("lodash");
 module.exports = {
 	processTogglewatchgroup: function(command, message, args, dry=false) {
 		if (command === "togglewatchgroup") {
+			console.log("CMD   : TOGGLEWATCHGROUP")
+			console.log("ARGS  : ", arg)
 
 			let roles =  message.member.roles
 			roles = new Set(roles.keys())

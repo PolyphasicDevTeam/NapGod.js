@@ -1,4 +1,6 @@
 const fs = require("fs");
+const schedules = require("./schedules");
+const { getOrGenImg } = require("./../imageCache");
 
 let commands = {};
 
@@ -24,13 +26,18 @@ async function bootstrapCommands() {
 bootstrapCommands();
 
 module.exports = {
-  processMarkdownCommands: function(command,message, args) {
-  if (commands.hasOwnProperty(command)) {
+  processMarkdownCommands: function(command, message, args) {
+    if (commands.hasOwnProperty(command)) {
       let mVal = commands[command];
       if (Array.isArray(mVal)) {
         mVal.forEach(m => message.channel.send(m));
       } else {
         message.channel.send(mVal);
+      }
+
+      if (schedules.hasOwnProperty(command)) {
+        schedules[command].chart &&
+          getOrGenImg(schedules[command].chart, message);
       }
     }
   }

@@ -2,6 +2,7 @@ const ImgModel = require("./models/img.model");
 const imgur = require("imgur");
 const Discord = require("discord.js");
 const { URL } = require("url");
+const axios = require('axios');
 
 module.exports = {
   getOrGenImg: function(nurl, message) {
@@ -39,8 +40,15 @@ module.exports = {
         console.log("error searching for img: ", err);
       });
   },
-  makeNapChartImageUrl: makeNapChartImageUrl
+  makeNapChartImageUrl: makeNapChartImageUrl,
+  createChart: function(data){
+    let url = "https://napchart.com/api/create";
+    axios.post(url, data).then((res)=>{
+      console.log("chart created")
+    })
+  }
 };
+
 function makeNapChartImageUrl(nurl) {
     let napChartId = nurl.pathname.substring(1);
     let imgurl = "https://napchart.com/api/getImage?width=600&height=600&chartid=" +

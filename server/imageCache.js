@@ -45,7 +45,7 @@ module.exports = {
 	createChart: function(data){
 		let url = "https://napchart.com/api/create";
 		axios.post(url, data).then((res)=>{
-			console.log("INFO  : ":"Chart created")
+			console.log("INFO  : ","Chart created")
 		})
 	}
 };

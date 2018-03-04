@@ -14,23 +14,33 @@ module.exports = {
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}
+			return true
 		}
+		return false
 	}
 };
 
-async function get(args, message) {
+async function get(args, message, dry) {
 	let msg = "";
 
 	let query = {};
 	let searchable = "";
 	if (args.length === 1) {
 		let isTag = args[0].indexOf("#");
-		query[isTag ? "tag" : "userName"] = args[0];
+		query[isTag ? "userName" : "tag"] = args[0];
 		searchable = args[0];
 	} else if (args.length === 0) {
 		query.tag = message.author.tag;
 		searchable = message.author.tag;
 	}
+	message.guild.fetchMembers(args[0]).then((res)=>{
+		m = res.members
+		console.log("MSG   : ", m)
+		console.log("MSG   : ", m.find("nickname",'Crimson [E2]'))
+		console.log("MSG   : ", m.find("user.tag",args[0]))
+		console.log("MSG   : ", m.find("user.username",args[0]))
+	})
+
 
 	let res;
 	try {
@@ -41,15 +51,15 @@ async function get(args, message) {
 
 	if (res && res.currentScheduleChart) {
 		let d = new Date(res.updatedAt);
-		var n = d.toLocaleDateString();
+		var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-		msg = `Napchart for ${res.tag} (since ${n}:)`
+		msg = `Napchart for **${res.tag}** (since ${n}):`
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 		getOrGenImg(res.currentScheduleChart, message, dry);
 	} else {
-			msg = `There is no napchart available for **${searchable}**`
-				console.log("MSG   : ", msg)
-				if(!dry){message.channel.send(msg);}
+		msg = `There is no napchart available for **${searchable}**`
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
 	}
 }

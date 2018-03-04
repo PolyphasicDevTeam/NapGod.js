@@ -40,6 +40,8 @@ module.exports = {
 				schedules[command].chart &&
 					getOrGenImg(schedules[command].chart, message, dry);
 			}
+			return true
 		}
+		return false
 	}
 };

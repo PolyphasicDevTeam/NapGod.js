@@ -15,7 +15,7 @@ module.exports = {
 				//const sched = message.content.slice(config.prefix.length).trim().split(/ +/g);
 				//if(args[0] ==
 			} else {
-				msg = "Set what? Say what? You need to provide a URL or a valid sleep cycle see +help for details."
+				msg = "You need to provide a URL or a valid sleep cycle see +help for details."
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}
@@ -29,6 +29,7 @@ module.exports = {
 async function set(args, message, dry) {
 	let msg = "";
 	let urlPossible = args.length === 2 ? args[1] : args[0];
+	let schedulePossible = args[0]
 
 	console.log("CMD   : SET")
 	console.log("ARGS  : ", args)
@@ -39,20 +40,54 @@ async function set(args, message, dry) {
 	//If schedule only, wipe chart
 	if (args[0] === "none") {
 		console.log("ACT   : ", "Remove napchart from database for " +message.author.username)
-		await saveUserSchedule(message, {"currentScheduleChart":null});
+		await saveUserSchedule(message, buildUserInstance());
 		msg = "Nap Chart has been removed for " + message.author.tag + "."
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 		return;
 	}
 
-	var { is_nurl, nurl } = checkIsUrlAndGet();
-	var { is_schedule, schedn, schedfull } = checkIsSchedule(urlPossible);
-	if (!is_nurl && !is_schedule) return;
+	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
+	var { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
+	if (!is_nurl && !is_schedule) {
+		msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details."
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
+		console.error("ERR>>>: ", "Set command was rejected with args", args)
+		return;
+	}
 
 	let userUpdate = buildUserInstance();
 
 	let result = await saveUserSchedule(message, userUpdate);
+
+	// We received Napchart, cache it:
+	if (is_nurl) {
+		if (nurl.host == "napchart.com") {
+			//Dry run, we are caching
+			getOrGenImg(nurl, message, true);
+		}
+	}
+
+
+	// We received Schedule change, process it:
+	if (is_schedule) {
+		if (message.author.nickname == null) {
+		new_username = message.author.username + ` [${args[0].toUpperCase()}]`
+		} else {
+			//TODO: we have to remvoe schedule tag (if any) and then append new one
+		}
+		console.log("ACT   : ", "Change usrname for " +message.author.username + " to "+new_username)
+		if(!dry){message.member.setNickname(new_username);}
+		msg = "Schedule set for " + message.author.tag + " to `" + args[0] + "`.";
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
+
+		let newRole = schedules[schedn].category;
+		let role = message.guild.roles.find("name", newRole);
+		console.log("ACT   : ", "Change role for " +message.author.username + " to "+newRole)
+		if(!dry){role && message.member.addRole(role.id);}
+	}
 
 	// We received Napchart, process it:
 	if (is_nurl) {
@@ -65,20 +100,6 @@ async function set(args, message, dry) {
 		}
 	}
 
-	// We received Schedule change, process it:
-	if (is_schedule) {
-		new_username = message.author.username + ` [${args[0].toUpperCase()}]`
-		console.log("ACT   : ", "Change usrname for " +message.author.username + " to "+new_username)
-		if(!dry){message.member.setNickname(new_username);}
-		msg = "Schedule set for " + message.author.tag + " to `" + args[0] + "`.";
-		console.log("MSG   : ", msg)
-		if(!dry){message.channel.send(msg);}
-
-		let newRole = schedules[schedn].category;
-		let role = message.guild.roles.find("name", newRole);
-		console.log("ACT   : ", "Change role for " +message.author.username + " to "+newRole)
-		if(!dry){role && message.member.addRole(role.id);}
-	}
 
 
 	function buildUserInstance() {

@@ -39,14 +39,21 @@ module.exports = {
 				if(!dry){message.channel.send(msgImg);}
 			})
 			.catch(err => {
-				console.warn("WARN  : ", "Could not get user: ", err);
+				console.warn("WARN  : ", "Could not get napchart from db: ", err);
 			});
 	},
 	makeNapChartImageUrl: makeNapChartImageUrl,
 	createChart: function(data){
 		let url = "https://napchart.com/api/create";
-		axios.post(url, data).then((res)=>{
-			console.log("INFO  : ","Chart created")
+		return new Promise(function (resolve, reject) {
+			axios.post(url, data).then((res)=>{
+				console.log("INFO  : ","Chart created", res.data.id)
+				let nurl = "https://napchart.com/"+res.data.id
+				resolve(nurl)
+			}).catch((error)=>{
+				console.error("ERR   : ","Chart could not be created", error)
+				reject(error)
+			})
 		})
 	}
 };

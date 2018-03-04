@@ -15,7 +15,8 @@ let schema = {
   ],
   historicScheduleCharts: [
     {
-      url: { type: String, required: true }
+      url: { type: String, required: true },
+      setAt: { type: Date, requried: true }
     }
   ],
   createdAt: {type: Date, default: Date.now},

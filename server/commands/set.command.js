@@ -203,7 +203,8 @@ async function set(args, message, dry) {
 			}
 			if ('currentScheduleChart' in userUpdate && userUpdate.currentScheduleChart != null) {
 				result.historicScheduleCharts.push({
-					url: userUpdate.currentScheduleChart
+					url: userUpdate.currentScheduleChart,
+					setAt: new Date(message.createdTimestamp)
 				});
 			}
 			result.save();

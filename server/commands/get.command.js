@@ -39,7 +39,7 @@ async function get(args, message) {
     console.log("err getting user: ", err);
   }
 
-  if (res.currentScheduleChart) {
+  if (res && res.currentScheduleChart) {
     let d = new Date(res.updatedAt);
     var n = d.toLocaleDateString();
 

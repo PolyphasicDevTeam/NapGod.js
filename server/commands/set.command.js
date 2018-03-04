@@ -72,21 +72,46 @@ async function set(args, message, dry) {
 
 	// We received Schedule change, process it:
 	if (is_schedule) {
-		if (message.author.nickname == null) {
-		new_username = message.author.username + ` [${args[0].toUpperCase()}]`
+		ptag = ` [${schedfull}]`;
+		if (message.member.nickname == null) {
+			new_username = message.author.username
 		} else {
-			//TODO: we have to remvoe schedule tag (if any) and then append new one
+			new_username = message.member.nickname
+			ptag_start = new_username.lastIndexOf(' [')
+			if (ptag_start != -1) {
+				new_username = new_username.slice(0,ptag_start)
+			}
 		}
+		lngt = new_username.length + ptag.length
+		if(lngt>32) {
+			new_username = new_username.slice(0,32-lngt)
+			msg = "Username had to be shortened because it was too long to fit the tag. Contact moderators if you want it changed."
+			console.log("MSG   : ", msg)
+			if(!dry){message.channel.send(msg);}
+		}
+		new_username = new_username + ptag
+
 		console.log("ACT   : ", "Change usrname for " +message.author.username + " to "+new_username)
 		if(!dry){message.member.setNickname(new_username);}
 		msg = "Schedule set for " + message.author.tag + " to `" + args[0] + "`.";
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 
+		let roles =  message.member.roles
+		roles = new Set(roles.keys())
+
 		let newRole = schedules[schedn].category;
 		let role = message.guild.roles.find("name", newRole);
-		console.log("ACT   : ", "Change role for " +message.author.username + " to "+newRole)
-		if(!dry){role && message.member.addRole(role.id);}
+		Object.values(schedules).forEach(sch=>{
+			if(message.guild.roles.find("name",sch.category)==null){
+				console.log("WARN  : ", sch.category, "is not present")
+			} else {
+				roles.delete(message.guild.roles.find("name",sch.category).id)
+			}
+		})
+		roles.add(role.id)
+		console.log("ACT   : ", "Change role for " +message.author.tag + " to "+newRole)
+		if(!dry){message.member.setRoles(Array.from(roles));}
 	}
 
 	// We received Napchart, process it:
@@ -140,9 +165,9 @@ async function set(args, message, dry) {
 					(schedp_arr.length == 2 && modifiers.includes(schedp_arr[1])))
 			) {
 				if (schedp_arr.length == 1) {
-					return { is_schedule: true, schedn, schedfull: schedn };
+					return { is_schedule: true, schedn, schedfull: schedn.toUpperCase() };
 				} else {
-					return { is_schedule: true, schedn, schedfull: schedn + schedp_arr[1] };
+					return { is_schedule: true, schedn, schedfull: schedn.toUpperCase() + "-" + schedp_arr[1] };
 				}
 			} else {
 				return { is_schedule: false };

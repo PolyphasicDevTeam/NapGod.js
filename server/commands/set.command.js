@@ -10,7 +10,7 @@ module.exports = {
 	processSet: function(command, message, args, dry=false) {
 		if (command === "set") {
 			if (args.length <= 2 && args.length > 0) {
-				set(args, message);
+				set(args, message, dry);
 
 				//const sched = message.content.slice(config.prefix.length).trim().split(/ +/g);
 				//if(args[0] ==
@@ -26,7 +26,7 @@ module.exports = {
 	}
 };
 
-async function set(args, message) {
+async function set(args, message, dry) {
 	let msg = "";
 	let urlPossible = args.length === 2 ? args[1] : args[0];
 
@@ -35,7 +35,8 @@ async function set(args, message) {
 
 	//DONE GET URL, GET User Name
 	//TODO HANDLE doubles
-	//IF schedule only, wipe chart
+
+	//If schedule only, wipe chart
 	if (args[0] === "none") {
 		console.log("ACT   : ", "Remove napchart from database for " +message.author.username)
 		await saveUserSchedule(message, {"currentScheduleChart":null});
@@ -60,7 +61,7 @@ async function set(args, message) {
 		if(!dry){message.channel.send(msg);}
 		if (nurl.host == "napchart.com") {
 			// Include http(s) when specifying URLs
-			getOrGenImg(nurl, message);
+			getOrGenImg(nurl, message, dry);
 		}
 	}
 

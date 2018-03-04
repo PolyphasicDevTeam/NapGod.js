@@ -7,7 +7,7 @@ const schedules = require("./schedules");
 const modifiers = [`shortened`, `extended`, `flipped`, `modified`, `recovery`];
 
 module.exports = {
-	processSet: function(command, message, args) {
+	processSet: function(command, message, args, dry=false) {
 		if (command === "set") {
 			if (args.length <= 2 && args.length > 0) {
 				set(args, message);
@@ -15,9 +15,9 @@ module.exports = {
 				//const sched = message.content.slice(config.prefix.length).trim().split(/ +/g);
 				//if(args[0] ==
 			} else {
-				message.channel.send(
-					"Set what? Say what? You need to provide a URL or a valid sleep cycle see +help for details."
-				);
+				msg = "Set what? Say what? You need to provide a URL or a valid sleep cycle see +help for details."
+				console.log("MSG   : ", msg)
+				if(!dry){message.channel.send(msg);}
 			}
 			return true;
 		} else {
@@ -30,14 +30,18 @@ async function set(args, message) {
 	let msg = "";
 	let urlPossible = args.length === 2 ? args[1] : args[0];
 
+	console.log("CMD   : SET")
+	console.log("ARGS  : ", args)
+
 	//DONE GET URL, GET User Name
 	//TODO HANDLE doubles
 	//IF schedule only, wipe chart
 	if (args[0] === "none") {
+		console.log("ACT   : ", "Remove napchart from database for " +message.author.username)
 		await saveUserSchedule(message, {"currentScheduleChart":null});
-		message.channel.send(
-			"Nap Chart has been removed for " + message.author.tag + "."
-		);
+		msg = "Nap Chart has been removed for " + message.author.tag + "."
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
 		return;
 	}
 
@@ -51,9 +55,9 @@ async function set(args, message) {
 
 	// We received Napchart, process it:
 	if (is_nurl) {
-		message.channel.send(
-			"Nap Chart set for " + message.author.tag + " to " + nurl.href + "."
-		);
+		msg = "Nap Chart set for " + message.author.tag + " to " + nurl.href + "."
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
 		if (nurl.host == "napchart.com") {
 			// Include http(s) when specifying URLs
 			getOrGenImg(nurl, message);
@@ -62,17 +66,17 @@ async function set(args, message) {
 
 	// We received Schedule change, process it:
 	if (is_schedule) {
-		message.member.setNickname(
-			message.author.username + ` [${args[0].toUpperCase()}]`
-		);
+		new_username = message.author.username + ` [${args[0].toUpperCase()}]`
+		console.log("ACT   : ", "Change usrname for " +message.author.username + " to "+new_username)
+		if(!dry){message.member.setNickname(new_username);}
 		msg = "Schedule set for " + message.author.tag + " to `" + args[0] + "`.";
-		message.channel.send(msg);
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
 
 		let newRole = schedules[schedn].category;
-		console.log("schedn ", schedn);//TODO: remove debug
-		console.log("newRole ", newRole);//TODO: remove debug
 		let role = message.guild.roles.find("name", newRole);
-		role && message.member.addRole(role.id);
+		console.log("ACT   : ", "Change role for " +message.author.username + " to "+newRole)
+		if(!dry){role && message.member.addRole(role.id);}
 	}
 
 
@@ -134,7 +138,7 @@ async function set(args, message) {
 			saveHistories();
 		} catch (error) {
 			console.log("error seraching for User: ", error);
-			message.channel.send("Something done broke.  Call the fire brigade");
+			if(!dry){message.channel.send("Something done broke.  Call the fire brigade");}
 			return;
 		}
 		return result;

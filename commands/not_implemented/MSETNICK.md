@@ -1,1 +1,0 @@
-“I shall call him Squishy and he shall be mine and he shall be my Squishy. Come on, Squishy. Come on, little Squishy.

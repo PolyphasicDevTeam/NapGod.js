@@ -4,7 +4,7 @@ const config = require("./config.json");
 
 var mongoose = require('mongoose');
 // mongoose.connect('mongodb://database:27017/napgod');
-mongoose.connect('mongodb://localhost:27017/napgod');
+mongoose.connect(config.mongo);
 
 const { processCommands } = require("./server/command.ctrl");
 const { processDevCommands } = require("./server/devCommand.ctrl")(client);

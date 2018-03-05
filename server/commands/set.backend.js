@@ -174,7 +174,9 @@ async function set(args, message, dry, author, member, silent) {
 		if (schedulePossible) {
 			const schedp_arr = schedulePossible.trim().split(/-+/g);
 			const schedn = schedp_arr[0].toLowerCase();
-			const schedmod = schedp_arr[1].toLowerCase();
+			if (schedp_arr.length == 2) {
+				const schedmod = schedp_arr[1].toLowerCase();
+			}
 			if (
 				schedp_arr.length <= 2 &&
 				Object.keys(schedules).includes(schedn) &&

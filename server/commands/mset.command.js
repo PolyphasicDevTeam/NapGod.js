@@ -45,7 +45,7 @@ async function mset(args, message, dry) {
 	//Next do the same for url and trim, we should now be left with just the username string
 	arg = arg.substr(arg.indexOf(' ')+1).trim()
 
-	console.log("CMD   : GET")
+	console.log("CMD   : MSET")
 	console.log("ARGS  : ", args[0], args[1], arg)
 
 	//Lets see if we can get user id from mention string

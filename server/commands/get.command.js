@@ -5,7 +5,7 @@ const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
 
 module.exports = {
-	processSet: function(command, message, args, dry=false) {
+	processGet: function(command, message, args, dry=false) {
 		if (command === "get") {
 			if (args.length <= 1) {
 				get(args, message, dry);

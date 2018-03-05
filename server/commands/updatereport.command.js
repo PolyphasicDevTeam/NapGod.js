@@ -25,6 +25,7 @@ async function report(args, message, dry) {
 		console.log("INFO  : ", "Starting processing user info")
 		users.forEach(function(user) {
 			uid = user.id
+			console.log("INFO  : ", "Processing:", uid)
 			member = message.guild.member(uid);
 			//Name of the user
 			if (member != null) {

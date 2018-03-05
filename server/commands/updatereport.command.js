@@ -1,6 +1,7 @@
 const config = require("../../config.json");
 const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
+const { URL } = require("url");
 const fs = require('fs');
 const _ = require("lodash");
 
@@ -42,11 +43,14 @@ async function report(args, message, dry) {
 			sched = `<p>Current schedule: ${user.currentScheduleName}</p>`
 
 			//Current napchart
-			console.log("INFO  : ", "Processing napchart:", user.currentScheduleChart)
-			let { napChartId, imgurl } = makeNapChartImageUrl(user.currentScheduleChart)
-			console.log("INFO  : ", "Processing napchart:", imgurl)
-			napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
-			napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
+			if (user.currentScheduleChart == null) {
+				napchart = "<p>No napchart is currently set</p>"
+				napchartimg = ""
+			} else {
+				napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
+				let { napChartId, imgurl } = makeNapChartImageUrl(new URL(user.currentScheduleChart))
+				napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
+			}
 
 			//Schedule history
 			sched_hist = ""
@@ -64,7 +68,7 @@ async function report(args, message, dry) {
 			user.historicScheduleCharts.forEach(function(ch) {
 				d = new Date(ch.setAt);
 				n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-				console.log("INFO  : ", "Processing chart history:", n)
+				console.log("INFO  : ", "Processing chart history:", ch)
 				chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
 			})
 			body += `${name}\n${sched}\n${napchart}\n${napcharturl}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`

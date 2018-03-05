@@ -8,7 +8,7 @@ module.exports = {
 			console.log("CMD   : REPORT")
 			console.log("ARGS  : ", args)
 
-			generate(args,message, dry)
+			report(args,message, dry)
 
 			return true
 		}

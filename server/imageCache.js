@@ -49,7 +49,7 @@ module.exports = {
 				}
 			})
 			.catch(err => {
-				console.warn("WARN  : ", "Could not get napchart from db: ", err);
+				console.warn("WARN>>: ", "Could not get napchart from db: ", err);
 			});
 	},
 	makeNapChartImageUrl: makeNapChartImageUrl,

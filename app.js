@@ -12,6 +12,21 @@ const { processDevCommands } = require("./server/devCommand.ctrl")(client);
 client.on("message", message => {
 	//Ignore other bots and messages that do not start with prefix
 	if (message.author.bot) return;
+	if (config.modonly != null && config.modonly != undefined && config.modonly == true) {
+		//Reject commands from non-mods because we are in Mod-only mode
+		let roles =  message.member.roles
+		roles = new Set(roles.keys())
+		let mods = message.guild.roles.find("name", "Moderators").id
+		let admins = message.guild.roles.find("name", "Admins").id
+		permissions = false
+		if (roles.has(mods)||roles.has(admins)) {
+			permissions = true
+		}
+		if(!permissions) {
+			console.log("INFO  : ", 'Command was rejected because author was not a mod and we are in mod-only mode.')
+			return
+		}
+	}
 
 	const args = getArgs(message);
 	const command = args.shift().toLowerCase();

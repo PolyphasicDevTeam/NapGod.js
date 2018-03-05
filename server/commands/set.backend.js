@@ -6,8 +6,6 @@ const schedules = require("./schedules").schedules
 const modifiers = require("./schedules").modifiers
 
 
-
-
 module.exports = {
 	setInternal: function(args, message, dry, author=null, member=null) {
 		if (author == null) { author = message.author }

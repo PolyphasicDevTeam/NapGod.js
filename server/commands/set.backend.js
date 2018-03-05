@@ -2,9 +2,9 @@ const { URL } = require("url");
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
-const schedules = require("./schedules");
+const schedules = require("./schedules").schedules
+const modifiers = require("./schedules").modifiers
 
-const modifiers = [`shortened`, `extended`, `flipped`, `modified`, `recovery`];
 
 
 
@@ -174,16 +174,17 @@ async function set(args, message, dry, author, member, silent) {
 		if (schedulePossible) {
 			const schedp_arr = schedulePossible.trim().split(/-+/g);
 			const schedn = schedp_arr[0].toLowerCase();
+			const schedmod = schedp_arr[1].toLowerCase();
 			if (
 				schedp_arr.length <= 2 &&
 				Object.keys(schedules).includes(schedn) &&
 				(schedp_arr.length == 1 ||
-					(schedp_arr.length == 2 && modifiers.includes(schedp_arr[1])))
+					(schedp_arr.length == 2 && Object.keys(modifiers).includes(schedmod)))
 			) {
 				if (schedp_arr.length == 1) {
 					return { is_schedule: true, schedn, schedfull: schedules[schedn].name };
 				} else {
-					return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + schedp_arr[1].toLowerCase() };
+					return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
 				}
 			} else {
 				return { is_schedule: false };

@@ -120,6 +120,7 @@ async function mset(args, message, dry) {
 				if (!res) {
 					msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"
 					console.log("MSG   : ", msg)
+					console.log("WARN>>: ", "MSET failed with args: ", args[0], args[1], arg)
 					if(!dry){message.channel.send(msg);}
 				} else {
 					msg = "Schedule set for " + usr.user.tag + " to `" + args[0] + "`.\n";

@@ -5,8 +5,6 @@
 **To look up your own napchart:** Type `+get`.
 **To look up someone else's napchart:** Type `+get` followed by the name of the user. Any of the following name formats will work: `+get Username`, `+get Username#0001`. Mentions should be avoided though as these will ping the user in question.
 **To create a new napchart:** Type `+create` followed by a series of time ranges. For example, `+create 03:00-05:00 08:00-08:20 14:00-14:20 21:00-23:00`. A napchart link will then be generated for you. (If you want to set it, you will have to do that manually afterwards)
-**To count number of people on each schedule:** Type `+schedulecount`.
-**To list all members sorted by schedule:** Type `+memberlist`.
-**To list all members with napcharts set:** Type `+chartlist`.
+**To generate report of Nap God information** Type `+report`.
 **To join/leave the watch group for users of NMO:** Type `+togglewatchgroup`.
 -----------------------------------------------

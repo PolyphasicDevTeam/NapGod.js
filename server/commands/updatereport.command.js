@@ -22,6 +22,7 @@ module.exports = {
 async function report(args, message, dry) {
 	UserModel.find({}, function(err, users) {
 		let body = ""
+		console.log("INFO  : ", "Starting processing user info")
 		users.forEach(function(user) {
 			uid = user.id
 			member = message.guild.member(uid);
@@ -78,6 +79,7 @@ async function report(args, message, dry) {
 	 ${body}\n\
   </body>\n\
 </html>`
+		console.log("INFO  : ", "Finished html generation")
 		fs.writeFile('/napcharts/report.html', html, err=> {
 			msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html."
 			console.log("MSG   : ", msg)

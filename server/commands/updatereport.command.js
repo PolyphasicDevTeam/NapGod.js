@@ -93,9 +93,9 @@ async function report(args, message, dry) {
   </body>\n\
 </html>`
 			fs.writeFile('/napcharts/report.html', html, err=> {
-				msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html."
+				msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html>."
 				console.log("MSG   : ", msg)
-				if(!dry&&!silent){message.channel.send(msg);}
+				if(!dry){message.channel.send(msg);}
 			})
 		} catch (err) { 
 			console.log("ERR>>>: ", err)

@@ -48,17 +48,21 @@ async function report(args, message, dry) {
 
 			//Schedule history
 			sched_hist = ""
+			console.log("INFO  : ", "Processing schedule history:", uid)
 			user.historicSchedules.forEach(function(sch) {
 				d = new Date(sch.setAt);
 				n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+				console.log("INFO  : ", "Processing schedule history:", n)
 				sched_hist += `${n}: ${sch.name}<br/>\n`
 			})
 
+			console.log("INFO  : ", "Processing chart history:", uid)
 			//Chart history
 			chrt_hist = ""
 			user.historicScheduleCharts.forEach(function(ch) {
 				d = new Date(ch.setAt);
 				n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+				console.log("INFO  : ", "Processing chart history:", n)
 				chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
 			})
 			body += `${name}\n${sched}\n${napchart}\n${napcharturl}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`

@@ -43,7 +43,7 @@ async function report(args, message, dry) {
 
 			//Current napchart
 			console.log("INFO  : ", "Processing napchart:", user.currentScheduleChart)
-			{ napChartId, imgurl } = makeNapChartImageUrl(user.currentScheduleChart)
+			let { napChartId, imgurl } = makeNapChartImageUrl(user.currentScheduleChart)
 			console.log("INFO  : ", "Processing napchart:", imgurl)
 			napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
 			napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`

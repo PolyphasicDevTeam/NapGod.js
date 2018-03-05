@@ -69,6 +69,7 @@ module.exports = {
 };
 
 function makeNapChartImageUrl(nurl) {
+	console.log("INFO  : ", "IN")
 	let napChartId = nurl.pathname.substring(1);
 	let imgurl = "https://napchart.com/api/getImage?width=600&height=600&chartid=" +
 		napChartId;

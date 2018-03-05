@@ -7,14 +7,14 @@ const config = require("../../config.json");
 module.exports = {
 	processGet: function(command, message, args, dry=false) {
 		if (command === "get") {
-			if (args.length <= 1) {
+			//if (args.length <= 1) {
 				get(args, message, dry);
-			} else {
+			//} else {
 				//What?
-				msg = "Valid options are `+get` or `+get userName` or `+get usertag#1234`"
-				console.log("MSG   : ", msg)
-				if(!dry){message.channel.send(msg);}
-			}
+				//msg = "Valid options are `+get` or `+get userName` or `+get usertag#1234`"
+				//console.log("MSG   : ", msg)
+				//if(!dry){message.channel.send(msg);}
+			//}
 			return true
 		}
 		return false
@@ -113,7 +113,7 @@ async function get(args, message, dry) {
 						let d = new Date(res.updatedAt);
 						var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-						msg = `Napchart for **${usr.tag}** (since ${n}):`
+						msg = `Napchart for **${usr}** (since ${n}):`
 						console.log("MSG   : ", msg)
 						if(!dry){message.channel.send(msg);}
 						getOrGenImg(res.currentScheduleChart, message, dry);

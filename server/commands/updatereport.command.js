@@ -1,5 +1,7 @@
 const config = require("../../config.json");
+const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
+const fs = require('fs');
 const _ = require("lodash");
 
 module.exports = {

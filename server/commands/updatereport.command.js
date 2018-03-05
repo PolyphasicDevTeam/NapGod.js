@@ -22,71 +22,72 @@ module.exports = {
 
 async function report(args, message, dry) {
 	UserModel.find({}, function(err, users) {
-		let body = ""
-		console.log("INFO  : ", "Starting processing user info")
-		users.forEach(function(user) {
-			try {
-				uid = user.id
-				console.log("INFO  : ", "Processing:", uid)
-				member = message.guild.member(uid);
-				//Name of the user
-				if (member != null) {
-					if(member.nickname != null) {
-						name = `<h3>${member.nickname}</h3>`
+		try {
+			let body = ""
+			console.log("INFO  : ", "Starting processing user info")
+			users.forEach(function(user) {
+				try {
+					uid = user.id
+					console.log("INFO  : ", "Processing:", uid)
+					member = message.guild.member(uid);
+					//Name of the user
+					if (member != null) {
+						if(member.nickname != null) {
+							name = `<h3>${member.nickname}</h3>`
+						} else {
+							name = `<h3>${member.user.tag}</h3>`
+						}
 					} else {
-						name = `<h3>${member.user.tag}</h3>`
+						name = `<h3>${user.tag} (last known tag, uid:${uid})</h3>`
 					}
-				} else {
-					name = `<h3>${user.tag} (last known tag, uid:${uid})</h3>`
+
+					//Current schedule
+					sched = `<p>Current schedule: ${user.currentScheduleName}</p>`
+
+					//Current napchart
+					napchart = ""
+					napchartimg = ""
+					if (user.currentScheduleChart == null) {
+						napchart = "<p>No napchart is currently set</p>"
+					} else {
+						napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
+						let { napChartId, imgurl } = makeNapChartImageUrl(new URL(user.currentScheduleChart))
+						napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
+					}
+
+					//Schedule history
+					sched_hist = ""
+					console.log("INFO  : ", "Processing schedule history:", uid)
+					user.historicSchedules.forEach(function(sch) {
+						d = new Date(sch.setAt);
+						n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+						console.log("INFO  : ", "Processing schedule history:", n)
+						sched_hist += `${n}: ${sch.name}<br/>\n`
+					})
+
+					console.log("INFO  : ", "Processing chart history:", uid)
+					//Chart history
+					chrt_hist = ""
+					user.historicScheduleCharts.forEach(function(ch) {
+						d = new Date(ch.setAt);
+						n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+						console.log("INFO  : ", "Processing chart history:", ch)
+						chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
+					})
+					console.log("INFO  : ", "Processing chart history done:", uid)
+					body += `${name}\n${sched}\n${napchart}\n${napchartimg}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`
+					console.log("INFO  : ", "Body appended", uid)
+				} catch (err) { 
+					console.log("ERR>>>: ", err)
 				}
 
-				//Current schedule
-				sched = `<p>Current schedule: ${user.currentScheduleName}</p>`
-
-				//Current napchart
-				napchart = ""
-				napchartimg = ""
-				if (user.currentScheduleChart == null) {
-					napchart = "<p>No napchart is currently set</p>"
-				} else {
-					napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
-					let { napChartId, imgurl } = makeNapChartImageUrl(new URL(user.currentScheduleChart))
-					napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
-				}
-
-				//Schedule history
-				sched_hist = ""
-				console.log("INFO  : ", "Processing schedule history:", uid)
-				user.historicSchedules.forEach(function(sch) {
-					d = new Date(sch.setAt);
-					n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-					console.log("INFO  : ", "Processing schedule history:", n)
-					sched_hist += `${n}: ${sch.name}<br/>\n`
-				})
-
-				console.log("INFO  : ", "Processing chart history:", uid)
-				//Chart history
-				chrt_hist = ""
-				user.historicScheduleCharts.forEach(function(ch) {
-					d = new Date(ch.setAt);
-					n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-					console.log("INFO  : ", "Processing chart history:", ch)
-					chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
-				})
-				console.log("INFO  : ", "Processing chart history done:", uid)
-				body += `${name}\n${sched}\n${napchart}\n${napcharturl}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`
-				console.log("INFO  : ", "Body appended", uid)
-			} catch (err) { 
-				console.log("ERR>>>: ", err)
-			}
-
-		});
+			});
 
 
-		console.log("INFO  : ", "Generating html")
-		d = Date.now();
-		n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-		let html = `<!DOCTYPE html>\n\
+			console.log("INFO  : ", "Generating html")
+			d = Date.now();
+			n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+			let html = `<!DOCTYPE html>\n\
 <html lang="en">\n\
   <head>\n\
 	 <meta charset="utf-8">\n\
@@ -99,11 +100,14 @@ async function report(args, message, dry) {
 	 ${body}\n\
   </body>\n\
 </html>`
-		console.log("INFO  : ", "Finished html generation")
-		fs.writeFile('/napcharts/report.html', html, err=> {
-			msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html."
-			console.log("MSG   : ", msg)
-			if(!dry&&!silent){message.channel.send(msg);}
-		})
+			console.log("INFO  : ", "Finished html generation")
+			fs.writeFile('/napcharts/report.html', html, err=> {
+				msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html."
+				console.log("MSG   : ", msg)
+				if(!dry&&!silent){message.channel.send(msg);}
+			})
+		} catch (err) { 
+			console.log("ERR>>>: ", err)
+		}
 	});
 }

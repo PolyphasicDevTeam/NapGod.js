@@ -25,55 +25,61 @@ async function report(args, message, dry) {
 		let body = ""
 		console.log("INFO  : ", "Starting processing user info")
 		users.forEach(function(user) {
-			uid = user.id
-			console.log("INFO  : ", "Processing:", uid)
-			member = message.guild.member(uid);
-			//Name of the user
-			if (member != null) {
-				if(member.nickname != null) {
-					name = `<h3>${member.nickname}</h3>`
+			try {
+				uid = user.id
+				console.log("INFO  : ", "Processing:", uid)
+				member = message.guild.member(uid);
+				//Name of the user
+				if (member != null) {
+					if(member.nickname != null) {
+						name = `<h3>${member.nickname}</h3>`
+					} else {
+						name = `<h3>${member.user.tag}</h3>`
+					}
 				} else {
-					name = `<h3>${member.user.tag}</h3>`
+					name = `<h3>${user.tag} (last known tag, uid:${uid})</h3>`
 				}
-			} else {
-			name = `<h3>${user.tag} (last known tag, uid:${uid})</h3>`
-			}
 
-			//Current schedule
-			sched = `<p>Current schedule: ${user.currentScheduleName}</p>`
+				//Current schedule
+				sched = `<p>Current schedule: ${user.currentScheduleName}</p>`
 
-			//Current napchart
-			if (user.currentScheduleChart == null) {
-				napchart = "<p>No napchart is currently set</p>"
+				//Current napchart
+				napchart = ""
 				napchartimg = ""
-			} else {
-				napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
-				let { napChartId, imgurl } = makeNapChartImageUrl(new URL(user.currentScheduleChart))
-				napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
+				if (user.currentScheduleChart == null) {
+					napchart = "<p>No napchart is currently set</p>"
+				} else {
+					napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
+					let { napChartId, imgurl } = makeNapChartImageUrl(new URL(user.currentScheduleChart))
+					napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
+				}
+
+				//Schedule history
+				sched_hist = ""
+				console.log("INFO  : ", "Processing schedule history:", uid)
+				user.historicSchedules.forEach(function(sch) {
+					d = new Date(sch.setAt);
+					n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+					console.log("INFO  : ", "Processing schedule history:", n)
+					sched_hist += `${n}: ${sch.name}<br/>\n`
+				})
+
+				console.log("INFO  : ", "Processing chart history:", uid)
+				//Chart history
+				chrt_hist = ""
+				user.historicScheduleCharts.forEach(function(ch) {
+					d = new Date(ch.setAt);
+					n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+					console.log("INFO  : ", "Processing chart history:", ch)
+					chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
+				})
+				console.log("INFO  : ", "Processing chart history done:", uid)
+				body += `${name}\n${sched}\n${napchart}\n${napcharturl}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`
+				console.log("INFO  : ", "Body appended", uid)
+			} catch (err) { 
+				console.log("ERR>>>: ", err)
 			}
 
-			//Schedule history
-			sched_hist = ""
-			console.log("INFO  : ", "Processing schedule history:", uid)
-			user.historicSchedules.forEach(function(sch) {
-				d = new Date(sch.setAt);
-				n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-				console.log("INFO  : ", "Processing schedule history:", n)
-				sched_hist += `${n}: ${sch.name}<br/>\n`
-			})
-
-			console.log("INFO  : ", "Processing chart history:", uid)
-			//Chart history
-			chrt_hist = ""
-			user.historicScheduleCharts.forEach(function(ch) {
-				d = new Date(ch.setAt);
-				n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-				console.log("INFO  : ", "Processing chart history:", ch)
-				chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
-			})
-			console.log("INFO  : ", "Processing chart history done:", uid)
-			body += `${name}\n${sched}\n${napchart}\n${napcharturl}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`
-			console.log("INFO  : ", "Body appended", uid)
 		});
 
 
@@ -89,7 +95,7 @@ async function report(args, message, dry) {
 	 <script src="script.js"></script>\n\
   </head>\n\
   <body>\n\
-  	<h1>Nap God Report ${n}</h1>\n\
+	<h1>Nap God Report ${n}</h1>\n\
 	 ${body}\n\
   </body>\n\
 </html>`

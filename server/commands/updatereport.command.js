@@ -24,7 +24,6 @@ async function report(args, message, dry) {
 	UserModel.find({}, function(err, users) {
 		try {
 			let body = ""
-			console.log("INFO  : ", "Starting processing user info")
 			users.forEach(function(user) {
 				try {
 					uid = user.id
@@ -57,26 +56,20 @@ async function report(args, message, dry) {
 
 					//Schedule history
 					sched_hist = ""
-					console.log("INFO  : ", "Processing schedule history:", uid)
 					user.historicSchedules.forEach(function(sch) {
 						d = new Date(sch.setAt);
 						n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-						console.log("INFO  : ", "Processing schedule history:", n)
 						sched_hist += `${n}: ${sch.name}<br/>\n`
 					})
 
-					console.log("INFO  : ", "Processing chart history:", uid)
 					//Chart history
 					chrt_hist = ""
 					user.historicScheduleCharts.forEach(function(ch) {
 						d = new Date(ch.setAt);
 						n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-						console.log("INFO  : ", "Processing chart history:", ch)
 						chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
 					})
-					console.log("INFO  : ", "Processing chart history done:", uid)
 					body += `${name}\n${sched}\n${napchart}\n${napchartimg}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`
-					console.log("INFO  : ", "Body appended", uid)
 				} catch (err) { 
 					console.log("ERR>>>: ", err)
 				}
@@ -84,7 +77,6 @@ async function report(args, message, dry) {
 			});
 
 
-			console.log("INFO  : ", "Generating html")
 			d = new Date();
 			n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 			let html = `<!DOCTYPE html>\n\
@@ -100,7 +92,6 @@ async function report(args, message, dry) {
 	 ${body}\n\
   </body>\n\
 </html>`
-			console.log("INFO  : ", "Finished html generation")
 			fs.writeFile('/napcharts/report.html', html, err=> {
 				msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html."
 				console.log("MSG   : ", msg)

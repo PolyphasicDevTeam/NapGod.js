@@ -85,7 +85,7 @@ async function report(args, message, dry) {
 
 
 			console.log("INFO  : ", "Generating html")
-			d = Date.now();
+			d = new Date();
 			n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 			let html = `<!DOCTYPE html>\n\
 <html lang="en">\n\

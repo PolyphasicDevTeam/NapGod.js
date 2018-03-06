@@ -67,6 +67,7 @@ async function rebuild(args, message, dry) {
 		msgs = await ch.fetchMessages({limit: 50})
 		while (msgs.length != 0) {
 			msgs.forEach(function(msg) {
+				console.log("INFO  : ","message:", message.content)
 				//Immitate app.js
 				if (msg.author.bot) {
 				} else {

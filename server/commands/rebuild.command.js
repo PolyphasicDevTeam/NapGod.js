@@ -93,7 +93,7 @@ async function rebuild(args, message, dry) {
 				nextId = msg.id
 			})
 			
-			msgs = await ch.fetchMessages({limit: 50, before: nextIdi})
+			msgs = await ch.fetchMessages({limit: 50, before: nextId})
 		}
 	}
 

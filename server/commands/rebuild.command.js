@@ -15,14 +15,13 @@ module.exports = {
 			}
 			let roles =  message.member.roles
 			roles = new Set(roles.keys())
-			let mods = message.guild.roles.find("name", "Moderators").id
 			let admins = message.guild.roles.find("name", "Admins").id
 			permissions = false
-			if (roles.has(mods)||roles.has(admins)) {
+			if (roles.has(admins)) {
 				permissions = true
 			}
 			if (!permissions) {
-				msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+mrebuild`"
+				msg = "You do not have privileges to execute this commands. Only Admins are allowed to use `+mrebuild`"
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}
@@ -79,12 +78,13 @@ async function rebuild(args, message, dry) {
 						const dargs = getArgs(dmsg);
 						const dcommand = dargs.shift().toLowerCase();
 						if (dcommand == '') { } //There is probably space after prefix, reject
+						else if (dcommand != 'set' || dcommand != 'set' ) { } //There is probably space after prefix, reject
 						else {
 
 							if (isValidPrefix(dmsg)) {
 								commands.push(dmsg)
 								if(repfreq > 0 && commands.length % repfreq == 0) {
-									msg = `Rebuild 1/4: ${commands.length} commands were found...`
+									msg = `Rebuild 1/4: ${commands.length} m/set commands were found...`
 									console.log("MSG   : ", msg)
 									message.channel.send(msg);
 								}
@@ -119,12 +119,12 @@ async function rebuild(args, message, dry) {
 	commands.forEach(function(dmessage) {
 		const dargs = getArgs(dmessage);
 		const dcommand = dargs.shift().toLowerCase();
-		was_processed = set.processSet(dcommand, dmessage, dargs, true)
-		was_processed = was_processed || mset.processMset(dcommand, dmessage, dargs, true)
+		was_processed = await set.processSet(dcommand, dmessage, dargs, true)
+		was_processed = was_processed || await mset.processMset(dcommand, dmessage, dargs, true)
 		if(was_processed) { n_processed += 1 }
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {
-			msg = `Rebuild 3/4: ${n_done} (${n_processed} m/set) commands were executed...`
+			msg = `Rebuild 3/4: ${n_done} (${n_processed} OK) commands were executed...`
 			console.log("MSG   : ", msg)
 			message.channel.send(msg);
 		}

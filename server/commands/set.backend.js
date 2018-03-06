@@ -193,8 +193,8 @@ async function set(args, message, dry, author, member, silent) {
 
 			if (Object.keys(schedules).includes(schedn)) {
 				if (schedp_arr.length == 2) {
-					if (Object.keys(modifiers).includes(schedmod)) {
 					const schedmod = schedp_arr[1].toLowerCase();
+					if (Object.keys(modifiers).includes(schedmod)) {
 					return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
 					}
 				} else if (schedp_arr.length == 1) {

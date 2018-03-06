@@ -119,8 +119,8 @@ async function rebuild(args, message, dry) {
 	for (dmessage of commands) {
 		const dargs = getArgs(dmessage);
 		const dcommand = dargs.shift().toLowerCase();
-		was_processed = await set.processSet(dcommand, dmessage, dargs, true)
-		was_processed = was_processed || await mset.processMset(dcommand, dmessage, dargs, true)
+		was_processed = await set.processSetBlock(dcommand, dmessage, dargs, true)
+		was_processed = was_processed || await mset.processMsetBlock(dcommand, dmessage, dargs, true)
 		if(was_processed) { n_processed += 1 }
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {

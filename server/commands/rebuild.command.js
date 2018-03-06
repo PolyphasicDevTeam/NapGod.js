@@ -62,6 +62,8 @@ async function rebuild(args, message, dry) {
 	commands = []
 	for(ch of channels) {
 		console.log("INFO  : ","Processing channel:", ch.name)
+		if (ch.type != "text") { continue }
+
 		msgs = await ch.fetchMessages({limit: 50})
 		while (msgs.length != 0) {
 			msgs.forEach(function(msg) {

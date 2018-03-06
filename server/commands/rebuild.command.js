@@ -48,7 +48,7 @@ async function rebuild(args, message, dry) {
 		if(!dry){message.channel.send(msg);}
 	}
 
-	msg = `Starting rebuild. This will take some time. I hope you wiped your database before running this. You also want the bot to be in mod-only mode so user commands do not get registered before the rebuild is complete. Progress will be reported every ${repfreq} iterrations.`
+	msg = `Starting rebuild. This will take some time. I hope you wiped your database before running this. You also want the bot to be in mod-only mode so user commands do not get registered before the rebuild is complete. Progress will be reported every ${repfreq} iterations.`
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 

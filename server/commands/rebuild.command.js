@@ -4,7 +4,8 @@ const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
 const set = require("./set.backend").setInternalPromise;
-const { processCommands } = require("../command.ctrl");
+const { processCommands } = require("./../command.ctrl");
+const tstimp = require("./../command.ctrl");
 
 module.exports = {
 	processMset: function(command, message, args, dry=false) {
@@ -43,6 +44,7 @@ async function rebuild(args, message, dry) {
 	console.log("CMD   : MREBUILD")
 	console.log("ARGS  : ", args)
 	console.log("ARGS  : ", processCommands)
+	console.log("ARGS  : ", tstimp)
 	repfreq = parseInt(args[0])
 	if(isNaN(repfreq) || repfreq < 0) {
 		msg = "Valid options are `+mrebuild [report-interval]`. [report-interval] must be positive integer or 0 for no progress reporting"

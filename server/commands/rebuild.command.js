@@ -60,7 +60,8 @@ async function rebuild(args, message, dry) {
 	channels = Object.values(message.guild.channels)
 	console.log("INFO  : ","channels:", channels)
 	commands = []
-	channels.forEach(async function(ch) {
+	for(ch of channels) {
+		console.log("INFO  : ","Processing channel:", ch.name)
 		msgs = await ch.fetchMessages({limit: 50})
 		while (msgs.length != 0) {
 			msgs.forEach(function(msg) {
@@ -87,7 +88,7 @@ async function rebuild(args, message, dry) {
 			})
 			msgs = await ch.fetchMessages({limit: 50})
 		}
-	})
+	}
 
 	msg = `Recreate 2/4: Total of ${commands.length} command was found. Ordering by datetime.`
 	console.log("MSG   : ", msg)

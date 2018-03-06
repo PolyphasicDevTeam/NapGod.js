@@ -22,7 +22,9 @@ module.exports = {
 	processSetBlock: (async function(command, message, args, dry=false) {
 		if (command === "set") {
 			if (args.length <= 2 && args.length > 0) {
-				await set(args, message, dry);
+				author = message.author
+				member = message.member
+				await set(args, message, dry, author, member, false);
 			} else {
 				msg = "You need to provide a URL or a valid sleep cycle see +help for details."
 				console.log("MSG   : ", msg)

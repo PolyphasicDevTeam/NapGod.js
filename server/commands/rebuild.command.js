@@ -103,7 +103,7 @@ async function rebuild(args, message, dry) {
 
 	msg = `Rebuild 2/4: Total of ${commands.length} m/set command was found. Ordering by datetime.`
 	console.log("MSG   : ", msg)
-	if(repfreq>0) {message.channel.send(msg);}
+	if(repfreq>0) {await message.channel.send(msg);}
 
 	commands.sort(function(a, b) {
 		var dateA = a.createdAt.getTime()
@@ -113,7 +113,7 @@ async function rebuild(args, message, dry) {
 
 	msg = "Rebuild 3/4: Done sorting commands. Executing set/mset commands in dry mode, discord will be unaffected."
 	console.log("MSG   : ", msg)
-	if(repfreq>0) {message.channel.send(msg);}
+	if(repfreq>0) {await message.channel.send(msg);}
 	n_done = 0
 	n_processed = 0
 	for (dmessage of commands) {
@@ -126,7 +126,7 @@ async function rebuild(args, message, dry) {
 		if(repfreq > 0 && n_done % repfreq == 0) {
 			msg = `Rebuild 3/4: ${n_done} (${n_processed} OK) commands were executed...`
 			console.log("MSG   : ", msg)
-			message.channel.send(msg);
+			await message.channel.send(msg);
 		}
 	}
 

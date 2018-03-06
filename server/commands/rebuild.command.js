@@ -90,6 +90,9 @@ async function rebuild(args, message, dry) {
 
 				}
 			})
+			
+			console.log("INFO  : ","message:", msgs)
+			console.log("INFO  : ","message:", msgs[msgs.length-1])
 			msgs = await ch.fetchMessages({limit: 50, before: msgs[msgs.length-1].id})
 		}
 	}

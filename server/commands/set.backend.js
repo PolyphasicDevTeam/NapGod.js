@@ -66,7 +66,7 @@ async function set(args, message, dry, author, member, silent) {
 
 	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
 	var { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
-	if (args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none")) ||
+	if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||
 		(!is_nurl && !is_schedule)) {
 		msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details."
 		console.log("MSG   : ", msg)

@@ -52,8 +52,8 @@ module.exports = {
 								.setImage(res.url)
 								.setURL(nurl.href);
 							message.channel.send(msgImg);
-							resolve(true);
 						}
+						resolve(true);
 					}
 				})
 				.catch(err => {

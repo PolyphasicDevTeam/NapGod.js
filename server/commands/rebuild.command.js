@@ -116,7 +116,7 @@ async function rebuild(args, message, dry) {
 	if(repfreq>0) {message.channel.send(msg);}
 	n_done = 0
 	n_processed = 0
-	commands.forEach(function(dmessage) {
+	for (dmessage of commands) {
 		const dargs = getArgs(dmessage);
 		const dcommand = dargs.shift().toLowerCase();
 		was_processed = await set.processSet(dcommand, dmessage, dargs, true)
@@ -128,7 +128,7 @@ async function rebuild(args, message, dry) {
 			console.log("MSG   : ", msg)
 			message.channel.send(msg);
 		}
-	})
+	}
 
 	msg = "Rebuild 4/4: Finished successfully."
 

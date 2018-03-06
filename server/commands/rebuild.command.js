@@ -42,6 +42,7 @@ module.exports = {
 async function rebuild(args, message, dry) {
 	console.log("CMD   : MREBUILD")
 	console.log("ARGS  : ", args)
+	console.log("ARGS  : ", processCommands)
 	repfreq = parseInt(args[0])
 	if(isNaN(repfreq) || repfreq < 0) {
 		msg = "Valid options are `+mrebuild [report-interval]`. [report-interval] must be positive integer or 0 for no progress reporting"

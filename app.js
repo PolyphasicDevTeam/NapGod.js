@@ -33,9 +33,10 @@ client.on("message", message => {
 	if (command == '') { return } //There is probably space after prefix, reject
 
 
-	if (isDevPrefix(message)) {
-		processDevCommands(command, message, args);
-	} else if (isValidPrefix(message)) {
+	//if (isDevPrefix(message)) {
+		//processDevCommands(command, message, args);
+	//} else 
+	if (isValidPrefix(message)) {
 		processCommands(command, message, args);
 	}
 });
@@ -52,6 +53,7 @@ function getArgs(message) {
 	return message.content
 		.slice(config.prefix.length)
 		.trimRight()
+		.replace( /\n/g, " " )	
 		.split(/ +/g);
 }
 

@@ -101,7 +101,7 @@ async function rebuild(args, message, dry) {
 		}
 	}
 
-	msg = `Rebuild 2/4: Total of ${commands.length} command was found. Ordering by datetime.`
+	msg = `Rebuild 2/4: Total of ${commands.length} m/set command was found. Ordering by datetime.`
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 

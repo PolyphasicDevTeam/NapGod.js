@@ -75,7 +75,7 @@ async function rebuild(args, message, dry) {
 
 						if (isValidPrefix(msg)) {
 							commands.push(msg)
-							if(repfreq > 0 commands.length % repfreq) {
+							if(repfreq > 0 && commands.length % repfreq == 0) {
 								msg = `Recreate 1/4: ${commands.length} commands were found...`
 								console.log("MSG   : ", msg)
 								message.channel.send(msg);
@@ -108,7 +108,7 @@ async function rebuild(args, message, dry) {
 		const command = args.shift().toLowerCase();
 		processCommands(command, message, args, true);
 		n_done += 1
-		if(repfreq > 0 n_done % repfreq) {
+		if(repfreq > 0 && n_done % repfreq == 0) {
 			msg = `Recreate 3/4: ${commands.length} commands were executed...`
 			console.log("MSG   : ", msg)
 			message.channel.send(msg);

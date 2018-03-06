@@ -21,16 +21,19 @@ module.exports = {
 				if (!res) {
 					//let json = await imgur.uploadUrl(imgurl);
 					//console.log("INFO  : ",json.data.link)
+					console.log("INFO  : ", 'Downloading napchart: '+napChartId)
 					request.get({url: imgurl, encoding: 'binary'},(err,res)=>{
 						fs.writeFile('/napcharts/'+napChartId+".png", res.body, 'binary', err=> {
 							cacheurl = "http://cache.polyphasic.net/"+napChartId+".png"
 
-							msgImg = new Discord.RichEmbed()
-								.setDescription(nurl.href)
-								.setImage(cacheurl)
-								.setURL(nurl.href);
 							console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
-							if(!dry){message.channel.send(msgImg);}
+							if(!dry){
+								msgImg = new Discord.RichEmbed()
+									.setDescription(nurl.href)
+									.setImage(cacheurl)
+									.setURL(nurl.href);
+								message.channel.send(msgImg);
+							}
 
 							let newImg = new ImgModel({
 								napchartid: napChartId,
@@ -40,12 +43,14 @@ module.exports = {
 						})
 					})
 				} else {
-					msgImg = new Discord.RichEmbed()
-						.setDescription(nurl.href)
-						.setImage(res.url)
-						.setURL(nurl.href);
 					console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
-					if(!dry){message.channel.send(msgImg);}
+					if(!dry){
+						msgImg = new Discord.RichEmbed()
+							.setDescription(nurl.href)
+							.setImage(res.url)
+							.setURL(nurl.href);
+						message.channel.send(msgImg);
+					}
 				}
 			})
 			.catch(err => {

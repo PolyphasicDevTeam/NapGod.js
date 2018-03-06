@@ -57,7 +57,7 @@ async function rebuild(args, message, dry) {
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 
-	channels = Object.values(message.guild.channels)
+	channels = Array.from(message.guild.channels.values())
 	console.log("INFO  : ","channels:", channels)
 	commands = []
 	for(ch of channels) {

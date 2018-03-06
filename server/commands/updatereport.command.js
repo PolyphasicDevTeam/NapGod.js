@@ -69,7 +69,7 @@ async function report(args, message, dry) {
 						n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 						chrt_hist += `${n}: <a href="${ch.url}">${ch.url}</a><br/>\n`
 					})
-					body += `${name}\n${sched}\n${napchart}\n${napchartimg}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td>${sched_hist}</td>\n<td>${chrt_hist}</td>\n</tr>\n</table><br/>`
+					body += `${name}\n${sched}\n${napchart}\n${napchartimg}\n<table>\n<tr>\n<td>Schedule history:</td>\n<td>Napchart history</td>\n</tr>\n<tr>\n<td valign="top">${sched_hist}</td>\n<td valign="top">${chrt_hist}</td>\n</tr>\n</table><br/>`
 				} catch (err) { 
 					console.log("ERR>>>: ", err)
 				}

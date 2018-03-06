@@ -4,7 +4,7 @@ const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
 const set = require("./set.backend").setInternalPromise;
-const { processCommands } = require("./server/command.ctrl");
+const { processCommands } = require("../command.ctrl");
 
 module.exports = {
 	processMset: function(command, message, args, dry=false) {

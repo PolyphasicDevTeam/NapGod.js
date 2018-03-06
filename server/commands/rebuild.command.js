@@ -66,6 +66,7 @@ async function rebuild(args, message, dry) {
 
 		msgs = await ch.fetchMessages({limit: 50})
 		while (msgs.length != 0) {
+			nextId = null
 			msgs.forEach(function(msg) {
 				console.log("INFO  : ","message:", msg.createdAt)
 				console.log("INFO  : ","message:", msg.content)
@@ -89,11 +90,10 @@ async function rebuild(args, message, dry) {
 					}
 
 				}
+				nextId = msg.id
 			})
 			
-			console.log("INFO  : ","message:", msgs)
-			console.log("INFO  : ","message:", msgs[msgs.length-1])
-			msgs = await ch.fetchMessages({limit: 50, before: msgs[msgs.length-1].id})
+			msgs = await ch.fetchMessages({limit: 50, before: nextIdi})
 		}
 	}
 

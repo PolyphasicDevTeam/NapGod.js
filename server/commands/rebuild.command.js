@@ -68,21 +68,21 @@ async function rebuild(args, message, dry) {
 		nextTime = null
 		while (msgs.length != 0) {
 			nextId = null
-			msgs.forEach(function(msg) {
-				if (nextTime == null || nextTime > msg.createdAt.getTime()){
-					console.log("INFO  : ","message:", msg.createdAt)
+			msgs.forEach(function(dmsg) {
+				if (nextTime == null || nextTime > dmsg.createdAt.getTime()){
+					console.log("INFO  : ","message:", dmsg.createdAt)
 					//console.log("INFO  : ","message:", msg.content)
 					//Immitate app.js
-					if (msg.author.bot) {
+					if (dmsg.author.bot) {
 					} else {
 
-						const args = getArgs(msg);
-						const command = args.shift().toLowerCase();
-						if (command == '') { } //There is probably space after prefix, reject
+						const dargs = getArgs(dmsg);
+						const dcommand = dargs.shift().toLowerCase();
+						if (dcommand == '') { } //There is probably space after prefix, reject
 						else {
 
-							if (isValidPrefix(msg)) {
-								commands.push(msg)
+							if (isValidPrefix(dmsg)) {
+								commands.push(dmsg)
 								if(repfreq > 0 && commands.length % repfreq == 0) {
 									msg = `Recreate 1/4: ${commands.length} commands were found...`
 									console.log("MSG   : ", msg)
@@ -92,8 +92,8 @@ async function rebuild(args, message, dry) {
 						}
 
 					}
-					nextTime = msg.createdAt.getTime()
-					nextId = msg.id
+					nextTime = dmsg.createdAt.getTime()
+					nextId = dmsg.id
 				}
 			})
 			if (nextId == null) {break;}
@@ -115,10 +115,10 @@ async function rebuild(args, message, dry) {
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 	n_done = 0
-	commands.forEach(function(message) {
-		const args = getArgs(msg);
-		const command = args.shift().toLowerCase();
-		processCommands(command, message, args, true);
+	commands.forEach(function(dmessage) {
+		const dargs = getArgs(msg);
+		const dcommand = dargs.shift().toLowerCase();
+		processCommands(dcommand, dmessage, dargs, true);
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {
 			msg = `Recreate 3/4: ${commands.length} commands were executed...`

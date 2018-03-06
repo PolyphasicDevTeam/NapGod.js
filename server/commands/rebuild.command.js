@@ -58,7 +58,7 @@ async function rebuild(args, message, dry) {
 	if(repfreq>0) {message.channel.send(msg);}
 
 	channels = Object.values(message.guild.channels)
-	console.log("INFO  : ","channels:" channels)
+	console.log("INFO  : ","channels:", channels)
 	commands = []
 	channels.forEach(function(ch) {
 		msgs = await ch.fetchMessages({limit: 50})

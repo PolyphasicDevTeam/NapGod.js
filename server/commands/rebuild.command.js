@@ -53,7 +53,7 @@ async function rebuild(args, message, dry) {
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 
-	msg = "Recreate 1/4: Reading messages from all channels"
+	msg = "Rebuild 1/4: Reading messages from all channels"
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 
@@ -84,7 +84,7 @@ async function rebuild(args, message, dry) {
 							if (isValidPrefix(dmsg)) {
 								commands.push(dmsg)
 								if(repfreq > 0 && commands.length % repfreq == 0) {
-									msg = `Recreate 1/4: ${commands.length} commands were found...`
+									msg = `Rebuild 1/4: ${commands.length} commands were found...`
 									console.log("MSG   : ", msg)
 									message.channel.send(msg);
 								}
@@ -101,7 +101,7 @@ async function rebuild(args, message, dry) {
 		}
 	}
 
-	msg = `Recreate 2/4: Total of ${commands.length} command was found. Ordering by datetime.`
+	msg = `Rebuild 2/4: Total of ${commands.length} command was found. Ordering by datetime.`
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 
@@ -111,7 +111,7 @@ async function rebuild(args, message, dry) {
 		return (dateA < dateB) ? -1 : (dateA > dateB) ? 1 : 0;
 	});
 
-	msg = "Recreate 3/4: Done sorting commands. Executing set/mset commands in dry mode, discord will be unaffected."
+	msg = "Rebuild 3/4: Done sorting commands. Executing set/mset commands in dry mode, discord will be unaffected."
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 	n_done = 0
@@ -119,19 +119,18 @@ async function rebuild(args, message, dry) {
 	commands.forEach(function(dmessage) {
 		const dargs = getArgs(dmessage);
 		const dcommand = dargs.shift().toLowerCase();
-		processCommands(dcommand, dmessage, dargs, true);
 		was_processed = set.processSet(dcommand, dmessage, dargs, true)
 		was_processed = was_processed || mset.processMset(dcommand, dmessage, dargs, true)
 		if(was_processed) { n_processed += 1 }
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {
-			msg = `Recreate 3/4: ${n_done} (${n_processed} m/set) commands were executed...`
+			msg = `Rebuild 3/4: ${n_done} (${n_processed} m/set) commands were executed...`
 			console.log("MSG   : ", msg)
 			message.channel.send(msg);
 		}
 	})
 
-	msg = "Recreate 4/4: Finished successfully."
+	msg = "Rebuild 4/4: Finished successfully."
 
 }
 

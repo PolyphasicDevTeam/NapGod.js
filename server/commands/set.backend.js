@@ -18,7 +18,22 @@ module.exports = {
 			if (member == null) { member = message.member }
 			resolve(set(args, message, dry, author, member, silent))
 		})
-	}
+	},
+	processSetBlock: (async function(command, message, args, dry=false) {
+		if (command === "set") {
+			if (args.length <= 2 && args.length > 0) {
+				await set(args, message, dry);
+			} else {
+				msg = "You need to provide a URL or a valid sleep cycle see +help for details."
+				console.log("MSG   : ", msg)
+				if(!dry){message.channel.send(msg);}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	})
+
 };
 
 
@@ -166,6 +181,7 @@ async function set(args, message, dry, author, member, silent) {
 			// console.log("set image error: " + err);
 			return { is_nurl: false };
 		}
+		return { is_nurl: false };
 	}
 
 	function checkIsSchedule(schedulePossible) {

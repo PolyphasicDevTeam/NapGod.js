@@ -3,8 +3,8 @@ const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
-const set = require("./set.command")
-const mset = require("./mset.command")
+const set = require("./set.backend")
+const mset = require("./mset.backend")
 
 module.exports = {
 	processMrebuild: function(command, message, args, dry=false) {

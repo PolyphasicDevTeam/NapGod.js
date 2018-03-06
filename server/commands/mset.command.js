@@ -21,7 +21,7 @@ module.exports = {
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}
-			else if (args.length <= 3) {
+			else if (args.length >= 3) {
 				mset(args, message, dry);
 			} else {
 				msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"

@@ -83,7 +83,7 @@ async function set(args, message, dry, author, member, silent) {
 	if (is_nurl) {
 		if (nurl.host == "napchart.com") {
 			//Dry run, we are caching
-			getOrGenImg(nurl, message, true);
+			await getOrGenImg(nurl, message, true);
 		}
 	}
 
@@ -113,7 +113,7 @@ async function set(args, message, dry, author, member, silent) {
 		if(!dry){member.setNickname(new_username);}
 		msg = "Schedule set for " + author.tag + " to `" + args[0] + "`.";
 		console.log("MSG   : ", msg)
-		if(!dry&&!silent){message.channel.send(msg);}
+		if(!dry&&!silent){await message.channel.send(msg);}
 
 		let roles =  member.roles
 		roles = new Set(roles.keys())
@@ -138,10 +138,10 @@ async function set(args, message, dry, author, member, silent) {
 	if (is_nurl) {
 		msg = "Nap Chart set for " + author.tag + " to " + nurl.href + "."
 		console.log("MSG   : ", msg)
-		if(!dry&&!silent){message.channel.send(msg);}
+		if(!dry&&!silent){await message.channel.send(msg);}
 		if (nurl.host == "napchart.com") {
 			// Include http(s) when specifying URLs
-			getOrGenImg(nurl, message, dry);
+			await getOrGenImg(nurl, message, dry);
 		}
 	} else if (args.length === 2 && args[1] === "none") {
 		console.log("ACT   : ", "Remove napchart from database for " +author.username)

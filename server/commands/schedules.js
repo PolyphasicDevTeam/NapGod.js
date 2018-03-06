@@ -23,7 +23,7 @@ module.exports = {
 		sevamayl: { name: "SEVAMAYL", category: "Experimental", chart: "https://napchart.com/f10fn" },
 		dymaxion: { name: "Dymaxion", category: "Nap only", chart: "https://napchart.com/90oo4" },
 		naptation: { name: "Naptation", category: "Nap only", chart: "https://napchart.com/76b7u" },
-		experimental: { name: "Naptation", category: "Nap only", chart: "https://napchart.com/76b7u" },
+		exaptation: { name: "Naptation", category: "Nap only", chart: "https://napchart.com/76b7u" },
 		spamayl: { name: "SPAMAYL", category: "Nap only", chart: "https://napchart.com/d6oef" },
 		tesla: { name: "Tesla", category: "Nap only", chart: "https://napchart.com/a62hi" },
 		uberman: { name: "Uberman", category: "Nap only", chart: "https://napchart.com/t4pyp" },

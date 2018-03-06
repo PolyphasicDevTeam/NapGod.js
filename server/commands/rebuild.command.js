@@ -58,16 +58,17 @@ async function rebuild(args, message, dry) {
 	if(repfreq>0) {message.channel.send(msg);}
 
 	channels = Array.from(message.guild.channels.values())
-	console.log("INFO  : ","channels:", channels)
+	//console.log("INFO  : ","channels:", channels)
 	commands = []
 	for(ch of channels) {
 		console.log("INFO  : ","Processing channel:", ch.name)
 		if (ch.type != "text") { continue }
 
-		msgs = await ch.fetchMessages({limit: 50, before: message.id})
+		msgs = await ch.fetchMessages({limit: 50})
 		while (msgs.length != 0) {
 			msgs.forEach(function(msg) {
-				console.log("INFO  : ","message:", message.createdAt)
+				console.log("INFO  : ","message:", msg.createdAt)
+				console.log("INFO  : ","message:", msg.content)
 				//Immitate app.js
 				if (msg.author.bot) {
 				} else {

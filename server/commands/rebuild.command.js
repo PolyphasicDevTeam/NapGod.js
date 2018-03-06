@@ -116,7 +116,7 @@ async function rebuild(args, message, dry) {
 	if(repfreq>0) {message.channel.send(msg);}
 	n_done = 0
 	commands.forEach(function(dmessage) {
-		const dargs = getArgs(msg);
+		const dargs = getArgs(dmessage);
 		const dcommand = dargs.shift().toLowerCase();
 		processCommands(dcommand, dmessage, dargs, true);
 		n_done += 1

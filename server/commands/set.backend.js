@@ -172,23 +172,16 @@ async function set(args, message, dry, author, member, silent) {
 		if (schedulePossible) {
 			const schedp_arr = schedulePossible.trim().split(/-+/g);
 			const schedn = schedp_arr[0].toLowerCase();
-			if (schedp_arr.length == 2) {
-				const schedmod = schedp_arr[1].toLowerCase();
-			}
-			if (
-				schedp_arr.length <= 2 &&
-				Object.keys(schedules).includes(schedn) &&
-				(schedp_arr.length == 1 ||
-					(schedp_arr.length == 2 && Object.keys(modifiers).includes(schedmod)))
-			) {
-				if (schedp_arr.length == 1) {
-					return { is_schedule: true, schedn, schedfull: schedules[schedn].name };
-				} else {
+
+			if (Object.keys(schedules).includes(schedn)) {
+				if (schedp_arr.length == 2) {
+					const schedmod = schedp_arr[1].toLowerCase();
 					return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
+				} else if (schedp_arr.length == 1) {
+					return { is_schedule: true, schedn, schedfull: schedules[schedn].name };
 				}
-			} else {
-				return { is_schedule: false };
 			}
+			return { is_schedule: false };
 		}
 	}
 

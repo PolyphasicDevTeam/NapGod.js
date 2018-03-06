@@ -65,38 +65,38 @@ async function rebuild(args, message, dry) {
 		if (ch.type != "text") { continue }
 
 		msgs = await ch.fetchMessages({limit: 100})
+		nextTime = null
 		while (msgs.length != 0) {
 			nextId = null
-			nextTime = null
 			msgs.forEach(function(msg) {
-				console.log("INFO  : ","message:", msg.createdAt)
-				//console.log("INFO  : ","message:", msg.content)
-				//Immitate app.js
-				if (msg.author.bot) {
-				} else {
+				if (nextTime == null || nextTime > msg.createdAt.getTime()){
+					console.log("INFO  : ","message:", msg.createdAt)
+					//console.log("INFO  : ","message:", msg.content)
+					//Immitate app.js
+					if (msg.author.bot) {
+					} else {
 
-					const args = getArgs(msg);
-					const command = args.shift().toLowerCase();
-					if (command == '') { } //There is probably space after prefix, reject
-					else {
+						const args = getArgs(msg);
+						const command = args.shift().toLowerCase();
+						if (command == '') { } //There is probably space after prefix, reject
+						else {
 
-						if (isValidPrefix(msg)) {
-							commands.push(msg)
-							if(repfreq > 0 && commands.length % repfreq == 0) {
-								msg = `Recreate 1/4: ${commands.length} commands were found...`
-								console.log("MSG   : ", msg)
-								message.channel.send(msg);
+							if (isValidPrefix(msg)) {
+								commands.push(msg)
+								if(repfreq > 0 && commands.length % repfreq == 0) {
+									msg = `Recreate 1/4: ${commands.length} commands were found...`
+									console.log("MSG   : ", msg)
+									message.channel.send(msg);
+								}
 							}
 						}
-					}
 
-				}
-				if (nextTime == null || nextTime > msg.createdAt.getTime()){
+					}
 					nextTime = msg.createdAt.getTime()
 					nextId = msg.id
 				}
 			})
-
+			if (nextId == null) {break;}
 			msgs = await ch.fetchMessages({limit: 100, before: nextId})
 		}
 	}

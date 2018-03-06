@@ -64,10 +64,10 @@ async function rebuild(args, message, dry) {
 		console.log("INFO  : ","Processing channel:", ch.name)
 		if (ch.type != "text") { continue }
 
-		msgs = await ch.fetchMessages({limit: 50})
+		msgs = await ch.fetchMessages({limit: 50, before: message.id})
 		while (msgs.length != 0) {
 			msgs.forEach(function(msg) {
-				console.log("INFO  : ","message:", message.content)
+				console.log("INFO  : ","message:", message.createdAt)
 				//Immitate app.js
 				if (msg.author.bot) {
 				} else {
@@ -89,7 +89,7 @@ async function rebuild(args, message, dry) {
 
 				}
 			})
-			msgs = await ch.fetchMessages({limit: 50})
+			msgs = await ch.fetchMessages({limit: 50, before: msgs[msgs.length-1].id})
 		}
 	}
 

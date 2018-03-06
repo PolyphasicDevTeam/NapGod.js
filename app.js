@@ -16,7 +16,7 @@ client.on("message", message => {
 		//Reject commands from non-mods because we are in Mod-only mode
 		let roles =  message.member.roles
 		roles = new Set(roles.keys())
-		let mods = message.guild.roles.find("name", "Moderators").id
+		let mods = message.guild.roles.find("name", "Admins").id
 		let admins = message.guild.roles.find("name", "Admins").id
 		permissions = false
 		if (roles.has(mods)||roles.has(admins)) {

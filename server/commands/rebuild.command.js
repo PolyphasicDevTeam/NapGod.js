@@ -3,12 +3,11 @@ const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
-const set = require("./set.backend").setInternalPromise;
-const { processCommands } = require("./../command.ctrl");
-const tstimp = require("./../command.ctrl");
+const set = require("./set.command")
+const mset = require("./mset.command")
 
 module.exports = {
-	processMset: function(command, message, args, dry=false) {
+	processMrebuild: function(command, message, args, dry=false) {
 		if (command === "mrebuild") {
 			if(dry) {
 				console.log("WARN>>: ", "+mrebuild cannot be executed dry to avoid cyclic behaviour")
@@ -43,8 +42,6 @@ module.exports = {
 async function rebuild(args, message, dry) {
 	console.log("CMD   : MREBUILD")
 	console.log("ARGS  : ", args)
-	console.log("ARGS  : ", processCommands)
-	console.log("ARGS  : ", tstimp)
 	repfreq = parseInt(args[0])
 	if(isNaN(repfreq) || repfreq < 0) {
 		msg = "Valid options are `+mrebuild [report-interval]`. [report-interval] must be positive integer or 0 for no progress reporting"
@@ -114,17 +111,21 @@ async function rebuild(args, message, dry) {
 		return (dateA < dateB) ? -1 : (dateA > dateB) ? 1 : 0;
 	});
 
-	msg = "Recreate 3/4: Done sorting commands. Executing commands in dry mode, discord will be unaffected."
+	msg = "Recreate 3/4: Done sorting commands. Executing set/mset commands in dry mode, discord will be unaffected."
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 	n_done = 0
+	n_processed = 0
 	commands.forEach(function(dmessage) {
 		const dargs = getArgs(dmessage);
 		const dcommand = dargs.shift().toLowerCase();
 		processCommands(dcommand, dmessage, dargs, true);
+		was_processed = set.processSet(dcommand, dmessage, dargs, true)
+		was_processed = was_processed || mset.processMset(dcommand, dmessage, dargs, true)
+		if(was_processed) { n_processed += 1 }
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {
-			msg = `Recreate 3/4: ${commands.length} commands were executed...`
+			msg = `Recreate 3/4: ${n_done} (${n_processed} m/set) commands were executed...`
 			console.log("MSG   : ", msg)
 			message.channel.send(msg);
 		}

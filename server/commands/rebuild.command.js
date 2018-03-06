@@ -60,7 +60,7 @@ async function rebuild(args, message, dry) {
 	channels = Object.values(message.guild.channels)
 	console.log("INFO  : ","channels:", channels)
 	commands = []
-	channels.forEach(function(ch) {
+	channels.forEach(async function(ch) {
 		msgs = await ch.fetchMessages({limit: 50})
 		while (msgs.length != 0) {
 			msgs.forEach(function(msg) {

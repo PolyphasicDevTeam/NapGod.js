@@ -64,9 +64,10 @@ async function rebuild(args, message, dry) {
 		console.log("INFO  : ","Processing channel:", ch.name)
 		if (ch.type != "text") { continue }
 
-		msgs = await ch.fetchMessages({limit: 50})
+		msgs = await ch.fetchMessages({limit: 100})
 		while (msgs.length != 0) {
 			nextId = null
+			nextTime = null
 			msgs.forEach(function(msg) {
 				console.log("INFO  : ","message:", msg.createdAt)
 				//console.log("INFO  : ","message:", msg.content)
@@ -90,10 +91,13 @@ async function rebuild(args, message, dry) {
 					}
 
 				}
-				nextId = msg.id
+				if (nextTime == null || nextTime > msg.createdAt.getTime()){
+					nextTime = msg.createdAt.getTime()
+					nextId = msg.id
+				}
 			})
-			
-			msgs = await ch.fetchMessages({limit: 50, before: nextId})
+
+			msgs = await ch.fetchMessages({limit: 100, before: nextId})
 		}
 	}
 

@@ -9,10 +9,10 @@ const commandsFlat = flat(commands);
 const c2 = _.values(commandsFlat);
 
 module.exports = {
-	processCommands: function(command, message, args) {
+	processCommands: function(command, message, args, dry=false) {
 		handled = false
 		c2.forEach(fn => {
-			handled = handled || fn(command, message, args)});
+			handled = handled || fn(command, message, args, dry)});
 		if(!handled){
 		console.error("WARN>>: ", "Command was not handled:", command, args)
 		}

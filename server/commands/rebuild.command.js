@@ -70,7 +70,7 @@ async function rebuild(args, message, dry) {
 			nextId = null
 			msgs.forEach(function(dmsg) {
 				if (nextTime == null || nextTime > dmsg.createdAt.getTime()){
-					console.log("INFO  : ","message:", dmsg.createdAt)
+					//console.log("INFO  : ","message:", dmsg.createdAt)
 					//console.log("INFO  : ","message:", msg.content)
 					//Immitate app.js
 					if (dmsg.author.bot) {
@@ -108,7 +108,7 @@ async function rebuild(args, message, dry) {
 	commands.sort(function(a, b) {
 		var dateA = a.createdAt.getTime()
 		var dateB = b.createdAt.getTime()
-		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+		return (dateA < dateB) ? -1 : (dateA > dateB) ? 1 : 0;
 	});
 
 	msg = "Recreate 3/4: Done sorting commands. Executing commands in dry mode, discord will be unaffected."

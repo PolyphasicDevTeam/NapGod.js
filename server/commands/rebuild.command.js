@@ -69,7 +69,7 @@ async function rebuild(args, message, dry) {
 			nextId = null
 			msgs.forEach(function(msg) {
 				console.log("INFO  : ","message:", msg.createdAt)
-				console.log("INFO  : ","message:", msg.content)
+				//console.log("INFO  : ","message:", msg.content)
 				//Immitate app.js
 				if (msg.author.bot) {
 				} else {

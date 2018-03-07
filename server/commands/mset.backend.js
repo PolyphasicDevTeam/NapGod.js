@@ -11,6 +11,7 @@ module.exports = {
 	},
 	processMsetBlock: (async function(command, message, args, dry=false) {
 		if (command === "mset") {
+			console.log("INFO  : ", "MSET execution attempted by ", message.author.tag, message.author.id)
 			if (message.author == null || message.member == null) {
 				console.log("WARN>>: ", "Member or author no longer exists")
 				return true;

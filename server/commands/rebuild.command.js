@@ -172,7 +172,7 @@ async function rebuild(args, message, dry) {
 				if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
 			}
 
-			roles =  member.roles
+			roles =  mbr.roles
 			roles = new Set(roles.keys())
 			for (sch of Object.values(schedules)) {
 				if (roles.has(message.guild.roles.find("name",sch.category).id)) {
@@ -195,7 +195,7 @@ async function rebuild(args, message, dry) {
 
 		}
 
-		roles =  member.roles
+		roles =  mbr.roles
 		roles = new Set(roles.keys())
 		for (sch of Object.values(schedules)){
 			if ( schedules[schedn].category == sch.category) {

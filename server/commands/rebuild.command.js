@@ -154,13 +154,14 @@ async function rebuild(args, message, dry) {
 	for (mbr of ms) {
 		//Deterime schedule in discord
 		dcrd_sch = null
+		dcrd_nick = mbr.nickname
 		if (mbr.nickname == null) {
-		} else {
-			ptag_start = mbr.nickname.lastIndexOf(' [')
-			ptag_end = mbr.nickname.lastIndexOf(']')
-			if (ptag_start != -1 && ptag_end > ptag_start) {
-				dcrd_sch = mbr.nickname.slice(ptag_start+2,ptag_end)
-			}
+			dcrd_nick = mbr.user.username
+		} 
+		ptag_start = mbr.nickname.lastIndexOf(' [')
+		ptag_end = mbr.nickname.lastIndexOf(']')
+		if (ptag_start != -1 && ptag_end > ptag_start) {
+			dcrd_sch = mbr.nickname.slice(ptag_start+2,ptag_end)
 		}
 
 		console.log("INFO  : ", dcrd_sch)

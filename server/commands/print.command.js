@@ -1,7 +1,5 @@
 const { URL } = require("url");
-const _ = require("lodash");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
-
 const config = require("../../config.json");
 const _ = require("lodash");
 

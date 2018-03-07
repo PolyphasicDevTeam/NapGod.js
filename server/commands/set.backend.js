@@ -22,7 +22,7 @@ module.exports = {
 			if (member == null) { member = message.member }
 			if (author == null || member == null) {
 				console.log("WARN>>: ", "Member or author no longer exists")
-				return false;
+				resolve(false)
 			}
 			resolve(set(args, message, dry, author, member, silent))
 		})
@@ -69,7 +69,9 @@ async function set(args, message, dry, author, member, silent) {
 	//If schedule only, wipe chart
 	if (args[0] === "none") {
 		console.log("ACT   : ", "Remove napchart from database for " +author.username)
-		await saveUserSchedule(message, buildUserInstance());
+		upd = buildUserInstance()
+		upd.currentScheduleChart = null
+		await saveUserSchedule(message, upd);
 		msg = "Nap Chart has been removed for " + author.tag + "."
 		console.log("MSG   : ", msg)
 		if(!dry&&!silent){message.channel.send(msg);}
@@ -157,7 +159,9 @@ async function set(args, message, dry, author, member, silent) {
 		}
 	} else if (args.length === 2 && args[1] === "none") {
 		console.log("ACT   : ", "Remove napchart from database for " +author.username)
-		await saveUserSchedule(message, buildUserInstance());
+		upd = buildUserInstance()
+		upd.currentScheduleChart = null
+		await saveUserSchedule(message, upd);
 		msg = "Nap Chart has been removed for " + author.tag + "."
 		console.log("MSG   : ", msg)
 		if(!dry&&!silent){message.channel.send(msg);}

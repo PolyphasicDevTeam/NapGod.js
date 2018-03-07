@@ -76,66 +76,66 @@ async function mset(args, message, dry) {
 	}
 
 
-	message.guild.fetchMembers(args[0]).then((res)=>{
-		ms = res.members
-		ms = ms.array()
+	//res = await message.guild.fetchMembers(arg)
+	res = await message.guild.fetchMembers()
+	ms = res.members
+	ms = ms.array()
 
-		nicks = []
-		unames = []
-		tags = []
-		for(var i=0; i < ms.length; i++) {
-			m = ms[i]
-			nickname = m.nickname
-			if(nickname!=null){
-				ptag_start = nickname.lastIndexOf(' [')
-				if (ptag_start != -1) {
-					nickname = nickname.slice(0,ptag_start)
-				}
+	nicks = []
+	unames = []
+	tags = []
+	for(var i=0; i < ms.length; i++) {
+		m = ms[i]
+		nickname = m.nickname
+		if(nickname!=null){
+			ptag_start = nickname.lastIndexOf(' [')
+			if (ptag_start != -1) {
+				nickname = nickname.slice(0,ptag_start)
 			}
-			if(nickname == arg) { nicks.push(m)	}
-			if(m.user.username == arg) { unames.push(m) }
-			if(m.user.tag == arg) { tags.push(m) }
 		}
+		if(nickname == arg) { nicks.push(m)	}
+		if(m.user.username == arg) { unames.push(m) }
+		if(m.user.tag == arg) { tags.push(m) }
+	}
 
-		usr = null
-		if(nicks.length > 0) { //We have some nicks that match
-			if(nicks.length == 1) {
-				usr = nicks[0]
-			} else {
-				msg = `Multiple users with nickname **${arg}** have been found: `
-				nicks.forEach(nick => {msg = msg + nick.user.tag + " "})
-				console.log("MSG   : ", msg)
-				if(!dry){message.channel.send(msg);}
-			}
-		} else if(unames.length > 0) { //We have some user names that match
-			if(unames.length == 1) {
-				usr = unames[0]
-			} else {
-				msg = `Multiple users with username **${arg}** have been found: `
-				unames.forEach(uname => {msg = msg + uname.user.tag + " "})
-				console.log("MSG   : ", msg)
-				if(!dry){message.channel.send(msg);}
-			}
-		} else if(tags.length > 0) { //We have some user tags that match
-			usr = tags[0]
+	usr = null
+	if(nicks.length > 0) { //We have some nicks that match
+		if(nicks.length == 1) {
+			usr = nicks[0]
 		} else {
-			msg = `User with nickname, username or tag '**${arg}**' was not found in the discord.`
+			msg = `Multiple users with nickname **${arg}** have been found: `
+			nicks.forEach(nick => {msg = msg + nick.user.tag + " "})
 			console.log("MSG   : ", msg)
 			if(!dry){message.channel.send(msg);}
 		}
-		if (usr!=null) {
-			set([args[0], args[1]], message, dry,usr.user,usr,true).then(res=>{
-				if (!res) {
-					msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"
-					console.log("MSG   : ", msg)
-					console.log("WARN>>: ", "MSET failed with args: ", args[0], args[1], arg)
-					if(!dry){message.channel.send(msg);}
-				} else {
-					msg = "Schedule set for " + usr.user.tag + " to `" + args[0] + "`.\n";
-					msg += "Nap Chart set for " + usr.user.tag + " to " + args[1] + "."
-					if(!dry){message.channel.send(msg);}
-				}
-			})
+	} else if(unames.length > 0) { //We have some user names that match
+		if(unames.length == 1) {
+			usr = unames[0]
+		} else {
+			msg = `Multiple users with username **${arg}** have been found: `
+			unames.forEach(uname => {msg = msg + uname.user.tag + " "})
+			console.log("MSG   : ", msg)
+			if(!dry){message.channel.send(msg);}
 		}
-	})
+	} else if(tags.length > 0) { //We have some user tags that match
+		usr = tags[0]
+	} else {
+		msg = `User with nickname, username or tag '**${arg}**' was not found in the discord.`
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
+	}
+	if (usr!=null) {
+		set([args[0], args[1]], message, dry,usr.user,usr,true).then(res=>{
+			if (!res) {
+				msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"
+				console.log("MSG   : ", msg)
+				console.log("WARN>>: ", "MSET failed with args: ", args[0], args[1], arg)
+				if(!dry){message.channel.send(msg);}
+			} else {
+				msg = "Schedule set for " + usr.user.tag + " to `" + args[0] + "`.\n";
+				msg += "Nap Chart set for " + usr.user.tag + " to " + args[1] + "."
+				if(!dry){message.channel.send(msg);}
+			}
+		})
+	}
 }

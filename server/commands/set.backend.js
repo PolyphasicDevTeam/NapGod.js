@@ -10,12 +10,20 @@ module.exports = {
 	setInternal: function(args, message, dry, author=null, member=null) {
 		if (author == null) { author = message.author }
 		if (member == null) { member = message.member }
+		if (author == null || member == null) {
+			console.log("WARN>>: ", "Member or author no longer exists")
+			return;
+		}
 		set(args, message, dry, author, member, false);
 	},
 	setInternalPromise: function(args, message, dry, author=null, member=null, silent = true) {
 		return new Promise(function (resolve, reject) {
 			if (author == null) { author = message.author }
 			if (member == null) { member = message.member }
+			if (author == null || member == null) {
+				console.log("WARN>>: ", "Member or author no longer exists")
+				return false;
+			}
 			resolve(set(args, message, dry, author, member, silent))
 		})
 	},
@@ -24,6 +32,10 @@ module.exports = {
 			if (args.length <= 2 && args.length > 0) {
 				author = message.author
 				member = message.member
+				if (author == null || member == null) {
+					console.log("WARN>>: ", "Member or author no longer exists")
+					return false;
+				}
 				await set(args, message, dry, author, member, false);
 			} else {
 				msg = "You need to provide a URL or a valid sleep cycle see +help for details."

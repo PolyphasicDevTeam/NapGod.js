@@ -77,11 +77,11 @@ async function rebuild(args, message, dry) {
 
 						const dargs = getArgs(dmsg);
 						const dcommand = dargs.shift().toLowerCase();
+						console.log("INFO  : ", dcommand)
 						if (dcommand == '') { } //There is probably space after prefix, reject
 						else if (dcommand != 'set' || dcommand != 'mset' ) { } //There is probably space after prefix, reject
 						else {
 							console.log("INFO  : ", dmsg.content)
-
 							if (isValidPrefix(dmsg)) {
 								console.log("INFO  : ", "valid")
 								commands.push(dmsg)
@@ -146,6 +146,7 @@ function getArgs(message) {
 	return message.content
 		.slice(config.prefix.length)
 		.trimRight()
+		.replace( /\n/g, " " )	
 		.split(/ +/g);
 }
 

@@ -158,10 +158,12 @@ async function rebuild(args, message, dry) {
 		if (mbr.nickname == null) {
 			dcrd_nick = mbr.user.username
 		} 
-		ptag_start = mbr.nickname.lastIndexOf(' [')
-		ptag_end = mbr.nickname.lastIndexOf(']')
-		if (ptag_start != -1 && ptag_end > ptag_start) {
-			dcrd_sch = mbr.nickname.slice(ptag_start+2,ptag_end)
+		if (dcrd_nick != null) {
+			ptag_start = mbr.nickname.lastIndexOf(' [')
+			ptag_end = mbr.nickname.lastIndexOf(']')
+			if (ptag_start != -1 && ptag_end > ptag_start) {
+				dcrd_sch = mbr.nickname.slice(ptag_start+2,ptag_end)
+			}
 		}
 
 		console.log("INFO  : ", dcrd_sch)

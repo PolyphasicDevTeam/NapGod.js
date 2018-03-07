@@ -37,6 +37,16 @@ module.exports = {
 		flipped: { name: "flipped" }, 
 		modified: { name: "modified" }, 
 		recovery: { name: "recovery" }
+	},
+	roles: {
+		everyman: { name: "Everyman" },
+		biphasic: { name: "Biphasic" },
+		dual_core: { name: "Dual Core" },
+		tri_core: { name: "Tri Core" },
+		monophasic: { name: "Monophasic" },
+		experimental: { name: "Experimental" },
+		nap_only: { name: "Nap only" },
+		random: { name: "Random" }
 	}
 };
 

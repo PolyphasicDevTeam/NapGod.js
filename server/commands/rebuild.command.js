@@ -124,6 +124,9 @@ async function rebuild(args, message, dry) {
 		was_processed = await set.processSetBlock(dcommand, dmessage, dargs, true)
 		was_processed = was_processed || await mset.processMsetBlock(dcommand, dmessage, dargs, true)
 		if(was_processed) { n_processed += 1 }
+		else {
+			console.log("WARN>>: ", dcommand, dargs, " was not processed.")
+		}
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {
 			msg = `Rebuild 3/4: ${n_done} (${n_processed} OK) commands were executed...`

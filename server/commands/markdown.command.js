@@ -1,5 +1,5 @@
 const fs = require("fs");
-const schedules = require("./schedules");
+const schedules = require("./schedules").schedules;
 const { getOrGenImg } = require("./../imageCache");
 
 let commands = {};

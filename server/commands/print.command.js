@@ -14,7 +14,7 @@ module.exports = {
 			}
 			console.log("CMD   : NC")
 			console.log("ARGS  : ", args)
-			let urlPossible = args.length === args[0];
+			let urlPossible = args[0];
 			var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
 			if (is_nurl) {
 

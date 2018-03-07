@@ -9,6 +9,7 @@ const setInternal = require("./set.backend").setInternalPromise;
 
 const schedules = require("./schedules").schedules
 const modifiers = require("./schedules").modifiers
+const roles = require("./schedules").roles
 
 module.exports = {
 	processMrebuild: function(command, message, args, dry=false) {
@@ -17,11 +18,11 @@ module.exports = {
 				console.log("WARN>>: ", "+mrebuild cannot be executed dry to avoid cyclic behaviour")
 				return true
 			}
-			let roles =  message.member.roles
-			roles = new Set(roles.keys())
+			mroles =  message.member.roles
+			mroles = new Set(mroles.keys())
 			let admins = message.guild.roles.find("name", "Admins").id
 			permissions = false
-			if (roles.has(admins)) {
+			if (mroles.has(admins)) {
 				permissions = true
 			}
 			if (!permissions) {
@@ -172,11 +173,11 @@ async function rebuild(args, message, dry) {
 				if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
 			}
 
-			roles =  mbr.roles
-			roles = new Set(roles.keys())
-			for (sch of Object.values(schedules)) {
-				if (roles.has(message.guild.roles.find("name",sch.category).id)) {
-					msga = `${mbr.user.tag} - has ${sch.category} role but no schedule tag, resolve manually\n`
+			mroles =  mbr.roles
+			mroles = new Set(mroles.keys())
+			for (sch of Object.values(roles)) {
+				if (mroles.has(message.guild.roles.find("name",sch.name).id)) {
+					msga = `${mbr.user.tag} - has ${sch.name} role but no schedule tag, resolve manually\n`
 					console.log("MSG   : ", msga)
 					msg+=msga
 					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
@@ -195,19 +196,19 @@ async function rebuild(args, message, dry) {
 
 		}
 
-		roles =  mbr.roles
-		roles = new Set(roles.keys())
-		for (sch of Object.values(schedules)){
-			if ( schedules[schedn].category == sch.category) {
-				if (!roles.has(message.guild.roles.find("name",sch.category).id)) {
-					msga = `${mbr.nickname} - has no ${sch.category} role but [${dcrd_sch}] schedule tag, resolve manually\n`
+		mroles =  mbr.roles
+		mroles = new Set(mroles.keys())
+		for (sch of Object.values(roles)){
+			if ( schedules[schedn].category == sch.name) {
+				if (!mroles.has(message.guild.roles.find("name",sch.name).id)) {
+					msga = `${mbr.nickname} - has no ${sch.name} role but [${dcrd_sch}] schedule tag, resolve manually\n`
 					console.log("MSG   : ", msga)
 					msg+=msga
 					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
 				}
 			} else {
-				if (roles.has(message.guild.roles.find("name",sch.category).id)) {
-					msga = `${mbr.nickname} - has ${sch.category} role but [${dcrd_sch}] schedule tag, resolve manually\n`
+				if (mroles.has(message.guild.roles.find("name",sch.name).id)) {
+					msga = `${mbr.nickname} - has ${sch.name} role but [${dcrd_sch}] schedule tag, resolve manually\n`
 					console.log("MSG   : ", msga)
 					msg+=msga
 					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}

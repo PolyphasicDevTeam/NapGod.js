@@ -72,6 +72,7 @@ async function mset(args, message, dry) {
 					if(!dry){message.channel.send(msg);}
 				}
 			})
+			return
 		}
 	}
 

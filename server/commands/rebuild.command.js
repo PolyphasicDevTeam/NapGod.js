@@ -159,7 +159,7 @@ async function rebuild(args, message, dry) {
 			ptag_start = mbr.nickname.lastIndexOf(' [')
 			ptag_end = mbr.nickname.lastIndexOf(']')
 			if (ptag_start != -1 && ptag_end > ptag_start) {
-				dcrd_sch = mbr.nickname.slice(ptag_start+1,ptag_end)
+				dcrd_sch = mbr.nickname.slice(ptag_start+2,ptag_end)
 			}
 		}
 

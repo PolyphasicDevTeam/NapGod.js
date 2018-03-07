@@ -172,14 +172,14 @@ async function rebuild(args, message, dry) {
 
 			roles =  member.roles
 			roles = new Set(roles.keys())
-			Object.values(schedules).forEach(sch=>{
+			for (sch of Object.values(schedules)) {
 				if (roles.has(message.guild.roles.find("name",sch.category).id)) {
 					msga = `${mbr.user.tag} - has ${sch.category} role but no schedule tag, resolve manually\n`
 					console.log("MSG   : ", msga)
 					msg+=msga
 					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
 				}
-			})
+			}
 			continue
 		}
 
@@ -195,7 +195,7 @@ async function rebuild(args, message, dry) {
 
 		roles =  member.roles
 		roles = new Set(roles.keys())
-		Object.values(schedules).forEach(sch=>{
+		for (sch of Object.values(schedules)){
 			if ( schedules[schedn].category == sch.category) {
 				if (!roles.has(message.guild.roles.find("name",sch.category).id)) {
 					msga = `${mbr.nickname} - has no ${sch.category} role but [${dcrd_sch}] schedule tag, resolve manually\n`
@@ -211,7 +211,7 @@ async function rebuild(args, message, dry) {
 					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
 				}
 			}
-		})
+		}
 
 		//Get info from our database
 		if (dbmbr && dbmbr.currentScheduleName 

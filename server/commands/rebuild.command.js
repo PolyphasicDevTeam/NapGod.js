@@ -5,6 +5,7 @@ const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
 const set = require("./set.backend")
 const mset = require("./mset.backend")
+const setInternal = require("./set.backend").setInternalPromise;
 
 const schedules = require("./schedules").schedules
 const modifiers = require("./schedules").modifiers
@@ -227,7 +228,7 @@ async function rebuild(args, message, dry) {
 
 		if (dcrd_sch) { //We have discord username but no database entry
 			//Autoresolve using mset
-			await set([dcrd_sch, "none"], message, true,mbr.user,mbr,true)
+			await setInternal([dcrd_sch, "none"], message, true,mbr.user,mbr,true)
 			msga = `${mbr.nickname} - Schedule not found in database, autoresolved\n`
 			console.log("MSG   : ", msga)
 			msg+=msga

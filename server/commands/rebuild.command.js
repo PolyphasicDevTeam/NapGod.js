@@ -161,8 +161,9 @@ async function rebuild(args, message, dry) {
 			}
 		}
 
+		console.log("INFO  : ", dcrd_sch)
 		dbmbr = await UserModel.findOne({id: mbr.user.id});
-		if (dcrd_sch == null) {
+		if (!dcrd_sch) {
 			if (dbmbr && dbmbr.currentScheduleName) { //We found user in our database but tag is missing
 				msga = `${mbr.user.tag} - Schedule in db is [${dbmbr.currentScheduleName}] but tag is missing, resolve manually\n`
 				console.log("MSG   : ", msga)
@@ -272,6 +273,7 @@ function checkIsSchedule(schedulePossible) {
 		}
 		return { is_schedule: false };
 	}
+	return { is_schedule: false };
 }
 
 

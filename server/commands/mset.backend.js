@@ -11,6 +11,10 @@ module.exports = {
 	},
 	processMsetBlock: (async function(command, message, args, dry=false) {
 		if (command === "mset") {
+			if (message.author == null || message.member == null) {
+				console.log("WARN>>: ", "Member or author no longer exists")
+				return true;
+			}
 			let roles =  message.member.roles
 			roles = new Set(roles.keys())
 			let mods = message.guild.roles.find("name", "Moderators").id

@@ -57,7 +57,7 @@ async function mset(args, message, dry) {
 	if (uid != '') {//Try to get user by id
 		member = message.guild.member(uid);
 		if (member != null) { //We found a valid user
-			set([args[0], args[1]], message, dry,member.user,member).then(res=>{
+			set([args[0], args[1]], message, dry,member.user,member,true).then(res=>{
 				if (!res) {
 					msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"
 					console.log("MSG   : ", msg)
@@ -120,7 +120,7 @@ async function mset(args, message, dry) {
 			if(!dry){message.channel.send(msg);}
 		}
 		if (usr!=null) {
-			set([args[0], args[1]], message, dry,usr.user,usr).then(res=>{
+			set([args[0], args[1]], message, dry,usr.user,usr,true).then(res=>{
 				if (!res) {
 					msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"
 					console.log("MSG   : ", msg)

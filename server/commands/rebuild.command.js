@@ -78,7 +78,7 @@ async function rebuild(args, message, dry) {
 						const dargs = getArgs(dmsg);
 						const dcommand = dargs.shift().toLowerCase();
 						if (dcommand == '') { } //There is probably space after prefix, reject
-						else if (dcommand != 'set' || dcommand != 'set' ) { } //There is probably space after prefix, reject
+						else if (dcommand != 'set' || dcommand != 'mset' ) { } //There is probably space after prefix, reject
 						else {
 
 							if (isValidPrefix(dmsg)) {
@@ -131,6 +131,8 @@ async function rebuild(args, message, dry) {
 	}
 
 	msg = "Rebuild 4/4: Finished successfully."
+	console.log("MSG   : ", msg)
+	await message.channel.send(msg);
 
 }
 

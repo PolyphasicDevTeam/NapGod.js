@@ -14,57 +14,50 @@ module.exports = {
 			}
 			let { napChartId, imgurl } = makeNapChartImageUrl(nurl);
 
-			//ImgModel.findOne({ napchartid: napChartId })
-				//.then(res => {
-			//
-					is_cached = fs.existsSync('/napcharts/'+napChartId+".png")
-					cacheurl = "http://cache.polyphasic.net/"+napChartId+".png"
-					console.log("INFO  : ","Image search res", is_cached);
-					//if(res==null){console.log("INFO  : ","Image search res", res);}
-					//else{console.log("INFO  : ","Image search res", res.url);}
-					let msgImg = null;
-					if (!is_cached) {
-						//let json = await imgur.uploadUrl(imgurl);
-						//console.log("INFO  : ",json.data.link)
-						console.log("INFO  : ", 'Downloading napchart: '+napChartId)
-						request.get({url: imgurl, encoding: 'binary'},(err,res)=>{
-							fs.writeFile('/napcharts/'+napChartId+".png", res.body, 'binary', err=> {
+			is_cached = fs.existsSync('/napcharts/'+napChartId+".png")
+			cacheurl = "http://cache.polyphasic.net/"+napChartId+".png"
+			console.log("INFO  : ","Image search res", is_cached);
+			let msgImg = null;
+			if (!is_cached) {
+				console.log("INFO  : ", 'Downloading napchart: '+napChartId)
+				request.get({url: imgurl, encoding: 'binary'},(err,res)=>{
+					fs.writeFile('/napcharts/'+napChartId+".png", res.body, 'binary', err=> {
 
-								console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
-								if(!dry){
-									msgImg = new Discord.RichEmbed()
-										.setDescription(nurl.href)
-										.setImage(cacheurl)
-										.setURL(nurl.href);
-									message.channel.send(msgImg);
-								}
-								resolve(false);
-
-								let newImg = new ImgModel({
-									napchartid: napChartId,
-									url: cacheurl
-								}).save();
-
-							})
-						})
-					} else {
 						console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
 						if(!dry){
 							msgImg = new Discord.RichEmbed()
 								.setDescription(nurl.href)
 								.setImage(cacheurl)
-								//.setImage(res.url)
 								.setURL(nurl.href);
-							message.channel.send(msgImg);
+							message.channel.send(msgImg).then(res=> {
+								resolve(false);
+							})
+						} else {
+							resolve(false);
 						}
-						resolve(true);
-					}
+					})
+				})
+			} else {
+				console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
+				if(!dry){
+					msgImg = new Discord.RichEmbed()
+						.setDescription(nurl.href)
+						.setImage(cacheurl)
+					//.setImage(res.url)
+						.setURL(nurl.href);
+					message.channel.send(msgImg).then(res=> {
+						resolve(true)
+					})
+				} else {
+					resolve(true);
+				}
+			}
 
-				//})
-				//.catch(err => {
-					//console.warn("WARN>>: ", "Could not get napchart from db: ", err);
-					//reject(err)
-				//});
+			//})
+			//.catch(err => {
+			//console.warn("WARN>>: ", "Could not get napchart from db: ", err);
+			//reject(err)
+			//});
 		})
 	}),
 	makeNapChartImageUrl: makeNapChartImageUrl,

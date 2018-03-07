@@ -154,8 +154,8 @@ async function rebuild(args, message, dry) {
 		dcrd_sch = null
 		if (mbr.nickname == null) {
 		} else {
-			ptag_start = new_username.lastIndexOf(' [')
-			ptag_end = new_username.lastIndexOf(']')
+			ptag_start = mbr.nickname.lastIndexOf(' [')
+			ptag_end = mbr.nickname.lastIndexOf(']')
 			if (ptag_start != -1 && ptag_end > ptag_start) {
 				dcrd_sch = mbr.nickname.slice(ptag_start+1,ptag_end)
 			}

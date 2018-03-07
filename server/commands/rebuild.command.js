@@ -77,13 +77,13 @@ async function rebuild(args, message, dry) {
 
 						const dargs = getArgs(dmsg);
 						const dcommand = dargs.shift().toLowerCase();
-						console.log("INFO  : ", dcommand, dcommand != 'set', dcommand != 'mset', dcommand == '')
+						//console.log("INFO  : ", dcommand, dcommand != 'set', dcommand != 'mset', dcommand == '')
 						if (dcommand == '') { } //There is probably space after prefix, reject
-						else if (dcommand != 'set' || dcommand != 'mset' ) { } //There is probably space after prefix, reject
+						else if (dcommand != 'set' && dcommand != 'mset' ) { } //Neither set nor mset
 						else {
-							console.log("INFO  : ", dmsg.content)
+							//console.log("INFO  : ", dmsg.content)
 							if (isValidPrefix(dmsg)) {
-								console.log("INFO  : ", "valid")
+								//console.log("INFO  : ", "valid")
 								commands.push(dmsg)
 								if(repfreq > 0 && commands.length % repfreq == 0) {
 									msg = `Rebuild 1/4: ${commands.length} m/set commands were found...`

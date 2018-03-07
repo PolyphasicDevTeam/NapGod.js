@@ -77,7 +77,7 @@ async function rebuild(args, message, dry) {
 
 						const dargs = getArgs(dmsg);
 						const dcommand = dargs.shift().toLowerCase();
-						console.log("INFO  : ", dcommand)
+						console.log("INFO  : ", dcommand, dcommand != 'set', dcommand != 'mset', dcommand == '')
 						if (dcommand == '') { } //There is probably space after prefix, reject
 						else if (dcommand != 'set' || dcommand != 'mset' ) { } //There is probably space after prefix, reject
 						else {

@@ -5,24 +5,41 @@ const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const config = require("../../config.json");
 const set = require("./set.backend").setInternalPromise;
 
+whitelist = [
+	"282078315588747264",//Ssk
+	"362687114954932224", //Jte
+	"351906266819330048", //Aeth
+	"147356941860077568", //TTR
+	"380207783171194882", //Crm
+	"220170052735991808", //Shy
+	"249218756298014720", //Ngn
+	"136870685711532032" //LTL
+]
+
+
 module.exports = {
 	msetInternal: function(args, message, dry) {
 		mset(args, message, dry);
 	},
 	processMsetBlock: (async function(command, message, args, dry=false) {
 		if (command === "mset") {
-			console.log("INFO  : ", "MSET execution attempted by ", message.author.tag, message.author.id)
-			if (message.author == null || message.member == null) {
-				console.log("WARN>>: ", "Member or author no longer exists")
-				return true;
-			}
-			let roles =  message.member.roles
-			roles = new Set(roles.keys())
-			let mods = message.guild.roles.find("name", "Moderators").id
-			let admins = message.guild.roles.find("name", "Admins").id
+			//console.log("INFO  : ", "MSET execution attempted by ", message.author.tag, message.author.id)
 			permissions = false
-			if (roles.has(mods)||roles.has(admins)) {
+			if (whitelist.indexOf(message.author.id) > -1) {
+				console.log("INFO  : ", "MSET was whitelisted for", message.author.tag, message.author.id)
 				permissions = true
+			} else {
+				if (message.author == null || message.member == null) {
+					console.log("WARN>>: ", "Member or author no longer exists")
+					return true;
+				}
+				let roles =  message.member.roles
+				roles = new Set(roles.keys())
+				let mods = message.guild.roles.find("name", "Moderators").id
+				let admins = message.guild.roles.find("name", "Admins").id
+				if (roles.has(mods)||roles.has(admins)) {
+					permissions = true
+				}
 			}
 			if (!permissions) {
 				msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+mset`"

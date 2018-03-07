@@ -6,6 +6,9 @@ const config = require("../../config.json");
 const set = require("./set.backend")
 const mset = require("./mset.backend")
 
+const schedules = require("./schedules").schedules
+const modifiers = require("./schedules").modifiers
+
 module.exports = {
 	processMrebuild: function(command, message, args, dry=false) {
 		if (command === "mrebuild") {
@@ -52,7 +55,7 @@ async function rebuild(args, message, dry) {
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 
-	msg = "Rebuild 1/4: Reading messages from all channels"
+	msg = "Rebuild 1/5: Reading messages from all channels"
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {message.channel.send(msg);}
 
@@ -86,7 +89,7 @@ async function rebuild(args, message, dry) {
 								//console.log("INFO  : ", "valid")
 								commands.push(dmsg)
 								if(repfreq > 0 && commands.length % repfreq == 0) {
-									msg = `Rebuild 1/4: ${commands.length} m/set commands were found...`
+									msg = `Rebuild 1/5: ${commands.length} m/set commands were found...`
 									console.log("MSG   : ", msg)
 									message.channel.send(msg);
 								}
@@ -103,7 +106,7 @@ async function rebuild(args, message, dry) {
 		}
 	}
 
-	msg = `Rebuild 2/4: Total of ${commands.length} m/set command was found. Ordering by datetime.`
+	msg = `Rebuild 2/5: Total of ${commands.length} m/set command was found. Ordering by datetime.`
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {await message.channel.send(msg);}
 
@@ -113,7 +116,7 @@ async function rebuild(args, message, dry) {
 		return (dateA < dateB) ? -1 : (dateA > dateB) ? 1 : 0;
 	});
 
-	msg = "Rebuild 3/4: Done sorting commands. Executing set/mset commands in dry mode, discord will be unaffected."
+	msg = "Rebuild 3/5: Done sorting commands. Executing set/mset commands in dry mode, discord will be unaffected."
 	console.log("MSG   : ", msg)
 	if(repfreq>0) {await message.channel.send(msg);}
 	n_done = 0
@@ -129,15 +132,114 @@ async function rebuild(args, message, dry) {
 		}
 		n_done += 1
 		if(repfreq > 0 && n_done % repfreq == 0) {
-			msg = `Rebuild 3/4: ${n_done} (${n_processed} OK) commands were executed...`
+			msg = `Rebuild 3/5: ${n_done} (${n_processed} OK) commands were executed...`
 			console.log("MSG   : ", msg)
 			await message.channel.send(msg);
 		}
 	}
-
-	msg = "Rebuild 4/4: Finished successfully."
+	msg = "Rebuild 4/5: Finished command reconstruction. Validating schedule tags."
 	console.log("MSG   : ", msg)
-	await message.channel.send(msg);
+	if(repfreq>0) {await message.channel.send(msg)}
+
+	res = await message.guild.fetchMembers()
+	ms = res.members
+	ms = ms.array()
+	msg = `Rebuild 4/5: Done fetching members. Processing tags for ${ms.length} members.`
+	console.log("MSG   : ", msg)
+	if(repfreq>0) {await message.channel.send(msg)}
+
+	msg = ""
+	for (mbr of ms) {
+		//Deterime schedule in discord
+		dcrd_sch = null
+		if (mbr.nickname == null) {
+		} else {
+			ptag_start = new_username.lastIndexOf(' [')
+			ptag_end = new_username.lastIndexOf(']')
+			if (ptag_start != -1 && ptag_end > ptag_start) {
+				dcrd_sch = mbr.nickname.slice(ptag_start+1,ptag_end)
+			}
+		}
+
+		dbmbr = await UserModel.findOne({id: mbr.user.id});
+		if (dcrd_sch == null) {
+			if (dbmbr && dbmbr.currentScheduleName) { //We found user in our database but tag is missing
+				msga = `${mbr.user.tag} - Schedule in db is [${dbmbr.currentScheduleName}] but tag is missing, resolve manually\n`
+				console.log("MSG   : ", msga)
+				msg+=msga
+				if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+			}
+
+			roles =  member.roles
+			roles = new Set(roles.keys())
+			Object.values(schedules).forEach(sch=>{
+				if (roles.has(message.guild.roles.find("name",sch.category).id)) {
+					msga = `${mbr.user.tag} - has ${sch.category} role but no schedule tag, resolve manually\n`
+					console.log("MSG   : ", msga)
+					msg+=msga
+					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+				}
+			})
+			continue
+		}
+
+		var { is_schedule, schedn, schedfull } = checkIsSchedule(dcrd_sch);
+		if (!is_schedule) {
+			msga = `${mbr.nickname} - [${dcrd_sch}] is invalid schedule tag, resolve manually\n`
+			console.log("MSG   : ", msga)
+			msg+=msga
+			if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+			continue
+
+		}
+
+		roles =  member.roles
+		roles = new Set(roles.keys())
+		Object.values(schedules).forEach(sch=>{
+			if ( schedules[schedn].category == sch.category) {
+				if (!roles.has(message.guild.roles.find("name",sch.category).id)) {
+					msga = `${mbr.nickname} - has no ${sch.category} role but [${dcrd_sch}] schedule tag, resolve manually\n`
+					console.log("MSG   : ", msga)
+					msg+=msga
+					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+				}
+			} else {
+				if (roles.has(message.guild.roles.find("name",sch.category).id)) {
+					msga = `${mbr.nickname} - has ${sch.category} role but [${dcrd_sch}] schedule tag, resolve manually\n`
+					console.log("MSG   : ", msga)
+					msg+=msga
+					if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+				}
+			}
+		})
+
+		//Get info from our database
+		if (dbmbr && dbmbr.currentScheduleName 
+			&& dbmbr.currentScheduleName.toLowerCase() != dcrd_sch.toLowerCase()) {
+			msga = `${mbr.nickname} - Schedule in db is [${dbmbr.currentScheduleName}] but tag shows [${dcrd_sch}], resolve manually\n`
+			console.log("MSG   : ", msga)
+			msg+=msga
+			if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+			continue
+
+		} 
+
+		if (dcrd_sch) { //We have discord username but no database entry
+			//Autoresolve using mset
+			await set([dcrd_sch, "none"], message, true,mbr.user,mbr,true)
+			msga = `${mbr.nickname} - Schedule not found in database, autoresolved\n`
+			console.log("MSG   : ", msga)
+			msg+=msga
+			if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+		}
+
+	}
+	if(repfreq>0) {await message.channel.send(msg);msg = ""}
+
+
+	msg = "Rebuild 5/5: Finished successfully."
+	console.log("MSG   : ", msg)
+	if(repfreq>0) {await message.channel.send(msg)}
 
 }
 
@@ -151,6 +253,25 @@ function getArgs(message) {
 		.trimRight()
 		.replace( /\n/g, " " )	
 		.split(/ +/g);
+}
+
+function checkIsSchedule(schedulePossible) {
+	if (schedulePossible) {
+		const schedp_arr = schedulePossible.trim().split(/-+/g);
+		const schedn = schedp_arr[0].toLowerCase();
+
+		if (Object.keys(schedules).includes(schedn)) {
+			if (schedp_arr.length == 2) {
+				const schedmod = schedp_arr[1].toLowerCase();
+				if (Object.keys(modifiers).includes(schedmod)) {
+					return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
+				}
+			} else if (schedp_arr.length == 1) {
+				return { is_schedule: true, schedn, schedfull: schedules[schedn].name };
+			}
+		}
+		return { is_schedule: false };
+	}
 }
 
 

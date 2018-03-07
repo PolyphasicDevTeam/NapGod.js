@@ -41,15 +41,15 @@ async function report(args, message, dry) {
 					}
 
 					//Current schedule
-					sched = `<p>Current schedule: ${user.currentScheduleName}</p>`
+					sched = `Current schedule: ${user.currentScheduleName}<br/>`
 
 					//Current napchart
 					napchart = ""
 					napchartimg = ""
 					if (user.currentScheduleChart == null) {
-						napchart = "<p>No napchart is currently set</p>"
+						napchart = "No napchart is currently set<br/>"
 					} else {
-						napchart = `<p>Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a></p>`
+						napchart = `Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a><br/>`
 						let { napChartId, imgurl } = makeNapChartImageUrl(new URL(user.currentScheduleChart))
 						napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`
 					}

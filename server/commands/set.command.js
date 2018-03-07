@@ -5,7 +5,6 @@ const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const schedules = require("./schedules");
 const set = require("./set.backend").setInternal;
 
-const modifiers = [`shortened`, `extended`, `flipped`, `modified`, `recovery`];
 
 module.exports = {
 	processSet: function(command, message, args, dry=false) {

@@ -75,6 +75,7 @@ async function rebuild(args, message, dry) {
 					if (dmsg.author.bot) {
 					} else {
 
+						console.log("INFO  : ", dmsg.content)
 						const dargs = getArgs(dmsg);
 						const dcommand = dargs.shift().toLowerCase();
 						if (dcommand == '') { } //There is probably space after prefix, reject

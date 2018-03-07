@@ -232,8 +232,8 @@ async function rebuild(args, message, dry) {
 			await setInternal([dcrd_sch, "none"], message, true,mbr.user,mbr,true)
 			msga = `${mbr.nickname} - Schedule not found in database, autoresolved\n`
 			console.log("MSG   : ", msga)
-			msg+=msga
-			if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
+			//msg+=msga
+			//if(repfreq>0 && msg.length > 1500) {await message.channel.send(msg);msg = ""}
 		}
 
 	}

@@ -77,7 +77,7 @@ async function set(args, message, dry, author, member, silent) {
 		upd = buildUserInstance()
 		upd.currentScheduleChart = null
 		await saveUserSchedule(message, upd);
-		msg = "Nap Chart has been removed for " + displayname + "."
+		msg = "Nap Chart has been removed for **" + displayname + "**."
 		console.log("MSG   : ", msg)
 		if(!dry&&!silent){message.channel.send(msg);}
 		return false;
@@ -131,7 +131,7 @@ async function set(args, message, dry, author, member, silent) {
 		}
 		new_username = new_username + ptag
 
-		console.log("ACT   : ", "Change usrname for " +displayname+ " to "+new_username)
+		console.log("ACT   : ", "Change usrname for **" +displayname+ "** to "+new_username)
 		if(!dry){member.setNickname(new_username);}
 		msg = "Schedule set for " + author.tag + " to `" + args[0] + "`.";
 		console.log("MSG   : ", msg)
@@ -169,7 +169,7 @@ async function set(args, message, dry, author, member, silent) {
 		upd = buildUserInstance()
 		upd.currentScheduleChart = null
 		await saveUserSchedule(message, upd);
-		msg = "Nap Chart has been removed for " + displayname + "."
+		msg = "Nap Chart has been removed for **" + displayname + "**."
 		console.log("MSG   : ", msg)
 		fullmsg += msg + "\n"
 		if (args.length == 1) { complete = false; }

@@ -44,8 +44,8 @@ async function get(args, message, dry) {
 
 					msg = `Napchart for **${user.user.tag}** (since ${n}):`
 					console.log("MSG   : ", msg)
-					if(!dry){message.channel.send(msg);}
-					getOrGenImg(res.currentScheduleChart, message, dry);
+					if(!dry){message.channel.send(msg,getOrGenImg(res.currentScheduleChart, message, dry));}
+					
 				} else {
 					msg = `There is no napchart available for **${user.user.username}**`
 					console.log("MSG   : ", msg)
@@ -115,8 +115,8 @@ async function get(args, message, dry) {
 
 						msg = `Napchart for **${usr}** (since ${n}):`
 						console.log("MSG   : ", msg)
-						if(!dry){message.channel.send(msg);}
-						getOrGenImg(res.currentScheduleChart, message, dry);
+						if(!dry){message.channel.send(msg,getOrGenImg(res.currentScheduleChart, message, dry));}
+						
 					} else {
 						msg = `There is no napchart available for **${arg}**`
 						console.log("MSG   : ", msg)
@@ -145,8 +145,8 @@ async function get(args, message, dry) {
 
 			msg = `Napchart for **${message.author.tag}** (since ${n}):`
 			console.log("MSG   : ", msg)
-			if(!dry){message.channel.send(msg);}
-			getOrGenImg(res.currentScheduleChart, message, dry);
+			if(!dry){message.channel.send(msg,getOrGenImg(res.currentScheduleChart, message, dry));}
+			
 		} else {
 			msg = `There is no napchart available for **${message.author.tag}**`
 			console.log("MSG   : ", msg)

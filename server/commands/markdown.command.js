@@ -26,25 +26,29 @@ async function bootstrapCommands() {
 bootstrapCommands();
 
 module.exports = {
-	processMarkdownCommands: (async function(command, message, args, dry=false) {
+	processMarkdownCommands: function(command, message, args, dry=false) {
 		if (commands.hasOwnProperty(command)) {
-			let mVal = commands[command];
-			console.log("MSG   : ", "[Markdown for " + command + "]")
-
-
-			msgparams = {}
-			if (schedules.hasOwnProperty(command)) {
-				ncem = await getOrGenImg(schedules[command].chart, message, dry)
-				msgparams = { embed: ncem }
-			}
-
-			if (Array.isArray(mVal)) {
-				if(!dry){mVal.forEach(m => message.channel.send(m, msgparams));}
-			} else {
-				if(!dry){message.channel.send(mVal,msgparams);}
-			}
+			markdown(command, message, args, dry)
 			return true
 		}
 		return false
-	})
+	}
 };
+
+async function markdown(command, message args, dry=false) {
+	let mVal = commands[command];
+	console.log("MSG   : ", "[Markdown for " + command + "]")
+
+
+	msgparams = {}
+	if (schedules.hasOwnProperty(command)) {
+		ncem = await getOrGenImg(schedules[command].chart, message, dry)
+		msgparams = { embed: ncem }
+	}
+
+	if (Array.isArray(mVal)) {
+		if(!dry){mVal.forEach(m => message.channel.send(m, msgparams));}
+	} else {
+		if(!dry){message.channel.send(mVal,msgparams);}
+	}
+}

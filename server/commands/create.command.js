@@ -63,8 +63,7 @@ async function create(args, message, dry) {
 	}
 	//data = JSON.stringify(data)
 	console.log("INFO  : ","Napchart payload", data)
-	createChart(data).then((nurl)=>{
-		emb = await getOrGenImg(nurl,message,dry)
-		if(!dry){message.channel.send(emb);}
-	}).catch((error)=>{})
+	nurl = await createChart(data)
+	emb = await getOrGenImg(nurl,message,dry)
+	if(!dry){message.channel.send(emb);}
 }

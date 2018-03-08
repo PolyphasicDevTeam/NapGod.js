@@ -85,8 +85,8 @@ async function mset(args, message, dry) {
 					console.log("MSG   : ", msg)
 					if(!dry){message.channel.send(msg);}
 				} else {
-					msg = "Schedule set for " + author.tag + " to `" + args[0] + "`.\n";
-					msg += "Nap Chart set for " + author.tag + " to " + args[1] + "."
+					msg = "Schedule set for " + member.user.tag + " to `" + args[0] + "`.\n";
+					msg += "Nap Chart set for " + member.user.tag + " to " + args[1] + "."
 					if(!dry){message.channel.send(msg);}
 				}
 			})

@@ -12,30 +12,36 @@ module.exports = {
 				if(!dry){message.channel.send(msg);}
 				return true
 			}
-			console.log("CMD   : NC")
-			console.log("ARGS  : ", args)
-			let urlPossible = args[0];
-			var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
-			if (is_nurl) {
-
-				console.log("ACT   : ", "Deleting user input message")
-				if(!dry){message.delete().catch(O_o => {});}
-
-				console.log("MSG   : ", "Repriting napchart")
-				if (nurl.host == "napchart.com") {
-					if(!dry){getOrGenImg(nurl, message);}
-				}
-			} else {
-				msg = "You need to provide valid napchart url."
-				console.log("MSG   : ", msg)
-				if(!dry){message.channel.send(msg);}
-			}
+			nc(command, message, args, dry)
 			return true
 		}
 		return false
 	}
 };
 
+async function nc(command, message, args, dry=false) {
+	console.log("CMD   : NC")
+	console.log("ARGS  : ", args)
+	let urlPossible = args[0];
+	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
+	if (is_nurl) {
+
+		console.log("ACT   : ", "Deleting user input message")
+		if(!dry){message.delete().catch(O_o => {});}
+
+		console.log("MSG   : ", "Repriting napchart")
+		if (nurl.host == "napchart.com") {
+			if(!dry){
+				emb = await getOrGenImg(nurl, message);
+				message.channel.send(emb);
+			}
+		}
+	} else {
+		msg = "You need to provide valid napchart url."
+		console.log("MSG   : ", msg)
+		if(!dry){message.channel.send(msg);}
+	}
+}
 
 function checkIsUrlAndGet(urlPossible) {
 	try {

@@ -35,7 +35,7 @@ module.exports = {
 	}
 };
 
-async function markdown(command, message args, dry=false) {
+async function markdown(command, message, args, dry=false) {
 	let mVal = commands[command];
 	console.log("MSG   : ", "[Markdown for " + command + "]")
 

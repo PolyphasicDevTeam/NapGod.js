@@ -58,7 +58,7 @@ async function get(args, message, dry) {
 		}
 
 
-		res = await message.guild.fetchMembers(args[0])
+		res = await message.guild.fetchMembers()
 		ms = res.members
 		ms = ms.array()
 		console.log("INFO  : ", ms.length)

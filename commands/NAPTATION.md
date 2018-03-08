@@ -10,3 +10,4 @@ Naptation (Naptation)
 **Adaptation difficulty**: Variable
 **Ideal scheduling**: Nap once every 1.7 hours. As adaptation progresses, naps can slowly be removed
 -----------------------------------------------
+More information about Uberman and related transitional schedules can be found at <https://ppse.polyphasic.net/scheduling/uberman/>

@@ -8,3 +8,4 @@ DC1 (Dual Core 1)
 **Adaptation difficulty**: Moderate
 **Ideal scheduling**: Dusk core around 21:00 to 22:00, dawn core is free to place till 07:00 or 08:00, REM nap around noon or early afternoon
 -----------------------------------------------
+More information about Dual Core schedules can be found at <https://ppse.polyphasic.net/scheduling/dual-core/>

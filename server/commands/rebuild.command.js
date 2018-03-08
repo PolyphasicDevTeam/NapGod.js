@@ -220,8 +220,10 @@ async function rebuild(args, message, dry) {
 		}
 
 		//Get info from our database
-		if (dbmbr && dbmbr.currentScheduleName 
-			&& dbmbr.currentScheduleName.toLowerCase() != dcrd_sch.toLowerCase()) {
+		if (dbmbr && 
+			(!dbmbr.currentScheduleName ||
+			(dbmbr.currentScheduleName 
+			&& dbmbr.currentScheduleName.toLowerCase() != dcrd_sch.toLowerCase()))) {
 			msga = `${mbr.nickname} - Schedule in db is [${dbmbr.currentScheduleName}] but tag shows [${dcrd_sch}], resolve manually\n`
 			console.log("MSG   : ", msga)
 			msg+=msga
@@ -230,7 +232,7 @@ async function rebuild(args, message, dry) {
 
 		} 
 
-		if (dcrd_sch) { //We have discord username but no database entry
+		if (dcrd_sch && !dbmbr ) { //We have discord username but no database entry
 			//Autoresolve using mset
 			await setInternal([dcrd_sch, "none"], message, true,mbr.user,mbr,true)
 			msga = `${mbr.nickname} - Schedule not found in database, autoresolved\n`

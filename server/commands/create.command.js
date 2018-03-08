@@ -22,7 +22,7 @@ module.exports = {
 
 async function create(args, message, dry) {
 	console.log("CMD   : CREATE")
-	console.log("ARGS  : ", arg)
+	console.log("ARGS  : ", args)
 	timeelems = []
 	i = 0
 	try {

@@ -26,7 +26,7 @@ async function bootstrapCommands() {
 bootstrapCommands();
 
 module.exports = {
-	processMarkdownCommands: function(command, message, args, dry=false) {
+	processMarkdownCommands: (async function(command, message, args, dry=false) {
 		if (commands.hasOwnProperty(command)) {
 			let mVal = commands[command];
 			console.log("MSG   : ", "[Markdown for " + command + "]")
@@ -46,5 +46,5 @@ module.exports = {
 			return true
 		}
 		return false
-	}
+	})
 };

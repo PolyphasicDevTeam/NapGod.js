@@ -34,15 +34,16 @@ module.exports = {
 
 			msgparams = {}
 			if (schedules.hasOwnProperty(command)) {
-					msgparams = { embed: getOrGenImg(schedules[command].chart, message, dry)}
+				ncem = await getOrGenImg(schedules[command].chart, message, dry)
+				msgparams = { embed: ncem }
 			}
-	
+
 			if (Array.isArray(mVal)) {
 				if(!dry){mVal.forEach(m => message.channel.send(m, msgparams));}
 			} else {
 				if(!dry){message.channel.send(mVal,msgparams);}
 			}
-		return true
+			return true
 		}
 		return false
 	}

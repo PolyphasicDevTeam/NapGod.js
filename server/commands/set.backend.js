@@ -95,9 +95,8 @@ async function set(args, message, dry, author, member, silent) {
 		} else {
 			args.push("none")
 		}
-		}
-
 	}
+
 
 	let userUpdate = buildUserInstance();
 
@@ -221,7 +220,7 @@ async function set(args, message, dry, author, member, silent) {
 				if (schedp_arr.length == 2) {
 					const schedmod = schedp_arr[1].toLowerCase();
 					if (Object.keys(modifiers).includes(schedmod)) {
-					return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
+						return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
 					}
 				} else if (schedp_arr.length == 1) {
 					return { is_schedule: true, schedn, schedfull: schedules[schedn].name };

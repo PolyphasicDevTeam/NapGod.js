@@ -26,8 +26,6 @@ async function nc(command, message, args, dry=false) {
 	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
 	if (is_nurl) {
 
-		console.log("ACT   : ", "Deleting user input message")
-		if(!dry){message.delete().catch(O_o => {});}
 
 		console.log("MSG   : ", "Repriting napchart")
 		if (nurl.host == "napchart.com") {
@@ -36,6 +34,9 @@ async function nc(command, message, args, dry=false) {
 				message.channel.send(emb);
 			}
 		}
+
+		console.log("ACT   : ", "Deleting user input message")
+		if(!dry){message.delete().catch(O_o => {});}
 	} else {
 		msg = "You need to provide valid napchart url."
 		console.log("MSG   : ", msg)

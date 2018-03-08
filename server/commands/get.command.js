@@ -38,18 +38,22 @@ async function get(args, message, dry) {
 					console.warn("WARN  : ", "Could not get user: ", err);
 				}
 
+				displayname = user.nickname
+				if (!displayname) {
+					displayname = user.user.username
+				}
 				if (res && res.currentScheduleChart) {
 					let d = new Date(res.updatedAt);
 					var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-					msg = `Napchart for **${user.user.tag}** (since ${n}):`
+					msg = `Napchart for **${displayname}** (since ${n}):`
 					console.log("MSG   : ", msg)
 					if(!dry){
 						rem = await getOrGenImg(res.currentScheduleChart, message, dry);
 						message.channel.send(msg, {embed: rem});
 					}
 				} else {
-					msg = `There is no napchart available for **${user.user.username}**`
+					msg = `There is no napchart available for **${displayname}**`
 					console.log("MSG   : ", msg)
 					if(!dry){message.channel.send(msg);}
 				}
@@ -86,7 +90,10 @@ async function get(args, message, dry) {
 		if(nicks.length > 0) { //We have some nicks that match
 			if(nicks.length == 1) {
 				uid = nicks[0].user.id	
-				usr = nicks[0].user.tag
+				usr = nicks[0].nickname
+				if (!usr) {
+					usr = nicks[0].user.username
+				}
 			} else {
 				msg = `Multiple users with nickname **${arg}** have been found: `
 				nicks.forEach(nick => {msg = msg + nick.user.tag + " "})
@@ -96,7 +103,10 @@ async function get(args, message, dry) {
 		} else if(unames.length > 0) { //We have some user names that match
 			if(unames.length == 1) {
 				uid = unames[0].user.id	
-				usr = unames[0].user.tag
+				usr = unames[0].nickname
+				if (!usr) {
+					usr = unames[0].user.username
+				}
 			} else {
 				msg = `Multiple users with username **${arg}** have been found: `
 				unames.forEach(uname => {msg = msg + uname.user.tag + " "})
@@ -105,7 +115,10 @@ async function get(args, message, dry) {
 			}
 		} else if(tags.length > 0) { //We have some user tags that match
 			uid = tags[0].user.id	
-			usr = tags[0].user.tag
+			usr = tags[0].nickname
+			if (!usr) {
+				usr = tags[0].user.username
+			}
 		} else {
 			msg = `User with nickname, username or tag '**${arg}**' was not found in the discord.`
 			console.log("MSG   : ", msg)
@@ -114,7 +127,7 @@ async function get(args, message, dry) {
 		console.log("INFO  : ", ms.length)
 		if (uid!=null) {
 			try {
-			res = await UserModel.findOne({id: uid})
+				res = await UserModel.findOne({id: uid})
 			} catch(err) {
 				console.warn("WARN  : ", "Could not get user: ", err)
 				msg = `There is no napchart available for **${arg}**`
@@ -122,6 +135,8 @@ async function get(args, message, dry) {
 				if(!dry){message.channel.send(msg);}
 				return;
 			}
+
+
 			if (res && res.currentScheduleChart) {
 				let d = new Date(res.updatedAt);
 				var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
@@ -133,7 +148,7 @@ async function get(args, message, dry) {
 					message.channel.send(msg, {embed: rem});
 				}
 			} else {
-				msg = `There is no napchart available for **${arg}**`
+				msg = `There is no napchart available for **${usr}**`
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}

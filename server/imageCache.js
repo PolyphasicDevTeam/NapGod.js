@@ -24,33 +24,20 @@ module.exports = {
 					fs.writeFile('/napcharts/'+napChartId+".png", res.body, 'binary', err=> {
 
 						console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
-						if(!dry){
-							msgImg = new Discord.RichEmbed()
-								.setDescription(nurl.href)
-								.setImage(cacheurl)
-								.setURL(nurl.href);
-							message.channel.send(msgImg).then(res=> {
-								resolve(false);
-							})
-						} else {
-							resolve(false);
-						}
+						msgImg = new Discord.RichEmbed()
+							.setDescription(nurl.href)
+							.setImage(cacheurl)
+							.setURL(nurl.href);
+						resolve(msgImg);
 					})
 				})
 			} else {
 				console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
-				if(!dry){
-					msgImg = new Discord.RichEmbed()
-						.setDescription(nurl.href)
-						.setImage(cacheurl)
-					//.setImage(res.url)
-						.setURL(nurl.href);
-					message.channel.send(msgImg).then(res=> {
-						resolve(true)
-					})
-				} else {
-					resolve(true);
-				}
+				msgImg = new Discord.RichEmbed()
+					.setDescription(nurl.href)
+					.setImage(cacheurl)
+					.setURL(nurl.href);
+				resolve(msgImg);
 			}
 
 			//})

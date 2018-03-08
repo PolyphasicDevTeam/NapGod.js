@@ -67,7 +67,7 @@ async function set(args, message, dry, author, member, silent) {
 	//TODO HANDLE doubles
 
 	//If schedule only, wipe chart
-	if (args[0] === "none") {
+	if (args[0] === "none" && args.length == 1) {
 		console.log("ACT   : ", "Remove napchart from database for " +author.username)
 		upd = buildUserInstance()
 		upd.currentScheduleChart = null
@@ -75,7 +75,7 @@ async function set(args, message, dry, author, member, silent) {
 		msg = "Nap Chart has been removed for " + author.tag + "."
 		console.log("MSG   : ", msg)
 		if(!dry&&!silent){message.channel.send(msg);}
-		if (args.length == 1) { return false; }
+		return false;
 	}
 
 	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
@@ -101,16 +101,10 @@ async function set(args, message, dry, author, member, silent) {
 	let userUpdate = buildUserInstance();
 
 	let result = await saveUserSchedule(message, userUpdate);
+	
 
-	// We received Napchart, cache it:
-	if (is_nurl) {
-		if (nurl.host == "napchart.com") {
-			//Dry run, we are caching
-			await getOrGenImg(nurl, message, true);
-		}
-	}
-
-
+	fullmsg = ""
+	msgopt = {}
 	// We received Schedule change, process it:
 	if (is_schedule) {
 		ptag = ` [${schedfull}]`;
@@ -136,7 +130,7 @@ async function set(args, message, dry, author, member, silent) {
 		if(!dry){member.setNickname(new_username);}
 		msg = "Schedule set for " + author.tag + " to `" + args[0] + "`.";
 		console.log("MSG   : ", msg)
-		if(!dry&&!silent){await message.channel.send(msg);}
+		fullmsg += msg
 
 		let roles =  member.roles
 		roles = new Set(roles.keys())
@@ -159,13 +153,12 @@ async function set(args, message, dry, author, member, silent) {
 
 	// We received Napchart, process it:
 	if (is_nurl) {
+		// Include http(s) when specifying URLs
 		msg = "Nap Chart set for " + author.tag + " to " + nurl.href + "."
 		console.log("MSG   : ", msg)
-		if(!dry&&!silent){await message.channel.send(msg);}
-		if (nurl.host == "napchart.com") {
-			// Include http(s) when specifying URLs
-			await getOrGenImg(nurl, message, dry);
-		}
+		fullmsg += msg
+		rembed = await getOrGenImg(nurl, message, dry);
+		msgopt = { embed: rembed }
 	} else if (args.length === 2 && args[1] === "none") {
 		console.log("ACT   : ", "Remove napchart from database for " +author.username)
 		upd = buildUserInstance()
@@ -173,11 +166,12 @@ async function set(args, message, dry, author, member, silent) {
 		await saveUserSchedule(message, upd);
 		msg = "Nap Chart has been removed for " + author.tag + "."
 		console.log("MSG   : ", msg)
-		if(!dry&&!silent){message.channel.send(msg);}
-		if (args.length == 1) { return false; }
+		fullmsg += msg
+		if (args.length == 1) { complete = false; }
 	} else {
 		complete = false;
 	} 
+	if(!dry&&!silent){message.channel.send(fullmsg, msgopt);}
 	return complete
 
 

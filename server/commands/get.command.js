@@ -162,18 +162,22 @@ async function get(args, message, dry) {
 			console.warn("WARN  : ", "Could not get user: ", err);
 		}
 
+		displayname = message.member.nickname
+		if (!displayname) {
+			displayname = message.author.username
+		}
 		if (res && res.currentScheduleChart) {
 			let d = new Date(res.updatedAt);
 			var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-			msg = `Napchart for **${message.author.tag}** (since ${n}):`
+			msg = `Napchart for **${displayname}** (since ${n}):`
 			console.log("MSG   : ", msg)
 			if(!dry){
 				rem = await getOrGenImg(res.currentScheduleChart, message, dry);
 				message.channel.send(msg, {embed: rem});
 			}
 		} else {
-			msg = `There is no napchart available for **${message.author.tag}**`
+			msg = `There is no napchart available for **${displayname}**`
 			console.log("MSG   : ", msg)
 			if(!dry){message.channel.send(msg);}
 		}

@@ -88,6 +88,16 @@ async function set(args, message, dry, author, member, silent) {
 		console.error("ERR>>>: ", "Set command was rejected with args", args)
 		return false;
 	}
+	//Delete napchart for monos and randoms
+	if(!is_nurl && is_schedule && (schedules[schedn] == "Random" || schedules[schedn] == "Mono")) {
+		if (args.length == 2) {
+			args[1] = "none"
+		} else {
+			args.push("none")
+		}
+		}
+
+	}
 
 	let userUpdate = buildUserInstance();
 

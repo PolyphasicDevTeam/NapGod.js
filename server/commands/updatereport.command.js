@@ -84,8 +84,15 @@ async function report(args, message, dry) {
   <head>\n\
 	 <meta charset="utf-8">\n\
 	 <title>Nap God Report ${n}</title>\n\
-	 <link rel="stylesheet" href="style.css">\n\
-	 <script src="script.js"></script>\n\
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110338868-3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110338868-3');
+</script>
   </head>\n\
   <body>\n\
 	<h1>Nap God Report ${n}</h1>\n\

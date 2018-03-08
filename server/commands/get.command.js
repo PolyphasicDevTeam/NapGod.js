@@ -110,29 +110,31 @@ async function get(args, message, dry) {
 			if(!dry){message.channel.send(msg);}
 		}
 		if (uid!=null) {
-			UserModel.findOne({id: uid}).then((res)=>{
-				if (res && res.currentScheduleChart) {
-					let d = new Date(res.updatedAt);
-					var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-
-					msg = `Napchart for **${usr}** (since ${n}):`
-					console.log("MSG   : ", msg)
-					if(!dry){
-						rem = await getOrGenImg(res.currentScheduleChart, message, dry);
-						message.channel.send(msg, {embed: rem});
-					}
-				} else {
-					msg = `There is no napchart available for **${arg}**`
-					console.log("MSG   : ", msg)
-					if(!dry){message.channel.send(msg);}
-				}
-
-			}).catch((err)=>{
+			try {
+			res = await UserModel.findOne({id: uid})
+			} catch(err) {
 				console.warn("WARN  : ", "Could not get user: ", err)
 				msg = `There is no napchart available for **${arg}**`
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
-			})
+				return;
+			}
+			if (res && res.currentScheduleChart) {
+				let d = new Date(res.updatedAt);
+				var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+				msg = `Napchart for **${usr}** (since ${n}):`
+				console.log("MSG   : ", msg)
+				if(!dry){
+					rem = await getOrGenImg(res.currentScheduleChart, message, dry);
+					message.channel.send(msg, {embed: rem});
+				}
+			} else {
+				msg = `There is no napchart available for **${arg}**`
+				console.log("MSG   : ", msg)
+				if(!dry){message.channel.send(msg);}
+			}
+
 		}
 	} else if (args.length === 0) {
 		let res;

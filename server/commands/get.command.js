@@ -8,12 +8,12 @@ module.exports = {
 	processGet: function(command, message, args, dry=false) {
 		if (command === "get") {
 			//if (args.length <= 1) {
-				get(args, message, dry);
+			get(args, message, dry);
 			//} else {
-				//What?
-				//msg = "Valid options are `+get` or `+get userName` or `+get usertag#1234`"
-				//console.log("MSG   : ", msg)
-				//if(!dry){message.channel.send(msg);}
+			//What?
+			//msg = "Valid options are `+get` or `+get userName` or `+get usertag#1234`"
+			//console.log("MSG   : ", msg)
+			//if(!dry){message.channel.send(msg);}
 			//}
 			return true
 		}
@@ -58,83 +58,82 @@ async function get(args, message, dry) {
 		}
 
 
-		message.guild.fetchMembers(args[0]).then((res)=>{
-			ms = res.members
-			ms = ms.array()
+		res = await message.guild.fetchMembers(args[0])
+		ms = res.members
+		ms = ms.array()
 
-			nicks = []
-			unames = []
-			tags = []
-			for(var i=0; i < ms.length; i++) {
-				m = ms[i]
-				nickname = m.nickname
-				if(nickname!=null){
-					ptag_start = nickname.lastIndexOf(' [')
-					if (ptag_start != -1) {
-						nickname = nickname.slice(0,ptag_start)
-					}
+		nicks = []
+		unames = []
+		tags = []
+		for(var i=0; i < ms.length; i++) {
+			m = ms[i]
+			nickname = m.nickname
+			if(nickname!=null){
+				ptag_start = nickname.lastIndexOf(' [')
+				if (ptag_start != -1) {
+					nickname = nickname.slice(0,ptag_start)
 				}
-				if(nickname == arg) { nicks.push(m)	}
-				if(m.user.username == arg) { unames.push(m) }
-				if(m.user.tag == arg) { tags.push(m) }
 			}
+			if(nickname == arg) { nicks.push(m)	}
+			if(m.user.username == arg) { unames.push(m) }
+			if(m.user.tag == arg) { tags.push(m) }
+		}
 
-			usr = null
-			uid = null
-			if(nicks.length > 0) { //We have some nicks that match
-				if(nicks.length == 1) {
-					uid = nicks[0].user.id	
-					usr = nicks[0].user.tag
-				} else {
-					msg = `Multiple users with nickname **${arg}** have been found: `
-					nicks.forEach(nick => {msg = msg + nick.user.tag + " "})
-					console.log("MSG   : ", msg)
-					if(!dry){message.channel.send(msg);}
-				}
-			} else if(unames.length > 0) { //We have some user names that match
-				if(unames.length == 1) {
-					uid = unames[0].user.id	
-					usr = unames[0].user.tag
-				} else {
-					msg = `Multiple users with username **${arg}** have been found: `
-					unames.forEach(uname => {msg = msg + uname.user.tag + " "})
-					console.log("MSG   : ", msg)
-					if(!dry){message.channel.send(msg);}
-				}
-			} else if(tags.length > 0) { //We have some user tags that match
-				uid = tags[0].user.id	
-				usr = tags[0].user.tag
+		usr = null
+		uid = null
+		if(nicks.length > 0) { //We have some nicks that match
+			if(nicks.length == 1) {
+				uid = nicks[0].user.id	
+				usr = nicks[0].user.tag
 			} else {
-				msg = `User with nickname, username or tag '**${arg}**' was not found in the discord.`
+				msg = `Multiple users with nickname **${arg}** have been found: `
+				nicks.forEach(nick => {msg = msg + nick.user.tag + " "})
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}
-			if (uid!=null) {
-				UserModel.findOne({id: uid}).then((res)=>{
-					if (res && res.currentScheduleChart) {
-						let d = new Date(res.updatedAt);
-						var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+		} else if(unames.length > 0) { //We have some user names that match
+			if(unames.length == 1) {
+				uid = unames[0].user.id	
+				usr = unames[0].user.tag
+			} else {
+				msg = `Multiple users with username **${arg}** have been found: `
+				unames.forEach(uname => {msg = msg + uname.user.tag + " "})
+				console.log("MSG   : ", msg)
+				if(!dry){message.channel.send(msg);}
+			}
+		} else if(tags.length > 0) { //We have some user tags that match
+			uid = tags[0].user.id	
+			usr = tags[0].user.tag
+		} else {
+			msg = `User with nickname, username or tag '**${arg}**' was not found in the discord.`
+			console.log("MSG   : ", msg)
+			if(!dry){message.channel.send(msg);}
+		}
+		if (uid!=null) {
+			UserModel.findOne({id: uid}).then((res)=>{
+				if (res && res.currentScheduleChart) {
+					let d = new Date(res.updatedAt);
+					var n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-						msg = `Napchart for **${usr}** (since ${n}):`
-						console.log("MSG   : ", msg)
-						if(!dry){
-							rem = await getOrGenImg(res.currentScheduleChart, message, dry);
-							message.channel.send(msg, {embed: rem});
-						}
-					} else {
-						msg = `There is no napchart available for **${arg}**`
-						console.log("MSG   : ", msg)
-						if(!dry){message.channel.send(msg);}
+					msg = `Napchart for **${usr}** (since ${n}):`
+					console.log("MSG   : ", msg)
+					if(!dry){
+						rem = await getOrGenImg(res.currentScheduleChart, message, dry);
+						message.channel.send(msg, {embed: rem});
 					}
-
-				}).catch((err)=>{
-					console.warn("WARN  : ", "Could not get user: ", err)
+				} else {
 					msg = `There is no napchart available for **${arg}**`
 					console.log("MSG   : ", msg)
 					if(!dry){message.channel.send(msg);}
-				})
-			}
-		})
+				}
+
+			}).catch((err)=>{
+				console.warn("WARN  : ", "Could not get user: ", err)
+				msg = `There is no napchart available for **${arg}**`
+				console.log("MSG   : ", msg)
+				if(!dry){message.channel.send(msg);}
+			})
+		}
 	} else if (args.length === 0) {
 		let res;
 		try {

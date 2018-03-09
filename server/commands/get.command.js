@@ -27,7 +27,7 @@ async function get(args, message, dry) {
 	console.log("CMD   : GET")
 	console.log("ARGS  : ", arg)
 	var uid = arg.replace(/[<@!>]/g, '');
-	if (args.length === 1) {
+	if (args.length >= 1) {
 		if (uid != '') {//Try to get user by id
 			user = message.guild.member(uid);
 			if (user != null) { //We found a valid user
@@ -65,7 +65,7 @@ async function get(args, message, dry) {
 		res = await message.guild.fetchMembers()
 		ms = res.members
 		ms = ms.array()
-		console.log("INFO  : ", ms.length)
+		console.log("INFO  : ", "nmembers", ms.length)
 
 		nicks = []
 		unames = []
@@ -83,7 +83,6 @@ async function get(args, message, dry) {
 			if(m.user.username == arg) { unames.push(m) }
 			if(m.user.tag == arg) { tags.push(m) }
 		}
-		console.log("INFO  : ", ms.length)
 
 		usr = null
 		uid = null
@@ -124,7 +123,6 @@ async function get(args, message, dry) {
 			console.log("MSG   : ", msg)
 			if(!dry){message.channel.send(msg);}
 		}
-		console.log("INFO  : ", ms.length)
 		if (uid!=null) {
 			try {
 				res = await UserModel.findOne({id: uid})

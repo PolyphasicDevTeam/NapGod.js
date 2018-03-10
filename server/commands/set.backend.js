@@ -202,13 +202,16 @@ async function set(args, message, dry, author, member, silent) {
 	function checkIsUrlAndGet(urlPossible) {
 		try {
 			let nurl = new URL(urlPossible);
+			console.log("INFO  : ", nurl, nurl.host)
 			if (nurl.host == "napchart.com") {
 				return { is_nurl: true, nurl: nurl };
 			}
 		} catch (err) {
 			// console.log("set image error: " + err);
+			console.log("INFO  : ", err)
 			return { is_nurl: false };
 		}
+		console.log("INFO  : ", "end")
 		return { is_nurl: false };
 	}
 

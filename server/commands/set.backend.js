@@ -86,7 +86,7 @@ async function set(args, message, dry, author, member, silent) {
 	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
 	var { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
 
-	console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
+	//console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
 	if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||
 		(!is_nurl && !is_schedule)) {
 		msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details."
@@ -202,16 +202,13 @@ async function set(args, message, dry, author, member, silent) {
 	function checkIsUrlAndGet(urlPossible) {
 		try {
 			let nurl = new URL(urlPossible);
-			console.log("INFO  : ", nurl, nurl.host)
-			if (nurl.host == "napchart.com") {
+			if (nurl.host == "napchart.com" || nurl.host == "www.napchart.com") {
 				return { is_nurl: true, nurl: nurl };
 			}
 		} catch (err) {
 			// console.log("set image error: " + err);
-			console.log("INFO  : ", err)
 			return { is_nurl: false };
 		}
-		console.log("INFO  : ", "end")
 		return { is_nurl: false };
 	}
 

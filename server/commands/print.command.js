@@ -47,7 +47,7 @@ async function nc(command, message, args, dry=false) {
 function checkIsUrlAndGet(urlPossible) {
 	try {
 		let nurl = new URL(urlPossible);
-		if (nurl.host == "napchart.com") {
+		if (nurl.host == "napchart.com" || nurl.host == "www.napchart.com") {
 			return { is_nurl: true, nurl: nurl };
 		}
 	} catch (err) {

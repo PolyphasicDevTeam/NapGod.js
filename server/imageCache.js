@@ -29,7 +29,7 @@ module.exports = {
 							.setImage(cacheurl)
 							.setURL(nurl.href);
 						resolve(msgImg);
-						}, 5000)
+						}, 200)
 					})
 				})
 			} else {

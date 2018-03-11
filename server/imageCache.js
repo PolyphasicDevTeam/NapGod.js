@@ -14,15 +14,15 @@ module.exports = {
 			}
 			let { napChartId, imgurl } = makeNapChartImageUrl(nurl);
 
-			is_cached = fs.existsSync('/napcharts/'+napChartId+".png")
-			cacheurl = "http://cache.polyphasic.net/"+napChartId+".png"
+			is_cached = fs.existsSync('/napcharts/cdn/'+napChartId+".png")
+			cacheurl = "http://cache.polyphasic.net/cdn/"+napChartId+".png"
 			console.log("INFO  : ","Image search res", is_cached);
 			let msgImg = null;
 			if (!is_cached) {
 				console.log("INFO  : ", 'Downloading napchart: '+napChartId)
 				request.get({url: imgurl, encoding: 'binary'},(err,res)=>{
-					fs.writeFile('/napcharts/'+napChartId+".png", res.body, 'binary', err=> {
-
+					fs.writeFile('/napcharts/cdn/'+napChartId+".png", res.body, 'binary', err=> {
+						await sleep(500);
 						console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
 						msgImg = new Discord.RichEmbed()
 							.setDescription(nurl.href)
@@ -70,3 +70,6 @@ function makeNapChartImageUrl(nurl) {
 	return { napChartId, imgurl };
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

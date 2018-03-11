@@ -22,13 +22,14 @@ module.exports = {
 				console.log("INFO  : ", 'Downloading napchart: '+napChartId)
 				request.get({url: imgurl, encoding: 'binary'},(err,res)=>{
 					fs.writeFile('/napcharts/cdn/'+napChartId+".png", res.body, 'binary', err=> {
-						sleepBlock(2000);
+						setTimeout(function() {
 						console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
 						msgImg = new Discord.RichEmbed()
 							.setDescription(nurl.href)
 							.setImage(cacheurl)
 							.setURL(nurl.href);
 						resolve(msgImg);
+						}, 5000)
 					})
 				})
 			} else {

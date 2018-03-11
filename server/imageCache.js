@@ -22,7 +22,7 @@ module.exports = {
 				console.log("INFO  : ", 'Downloading napchart: '+napChartId)
 				request.get({url: imgurl, encoding: 'binary'},(err,res)=>{
 					fs.writeFile('/napcharts/cdn/'+napChartId+".png", res.body, 'binary', err=> {
-						await sleep(500);
+						sleepBlock(2000);
 						console.log("MSG   : ", 'RichEmbed['+nurl.href+']')
 						msgImg = new Discord.RichEmbed()
 							.setDescription(nurl.href)
@@ -70,6 +70,9 @@ function makeNapChartImageUrl(nurl) {
 	return { napChartId, imgurl };
 }
 
+async function sleepBlock(ms) {
+	await sleep(ms)
+}
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

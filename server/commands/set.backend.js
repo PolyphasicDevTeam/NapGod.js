@@ -144,9 +144,10 @@ async function set(args, message, dry, author, member, silent) {
 
 		let newRole = schedules[schedn].category;
 		let role = message.guild.roles.find("name", newRole);
+		let attempt_role = null
 		if(schedules[schedn].name != "Naptation" && schedules[schedn].name != "Mono" && schedules[schedn].name != "Experimental") {
 			let newAttemptRole = "Attempted-"+schedules[schedn].name;
-			let attempt_role = message.guild.roles.find("name", newAttemptRole);
+			attempt_role = message.guild.roles.find("name", newAttemptRole);
 		}
 		Object.values(schedules).forEach(sch=>{
 			if(message.guild.roles.find("name",sch.category)==null){

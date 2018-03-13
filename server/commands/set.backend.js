@@ -144,6 +144,10 @@ async function set(args, message, dry, author, member, silent) {
 
 		let newRole = schedules[schedn].category;
 		let role = message.guild.roles.find("name", newRole);
+		if(schedules[schedn].name != "Naptation" && schedules[schedn].name != "Mono" && schedules[schedn].name != "Experimental") {
+			let newAttemptRole = "Attempted-"+schedules[schedn].name;
+			let attempt_role = message.guild.roles.find("name", newAttemptRole);
+		}
 		Object.values(schedules).forEach(sch=>{
 			if(message.guild.roles.find("name",sch.category)==null){
 				console.log("WARN  : ", sch.category, "is not present")
@@ -152,6 +156,9 @@ async function set(args, message, dry, author, member, silent) {
 			}
 		})
 		roles.add(role.id)
+		if(schedules[schedn].name != "Naptation" && schedules[schedn].name != "Mono" && schedules[schedn].name != "Experimental") {
+			roles.add(attempt_role.id)
+		}
 		console.log("ACT   : ", "Change role for " +author.tag + " to "+newRole)
 		if(!dry){member.setRoles(Array.from(roles));}
 	} else {

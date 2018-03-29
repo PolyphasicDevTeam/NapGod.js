@@ -1,0 +1,2 @@
+Generally, the nap lengths are best to be 20 minutes. Don't allow yourself more than 2m to fall asleep (stick with 20m preferably). Once sleep deprivation starts to kick in you will fall asleep within minutes, and if your naps are any longer you risk entering SWS; which is both hard and unpleasant to wake from. If you want to sleep longer, try aiming for a full cycle of 90m.
+If you don't have the ability to take 20m naps then two 15m naps could replace one 20m. Keep all naps the same length.

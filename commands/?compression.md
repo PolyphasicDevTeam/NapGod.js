@@ -1,0 +1,3 @@
+Sleepcycle compression is mostly observed in the dualcore line. Segmented creates a gap between the two cores (first core SWS sleep, second core REM sleep), which allows both the SWS peak and REM peak (about 9h apart) to be "hit" during sleep, and removes one cycle. This causes the sleep cycles to increase in length (105m). DC1 removes one REM-heavy cycle and adds one 20m nap, and the cycles compress some (100m). DC2 adds another nap, and compresses the cycles down further. (80m)
+
+All schedules except DC1 and Segmented should first be scheduled to have 90m cycles from the start; if you start to regularly wake up before the alarm after the third week of adaptation, you can assume the cycles have compressed more. In that case the alarms can be altered to accommodate this.

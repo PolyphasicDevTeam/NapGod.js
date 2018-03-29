@@ -1,0 +1,1 @@
+If you're too sleepy, try increasing body temperature to stay awake. That includes eating protein, do some exercise (jumping jacks, walking, a set of pushups, plank, etc), or focus on doing something you love. Keep your mind in an excited state. 

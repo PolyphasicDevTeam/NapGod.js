@@ -1,0 +1,1 @@
+Avoid all drugs that alters your sleep either directly (messes with sleep stages/cycle lengths, makes you sleepy/more alert etc) or indirectly (makes you lose control in some way). This is especially important during adaptation, check in #fitness_and_nutrition or read some studies if you're unsure about a certain drug.

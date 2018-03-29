@@ -1,0 +1,1 @@
+If you can't nap at all during the day, or you can nap during the day but you can't stick to one particular time everyday, please choose Segmented sleep, or a biphasic variant that has the nap after work (5-6 PM) and then have another sleep late in the morning and wake later, for example. 

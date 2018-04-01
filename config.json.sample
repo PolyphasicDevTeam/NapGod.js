@@ -2,6 +2,7 @@
 	"token"  : "DISCORD_API_TOKEN",
 	"mongo"  : "mongodb://yourmongohost:PORT/database_to_be_used",
   "prefix" : "+",
+  "help_prefix" : "!",
   "devPrefix" : "|",
 	"modonly": true
 }

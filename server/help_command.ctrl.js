@@ -10,7 +10,7 @@ const c2 = _.values(commandsFlat);
 
 module.exports = {
 
-	processCommands: function(command, message, args, dry=false) {
+	processHelpCommands: function(command, message, args, dry=false) {
 		handled = false
 		//console.error("INFO  : ", c2)
 		c2.forEach(fn => {

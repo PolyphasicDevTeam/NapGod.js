@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 mongoose.connect(config.mongo);
 
 const { processCommands } = require("./server/command.ctrl");
+const { processHelpCommands } = require("./server/help_command.ctrl");
 const { processDevCommands } = require("./server/devCommand.ctrl")(client);
 
 client.on("message", message => {
@@ -39,10 +40,17 @@ client.on("message", message => {
 	if (isValidPrefix(message)) {
 		processCommands(command, message, args);
 	}
+	if (isValidHelpPrefix(message)) {
+		processHelpCommands(command, message, args);
+	}
+
 });
 
 function isValidPrefix(message) {
 	return message.content.indexOf(config.prefix) === 0;
+}
+function isValidHelpPrefix(message) {
+	return message.content.indexOf(config.help_prefix) === 0;
 }
 
 function isDevPrefix(message) {

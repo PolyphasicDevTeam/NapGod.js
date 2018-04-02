@@ -1,0 +1,3 @@
+Consuming too much sugar should be avoided. After consumption of mainly sugar you get a boost in energy for up to 45 minutes, during which it's going to be very hard to fall asleep. Abundant sugar mixed with plenty of fiber, protein,  and/or fat should reduce the intensity of the sugar high but make it last up to a couple hours.  When this wears off, you'll reach an energy low for as long as a couple hours where you risk oversleeping. 
+
+The quality of your sleep will also suffer. SWS will be replaced by light sleep and you'll be more prone to waking up in the middle of your sleep (which will also result in a lower quality sleep).

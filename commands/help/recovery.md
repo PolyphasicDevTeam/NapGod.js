@@ -10,10 +10,10 @@ E1-recovery, one 20m nap during the day and a core in the night without an alarm
 Siesta-recovery, one 90m core during the day and a core in the night without an alarm
 Segmented-recovery, one 3,5h core, followed by a break and another core without an alarm.
 
-Recovering from a polyphasic schedulue often follows this pattern
-x-days with short wakes
--> y-days with long wakes
--> 2-3 days of wakes of the usual length
+Recovering from a polyphasic schedulue often follows this pattern:
+A few days with a short core (due to the body remembering to wake up early) 
+-> many days with a long core
+-> 2-3 days of core times of the usual  length
 This is when one is done recovering, when the sleep has stabilized at a set length that's of similar length to before attempting polyphasic sleep, around 6-8h for most adults
 
 If recovery with natural wakes is impossible due to scheduling limitations doing it with as much sleep as one can get is possible, but recovering will take a longer amount of time.

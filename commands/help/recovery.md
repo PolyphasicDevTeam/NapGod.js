@@ -10,7 +10,7 @@ E1-recovery, one 20m nap during the day and a core in the night without an alarm
 Siesta-recovery, one 90m core during the day and a core in the night without an alarm
 Segmented-recovery, one 3,5h core, followed by a break and another core without an alarm.
 
-Recovering from a polyphasic schedulue often follows this pattern:
+Recovering from a polyphasic schedule often follows this pattern:
 A few days with a short core (due to the body remembering to wake up early) 
 -> many days with a long core
 -> 2-3 days of core times of the usual  length

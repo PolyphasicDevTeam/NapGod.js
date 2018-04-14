@@ -77,8 +77,10 @@ async function mset(args, message, dry) {
 	//Lets see if we can get user id from mention string
 	var uid = arg.replace(/[<@!>]/g, '');
 	if (uid != '') {//Try to get user by id
+		console.log("INFO  : ", "User mentioned by UID", uid)
 		member = message.guild.member(uid);
 		if (member != null) { //We found a valid user
+			console.log("INFO  : ", "User was found by UID", member.user.tag)
 			set([args[0], args[1]], message, dry,member.user,member,true).then(res=>{
 				if (!res) {
 					msg = "Valid options are `+mset [schedule-name] [napchart-link] [username]`"

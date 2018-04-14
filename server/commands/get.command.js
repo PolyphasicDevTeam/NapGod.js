@@ -29,7 +29,12 @@ async function get(args, message, dry) {
 	var uid = arg.replace(/[<@!>]/g, '');
 	if (args.length >= 1) {
 		if (uid != '') {//Try to get user by id
-			user = await message.guild.fetchMember(uid);
+			let user = null;
+			try {
+				user = await message.guild.fetchMember(uid);
+			} catch (err) {
+				console.warn("WARN  : ", "User could not be fetched by UID", uid);
+			}
 			if (user != null) { //We found a valid user
 				let res;
 				try {

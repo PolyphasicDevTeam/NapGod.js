@@ -78,8 +78,12 @@ async function mset(args, message, dry) {
 	var uid = arg.replace(/[<@!>]/g, '');
 	if (uid != '') {//Try to get user by id
 		console.log("INFO  : ", "User mentioned by UID", uid)
-		member = await message.guild.fetchMember(uid);
-		console.log("INFO  : ", "User mentioned by UID", uid, " and resolved to", member)
+		let user = null;
+		try {
+			member = await message.guild.fetchMember(uid);
+		} catch (err) {
+			console.warn("WARN  : ", "User could not be fetched by UID", uid);
+		}
 		if (member != null) { //We found a valid user
 			console.log("INFO  : ", "User was found by UID", member.user.tag)
 			set([args[0], args[1]], message, dry,member.user,member,true).then(res=>{

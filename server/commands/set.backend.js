@@ -83,8 +83,8 @@ async function set(args, message, dry, author, member, silent) {
 		return false;
 	}
 
-	var { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
-	var { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
+	let { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
+	let { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
 
 	//console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
 	if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||

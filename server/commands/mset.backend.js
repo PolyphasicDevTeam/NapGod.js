@@ -75,7 +75,7 @@ async function mset(args, message, dry) {
 	console.log("ARGS  : ", args[0], args[1], arg)
 
 	//Lets see if we can get user id from mention string
-	var uid = arg.replace(/[<@!>]/g, '');
+	let uid = arg.replace(/[<@!>]/g, '');
 	if (uid != '') {//Try to get user by id
 		console.log("INFO  : ", "User mentioned by UID", uid)
 		let user = null;
@@ -110,7 +110,7 @@ async function mset(args, message, dry) {
 	nicks = []
 	unames = []
 	tags = []
-	for(var i=0; i < ms.length; i++) {
+	for(let i=0; i < ms.length; i++) {
 		m = ms[i]
 		nickname = m.nickname
 		if(nickname!=null){

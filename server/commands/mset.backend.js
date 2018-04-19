@@ -78,7 +78,7 @@ async function mset(args, message, dry) {
 	let uid = arg.replace(/[<@!>]/g, '');
 	if (uid != '') {//Try to get user by id
 		console.log("INFO  : ", "User mentioned by UID", uid)
-		let user = null;
+		let member = null;
 		try {
 			member = await message.guild.fetchMember(uid);
 		} catch (err) {

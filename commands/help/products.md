@@ -1,5 +1,4 @@
-We do not endorse any specific products from specific sellers, feel free to dig around to find similar ones if you so desire!
-
+We do not endorse any specific products from specific sellers, feel free to do your own research to see if similar ones work or ask in #sleep_tech!
 Red glasses, use during the dark period, if you normally wear glasses get 2 and remove 1 from the frame and wear between the glasses and the face
 https://www.amazon.com/HDE-Protection-Safety-Glasses-Lasers/dp/B009T6RN0G/ref=sr_1_6/135-1613293-8844310?ie=UTF8&qid=1522600204&sr=8-6&keywords=red+laser+glasses
 

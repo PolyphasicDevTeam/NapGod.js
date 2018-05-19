@@ -12,6 +12,7 @@ module.exports = {
 			if(!nurl.pathname){
 				nurl = new URL(nurl);
 			}
+			nurl.protocol = "http:"
 			let { napChartId, imgurl } = makeNapChartImageUrl(nurl);
 
 			is_cached = fs.existsSync('/napcharts/cdn/'+napChartId+".png")
@@ -50,11 +51,11 @@ module.exports = {
 	}),
 	makeNapChartImageUrl: makeNapChartImageUrl,
 	createChart: function(data){
-		let url = "https://napchart.com/api/create";
+		let url = "http://napchart.com/api/create";
 		return new Promise(function (resolve, reject) {
 			axios.post(url, data).then((res)=>{
 				console.log("INFO  : ","Chart created", res.data.id)
-				let nurl = "https://napchart.com/"+res.data.id
+				let nurl = "http://napchart.com/"+res.data.id
 				resolve(nurl)
 			}).catch((error)=>{
 				console.error("ERR   : ","Chart could not be created", error)
@@ -66,7 +67,7 @@ module.exports = {
 
 function makeNapChartImageUrl(nurl) {
 	let napChartId = nurl.pathname.substring(1);
-	let imgurl = "https://napchart.com/api/getImage?width=600&height=600&chartid=" +
+	let imgurl = "http://napchart.com/api/getImage?width=600&height=600&chartid=" +
 		napChartId;
 	return { napChartId, imgurl };
 }

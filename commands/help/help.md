@@ -6,6 +6,7 @@
 !beforeyoustart 
 !bestschedule 
 !caffeine 
+!cannabis
 !circadian 
 !compression 
 !darkperiod 

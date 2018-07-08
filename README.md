@@ -6,11 +6,9 @@
 
 `sudo docker network create ng_network`
 
-`sudo docker run --name ng_mongo --log-opt max-size=10m --memory=768m --restart always --net ng_network -v 
+`sudo docker run --name ng_mongo --log-opt max-size=10m --memory=768m --restart always --net ng_network -v $HOME/mongo_data:/data/db -d mongo --storageEngine wiredTiger`
 
-$HOME/mongo_data:/data/db -d mongo --storageEngine wiredTiger`
-
-`sudo docker run --net ng_network -v $HOME/napcharts:/napcharts --log-opt max-size=10m  --restart always -dit --name ng napgodjs`
+`sudo docker run --net ng_network -v $HOME/cache:/napcharts --log-opt max-size=10m  --restart always -dit --name ng napgodjs`
 
 
 # the-static-one-data

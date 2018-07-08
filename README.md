@@ -1,5 +1,7 @@
 # Docker usage
 
+Copy 'config.json.sample' to 'config.json' and configuer the file appropriately. For purposes of the example setup, this file is placed in the home directory.
+
 `mkdir ~/mongo_data` <- place wherever appropriate
 
 `mkdir ~/cache` <- folder from which the webserver serves cached objects
@@ -8,7 +10,7 @@
 
 `sudo docker run --name ng_mongo --log-opt max-size=10m --memory=768m --restart always --net ng_network -v $HOME/mongo_data:/data/db -d mongo --storageEngine wiredTiger`
 
-`sudo docker run --net ng_network -v $HOME/cache:/napcharts --log-opt max-size=10m  --restart always -dit --name ng napgodjs`
+`sudo docker run --net ng_network -v $HOME/cache:/napcharts -v $HOME/config.json:/usr/src/napgodjs-build/config.json --log-opt max-size=10m --restart always -dit --name ng polyphasic/napgod_js`
 
 
 # the-static-one-data

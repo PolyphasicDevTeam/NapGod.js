@@ -1,6 +1,8 @@
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const config = require("../../config.json");
+const schedules = require("./schedules").schedules
+
 
 whitelist = [
     "282078315588747264",//Ssk
@@ -16,7 +18,7 @@ whitelist = [
 
 
 module.exports = {
-    bob: function(args, message, dry) {
+    adapt_to: function(args, message, dry) {
 	adapt(args, message, dry);
     },
     processAdaptedBlock: (async function(command, message, args, dry=false) {
@@ -32,8 +34,8 @@ module.exports = {
 		}
 		let roles =  message.member.roles
 		roles = new Set(roles.keys())
-		let mods = message.guild.roles.find("name", "Moderators").id
-		let admins = message.guild.roles.find("name", "Admins").id
+		mods = message.guild.roles.find("name", "Moderators").id
+		admins = message.guild.roles.find("name", "Admins").id
 		if (roles.has(mods)||roles.has(admins)) {
 		    permissions = true
 		}
@@ -43,10 +45,10 @@ module.exports = {
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 	    }
-	    else if (args.length >= 3) {
-		await adapted(args, message, dry);
+	    else if (args.length >= 2) {
+		await adapt(args, message, dry);
 	    } else {
-		msg = "Valid options are `+adapted [username]`"
+		msg = "Valid options are `+adapted [schedule] [username]`"
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 	    }
@@ -66,11 +68,13 @@ module.exports = {
 
 async function adapt(args, message, dry) {
     let msg = "";
-    user = args[0];
-
-    console.log("CMD   : ADAPTED")
-    console.log("ARGS  : ", user)
-
+    sch = args[0];
+    //We need to extract the username which can containe arbitrary whitespaces
+    //First get rid of the prefix and 'adapted' command string (8chars long) and trim
+    user = message.content.slice(config.prefix.length+8,message.content.length).trim()
+    //Next there is the schedule name. Its a single word so find next whitespace and
+    //cut everything before it, trim the space once thats done
+    user = user.substr(user.indexOf(' ')+1).trim()
     //Lets see if we can get user id from mention string
     let uid = user.replace(/[<@!>]/g, '');
     if (uid != '') {//Try to get user by id
@@ -83,18 +87,7 @@ async function adapt(args, message, dry) {
 	}
 	if (member != null) { //We found a valid user
 	    console.log("INFO  : ", "User was found by UID", member.user.tag)
-	    let roles = member.roles;
-	    roles = new Set(roles.keys());
-	    let role = message.guild.roles.find("name", "Currently Adapted");
-	    if (roles.has(role.id)){
-		roles.delete(role.id);
-		msg = member.user.tag + " is no longer adapted";
-	    } else {
-		roles.add(role.id);
-		msg = member.user.tag + " is now adapted";
-	    }
-	    if(!dry){member.setRoles(Array.from(roles));}
-	    if(!dry){message.channel.send(msg);}
+	    await adapt_one(member, sch, message, dry);
 	    return
 	}
     }
@@ -149,18 +142,73 @@ async function adapt(args, message, dry) {
 	if(!dry){message.channel.send(msg);}
     }
     if (usr!=null) {
-	let roles = usr.roles
-	roles = new Set(roles.keys())
-	let role = message.guild.roles.find("name", "Currently Adapted");
+	await adapt_one(usr, sch, message, dry);
+    }
+}
+
+
+async function adapt_one(user, schedule, message, dry){
+    let msg=""
+    upd = await UserModel.findOne({id: user.id});
+    roles = user.roles
+    roles = new Set(roles.keys())
+    role = message.guild.roles.find("name", "Currently Adapted");
+    if (schedule != "none"){
+	let { is_schedule, schedn, schedfull } = checkIsSchedule(schedule);
+	console.log("IS_SCHEDULE "+is_schedule+" | schedn "+schedn+" schedfull "+schedfull);
+	if (is_schedule){
+	    if (roles.has(role.id)){
+		if (upd.currentScheduleName != schedules[schedn].name){
+		    msg = user.user.tag + " is no longer adapted to "+upd.currentScheduleName+"\n";
+		}
+	    }else {
+		roles.add(role.id);   
+	    }
+	    role_sch = message.guild.roles.find("name", "Adapted-"+schedules[schedn].name);
+	    old_role_sch = message.guild.roles.find("name", "Attempted-"+schedules[schedn].name);
+	    if (role_sch == null){
+		msg = "There is no Adapted-"+schedules[schedn].name+" role";
+	    } else {
+		roles.delete(old_role_sch.id);
+		roles.add(role_sch.id);
+		msg += user.user.tag + " is now adapted to "+schedules[schedn].name;
+	    }
+	    
+	} else {
+	    msg = schedule+ " is not a valide schedule";
+	    if(!dry){message.channel.send(msg);}
+	    return
+	}
+    } else {
 	if (roles.has(role.id)){
+	    msg = user.user.tag + " is no longer adapted to "+upd.currentScheduleName;
 	    roles.delete(role.id);
-	    msg = usr.user.tag + " is no longer adapted";
 	} else {
 	    roles.add(role.id);
-	    msg = usr.user.tag + " is now adapted1";
+	    msg += user.user.tag + " is now adapted"
 	}
-	if(!dry){usr.setRoles(Array.from(roles));}
-	if(!dry){message.channel.send(msg);}
+    }
+    if(!dry){user.setRoles(Array.from(roles));}
+    if(!dry){message.channel.send(msg);}
+}
+
+
+
+function checkIsSchedule(schedulePossible) {
+    if (schedulePossible) {
+	const schedp_arr = schedulePossible.trim().split(/-+/g);
+	const schedn = schedp_arr[0].toLowerCase();
+	if (Object.keys(schedules).includes(schedn)) {
+	    if (schedp_arr.length == 2) {
+		const schedmod = schedp_arr[1].toLowerCase();
+		if (Object.keys(modifiers).includes(schedmod)) {
+		    return { is_schedule: true, schedn, schedfull: schedules[schedn].name + "-" + modifiers[schedmod].name };
+		}
+	    } else if (schedp_arr.length == 1) {
+		return { is_schedule: true, schedn, schedfull: schedules[schedn].name };
+	    }
+	}
+	return { is_schedule: false };
     }
 }
 

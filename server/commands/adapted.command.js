@@ -1,6 +1,6 @@
 const config = require("../../config.json");
 const _ = require("lodash");
-const adapted = require("./adapted.backend").bob;
+const adapted = require("./adapted.backend").adapt_to;
 
 
 
@@ -23,10 +23,10 @@ module.exports = {
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 	    }
-	    else if (args.length == 1) {
+	    else if (args.length >= 2) {
 		adapted(args, message, dry);
 	    } else {
-		msg = "Valid options are `+adapted [username]`"
+		msg = "Valid options are `+adapted [schedule] [username]`"
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 	    }

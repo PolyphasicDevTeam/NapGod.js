@@ -5,3 +5,4 @@
 **To set someone's schedule and napchart**: `+mset [schedule-name] [napchart-link] [username]`. Only the standard schedules are supported. Use none in place of the napchart link if you want the user not to have a napchart (any existing chart they have will be removed).
 **To toggle adapted on someone**: `+adapted [schedule-name] [username].  Only the standard schedules are supported. Use none in place of the schedule name if you just want to toggle the Currently adapted role.
 -----------------------------------------------
+X

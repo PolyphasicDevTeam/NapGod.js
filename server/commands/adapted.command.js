@@ -23,7 +23,7 @@ module.exports = {
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 	    }
-	    else if (args.length >= 2) {
+	    else if (args.length >= 1) {
 		adapted(args, message, dry);
 	    } else {
 		msg = "Valid options are `+adapted [schedule] [username]`"

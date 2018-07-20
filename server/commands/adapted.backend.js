@@ -45,7 +45,7 @@ module.exports = {
 		console.log("MSG   : ", msg)
 		if(!dry){message.channel.send(msg);}
 	    }
-	    else if (args.length >= 2) {
+	    else if (args.length >= 1) {
 		await adapt(args, message, dry);
 	    } else {
 		msg = "Valid options are `+adapted [schedule] [username]`"
@@ -68,13 +68,18 @@ module.exports = {
 
 async function adapt(args, message, dry) {
     let msg = "";
-    sch = args[0];
     //We need to extract the username which can containe arbitrary whitespaces
     //First get rid of the prefix and 'adapted' command string (8chars long) and trim
     user = message.content.slice(config.prefix.length+8,message.content.length).trim()
-    //Next there is the schedule name. Its a single word so find next whitespace and
-    //cut everything before it, trim the space once thats done
-    user = user.substr(user.indexOf(' ')+1).trim()
+    sch = args[0];
+    let { is_schedule, schedn, schedfull } = checkIsSchedule(sch);
+    if (is_schedule){
+	console.log("INFO  : ", "Schedule1 is ", schedules[schedn].name);
+	//Next there is the schedule name. Its a single word so find next whitespace and
+	//cut everything before it, trim the space once thats done
+	user = user.substr(user.indexOf(' ')+1).trim()
+    } 
+    
     //Lets see if we can get user id from mention string
     let uid = user.replace(/[<@!>]/g, '');
     if (uid != '') {//Try to get user by id
@@ -87,8 +92,8 @@ async function adapt(args, message, dry) {
 	}
 	if (member != null) { //We found a valid user
 	    console.log("INFO  : ", "User was found by UID", member.user.tag)
-	    await adapt_one(member, sch, message, dry);
-	    return
+	    await adapt_one(member, schedfull, is_schedule, message, dry);
+
 	}
     }
 
@@ -142,55 +147,62 @@ async function adapt(args, message, dry) {
 	if(!dry){message.channel.send(msg);}
     }
     if (usr!=null) {
-	await adapt_one(usr, sch, message, dry);
+	await adapt_one(usr, schedfull, is_schedule, message, dry);
+
     }
 }
 
 
-async function adapt_one(user, schedule, message, dry){
-    let msg=""
-    upd = await UserModel.findOne({id: user.id});
+async function adapt_one(user, schedule, is_schedule, message, dry){
+    let msg="";
+    upd = await UserModel.findOne({id: usr.id});
+    console.log("INFO  : ", "Schedule is ", schedule);
     roles = user.roles
     roles = new Set(roles.keys())
     role = message.guild.roles.find("name", "Currently Adapted");
-    if (schedule != "none"){
-	let { is_schedule, schedn, schedfull } = checkIsSchedule(schedule);
-	console.log("IS_SCHEDULE "+is_schedule+" | schedn "+schedn+" schedfull "+schedfull);
-	if (is_schedule){
+    if (! is_schedule) {
+	if (upd != null) {
 	    if (roles.has(role.id)){
-		if (upd.currentScheduleName != schedules[schedn].name){
-		    msg = user.user.tag + " is no longer adapted to "+upd.currentScheduleName+"\n";
-		}
+		msg = user.user.tag + " is no longer adapted to "+upd.currentScheduleName+"\n";
+		roles.delete(role.id);
 	    }else {
-		roles.add(role.id);   
+		role_sch = message.guild.roles.find("name", "Adapted-"+upd.currentScheduleName);
+		old_role_sch = message.guild.roles.find("name", "Attempted-"+upd.currentScheduleName);
+		if (role_sch == null){
+		    msg = "There is no Adapted-"+upd.currentScheduleName+" role";
+		} else {
+		    roles.delete(old_role_sch.id);
+		    roles.add(role_sch.id);
+		    roles.add(role.id);
+		    msg = user.user.tag + " is now adapted to "+upd.currentScheduleName+"\n";
+		}
 	    }
-	    role_sch = message.guild.roles.find("name", "Adapted-"+schedules[schedn].name);
-	    old_role_sch = message.guild.roles.find("name", "Attempted-"+schedules[schedn].name);
-	    if (role_sch == null){
-		msg = "There is no Adapted-"+schedules[schedn].name+" role";
-	    } else {
-		roles.delete(old_role_sch.id);
-		roles.add(role_sch.id);
-		msg += user.user.tag + " is now adapted to "+schedules[schedn].name;
-	    }
-	    
 	} else {
-	    msg = schedule+ " is not a valide schedule";
-	    if(!dry){message.channel.send(msg);}
-	    return
+	    if (roles.has(role.id)){
+		roles.delete(role.id);
+		msg = user.user.tag + " is no longer adapted";
+		return
+	    } else {
+		msg = "One can't be adapted without a schedule. Use +set (or +mset if mod) to set a schedule)";
+		if(!dry){message.channel.send(msg);}
+		return
+	    }
 	}
     } else {
-	if (roles.has(role.id)){
-	    msg = user.user.tag + " is no longer adapted to "+upd.currentScheduleName;
-	    roles.delete(role.id);
+	role_sch = message.guild.roles.find("name", "Adapted-"+schedule);
+	old_role_sch = message.guild.roles.find("name", "Attempted-"+schedule);
+	if (role_sch == null){
+	    msg = "There is no Adapted-"+schedule+" role";
 	} else {
-	    roles.add(role.id);
-	    msg += user.user.tag + " is now adapted"
+	    roles.delete(old_role_sch.id);
+	    roles.add(role_sch.id);
+	    msg = user.user.tag + " is now adapted to "+schedule+"\n";
 	}
     }
     if(!dry){user.setRoles(Array.from(roles));}
     if(!dry){message.channel.send(msg);}
 }
+
 
 
 

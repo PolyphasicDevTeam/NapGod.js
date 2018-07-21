@@ -55,6 +55,7 @@ module.exports = {
 //silent supresses dicord text output only, changes still take place
 //(provided dry=false)
 async function set(args, message, dry, author, member, silent) {
+    console.log(author);
     complete = true
     let msg = "";
     let urlPossible = args.length === 2 ? args[1] : args[0];

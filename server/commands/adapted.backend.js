@@ -156,49 +156,54 @@ async function adapt(args, message, dry) {
 async function adapt_one(user, schedule, is_schedule, message, dry){
     let msg="";
     upd = await UserModel.findOne({id: usr.id});
-    console.log("INFO  : ", "Schedule is ", schedule);
+    console.log("INFO  : ", "Schedule is ", schedule, " | true? : ",is_schedule);
     roles = user.roles
     roles = new Set(roles.keys())
     role = message.guild.roles.find("name", "Currently Adapted");
     if (! is_schedule) {
+	schedule = upd.currentScheduleName;
 	if (upd != null) {
 	    if (roles.has(role.id)){
-		msg = user.user.tag + " is no longer adapted to "+upd.currentScheduleName+"\n";
+		msg = user.user.tag + " is no longer adapted to "+schedule+"\n";
+		adapted = false;
 		roles.delete(role.id);
 	    }else {
-		role_sch = message.guild.roles.find("name", "Adapted-"+upd.currentScheduleName);
-		old_role_sch = message.guild.roles.find("name", "Attempted-"+upd.currentScheduleName);
+		role_sch = message.guild.roles.find("name", "Adapted-"+schedule);
+		old_role_sch = message.guild.roles.find("name", "Attempted-"+schedule);
 		if (role_sch == null){
-		    msg = "There is no Adapted-"+upd.currentScheduleName+" role";
+		    msg = "There is no Adapted-"+schedule+" role";
+		    if(!dry){message.channel.send(msg);}
+		    return
 		} else {
 		    roles.delete(old_role_sch.id);
 		    roles.add(role_sch.id);
 		    roles.add(role.id);
-		    msg = user.user.tag + " is now adapted to "+upd.currentScheduleName+"\n";
+		    msg = user.user.tag + " is now adapted to "+schedule+"\n";
+		    adapted = true;
 		}
 	    }
 	} else {
-	    if (roles.has(role.id)){
-		roles.delete(role.id);
-		msg = user.user.tag + " is no longer adapted";
-		return
-	    } else {
-		msg = "One can't be adapted without a schedule. Use +set (or +mset if mod) to set a schedule)";
-		if(!dry){message.channel.send(msg);}
-		return
-	    }
+	    msg = "One can't be adapted without a schedule. Use +set (or +mset if mod) to set a schedule)";
+	    if(!dry){message.channel.send(msg);}
+	    return
+	    
 	}
     } else {
 	role_sch = message.guild.roles.find("name", "Adapted-"+schedule);
 	old_role_sch = message.guild.roles.find("name", "Attempted-"+schedule);
 	if (role_sch == null){
 	    msg = "There is no Adapted-"+schedule+" role";
+	    if(!dry){message.channel.send(msg);}
+	    return
 	} else {
 	    roles.delete(old_role_sch.id);
 	    roles.add(role_sch.id);
 	    msg = user.user.tag + " is now adapted to "+schedule+"\n";
+	    adapted = true;
 	}
     }
+    let userUpdate = buildUserInstance(user.user, message, schedule);
+    let result = await saveUserSchedule(message, userUpdate, user.user, dry, adapted);
     if(!dry){user.setRoles(Array.from(roles));}
     if(!dry){message.channel.send(msg);}
 }
@@ -224,3 +229,42 @@ function checkIsSchedule(schedulePossible) {
     }
 }
 
+function buildUserInstance(author, message, sch) {
+    console.log(author);
+    console.log(author.tag);
+    let userUpdate = {
+	tag: author.tag,
+	userName: author.username,
+	updatedAt: new Date(message.createdTimestamp)
+    };
+    
+    userUpdate.currentScheduleName = sch;
+    return userUpdate;
+}
+async function saveUserSchedule(message, userUpdate, author, dry, adapted) {
+    let query = { id: author.id },
+	options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+    let result = null;
+    try {
+	result = await UserModel.findOneAndUpdate(query, userUpdate, options);
+	saveHistories();
+    } catch (error) {
+	console.log("error seraching for User: ", error);
+	if(!dry){message.channel.send("Something done broke.  Call the fire brigade");}
+	return;
+    }
+    return result;
+
+    function saveHistories() {
+	if (!result) {
+	    return;
+	}
+	result.historicSchedules.push({
+	    name: userUpdate.currentScheduleName,
+	    setAt: new Date(message.createdTimestamp),
+	    adapted: adapted
+	});
+	result.save();
+    }
+}

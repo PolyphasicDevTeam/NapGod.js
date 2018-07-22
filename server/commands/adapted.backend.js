@@ -165,8 +165,9 @@ async function adapt_one(user, schedule, is_schedule, message, dry){
 	if (upd != null) {
 	    if (roles.has(role.id)){
 		msg = user.user.tag + " is already adapted to "+schedule+"\n";
+		if(!dry){message.channel.send(msg);}
 		return
-	    }else {
+	    } else {
 		role_sch = message.guild.roles.find("name", "Adapted-"+schedule);
 		old_role_sch = message.guild.roles.find("name", "Attempted-"+schedule);
 		if (role_sch == null){

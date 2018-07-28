@@ -2,6 +2,7 @@ const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const config = require("../../config.json");
 const schedules = require("./schedules").schedules
+const modifiers = require("./schedules").modifiers
 
 
 whitelist = [
@@ -93,7 +94,6 @@ async function adapt(args, message, dry) {
 	if (member != null) { //We found a valid user
 	    console.log("INFO  : ", "User was found by UID", member.user.tag)
 	    await adapt_one(member, schedfull, is_schedule, message, dry);
-
 	}
     }
 
@@ -162,25 +162,27 @@ async function adapt_one(user, schedule, is_schedule, message, dry){
     role = message.guild.roles.find("name", "Currently Adapted");
     if (! is_schedule) {
 	schedule = upd.currentScheduleName;
+	let { is_schedule, schedn, schedfull } = checkIsSchedule(schedule);
+	console.log("SCHEDULE :", schedule, " schedfull: ",schedfull, " | is_schedule: ", is_schedule, " | schedn:", schedn);
 	if (upd != null) {
 	    if (roles.has(role.id)){
 		msg = user.user.tag + " is already adapted to "+schedule+"\n";
 		if(!dry){message.channel.send(msg);}
 		return
 	    } else {
-		role_sch = message.guild.roles.find("name", "Adapted-"+schedule);
-		old_role_sch = message.guild.roles.find("name", "Attempted-"+schedule);
-		if (role_sch == null){
-		    msg = "There is no Adapted-"+schedule+" role";
-		    if(!dry){message.channel.send(msg);}
-		    return
+		role_sch = message.guild.roles.find("name", "Adapted-"+schedules[schedn].name);
+		old_role_sch = message.guild.roles.find("name", "Attempted-"+schedules[schedn].name);
+		if (role_sch == null){ // I suppose for each adapted there is an attempted (but there is attempted-random and iirc no adapted-random)
+		    msg = "There is no Adapted-"+schedules[schedn].name+" role\n";
 		} else {
 		    roles.delete(old_role_sch.id);
 		    roles.add(role_sch.id);
-		    roles.add(role.id);
-		    msg = user.user.tag + " is now adapted to "+schedule+"\n";
-		    adapted = true;
 		}
+		roles.add(role.id);
+		msg += user.user.tag + " is currently adapted to "+schedule+"\n"; // schedule is the name in the DB as e3-flex-shortened-compressed-light-and-dark
+		adapted = true;
+		let userUpdate = buildUserInstance(user.user, message, schedule);
+		let result = await saveUserSchedule(message, userUpdate, user.user, dry, adapted);
 	    }
 	} else {
 	    msg = "One can't be adapted without a schedule. Use +set (or +mset if mod) to set a schedule)";
@@ -198,12 +200,10 @@ async function adapt_one(user, schedule, is_schedule, message, dry){
 	} else {
 	    roles.delete(old_role_sch.id);
 	    roles.add(role_sch.id);
-	    msg = user.user.tag + " is now adapted to "+schedule+"\n";
+	    msg = user.user.tag + " has now the adapted-"+schedule+" role\n";
 	    adapted = true;
 	}
     }
-    let userUpdate = buildUserInstance(user.user, message, schedule);
-    let result = await saveUserSchedule(message, userUpdate, user.user, dry, adapted);
     if(!dry){user.setRoles(Array.from(roles));}
     if(!dry){message.channel.send(msg);}
 }
@@ -230,8 +230,6 @@ function checkIsSchedule(schedulePossible) {
 }
 
 function buildUserInstance(author, message, sch) {
-    console.log(author);
-    console.log(author.tag);
     let userUpdate = {
 	tag: author.tag,
 	userName: author.username,

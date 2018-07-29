@@ -24,7 +24,6 @@
 !genetics
 !graveyard 
 !howtobegin 
-!jetlag 
 !latecore 
 !melatonin 
 !nap-eat 
@@ -46,5 +45,6 @@
 !sleeptracker 
 !stayawake 
 !sugar
-!tankphasic 
+!tankphasic
+!travelling
 !underage

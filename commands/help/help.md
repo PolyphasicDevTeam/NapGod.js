@@ -25,6 +25,7 @@
 !graveyard 
 !howtobegin 
 !latecore 
+!memory 
 !melatonin 
 !nap-eat 
 !naplength 

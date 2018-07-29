@@ -1,3 +1,5 @@
+During adaptation your memory can be expected to be impaired due to lowered amounts of REM and SWS, but after adaptation it will restored to that of a natural wakes mono or possibly better due to the frequent breaks (naps). 
+
 SWS is responsible for storage of declarative/explicit memory, i.e. recall of explicit factual information. like if you study for a history, or a biology test. X happened on date Y. A in the body does thing B.
 
 REM is responsible for storage of procedural memory, i.e. remembering how to do certain things by following a procedure. example include how to walk, how to ride a bike, how to play a specific piano piece. Rem is also responsible for emotionally related memory consolidation, and for spatial memory consolidation (together with light sleep), i.e. which way to walk to your friends house. 

@@ -67,7 +67,7 @@ module.exports = {
 
 function makeNapChartImageUrl(nurl) {
 	let napChartId = nurl.pathname.substring(1);
-	let imgurl = "http://napchart.com/api/getImage?width=600&height=600&chartid=" +
+	let imgurl = "http://napchart.com/api/getImage?width=600&shape=circle&height=600&chartid=" +
 		napChartId;
 	return { napChartId, imgurl };
 }

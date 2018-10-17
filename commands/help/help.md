@@ -17,7 +17,8 @@
 !dst 
 !dualcore 
 !everyman 
-!exercise 
+!exercise
+!experiments
 !eyestrain 
 !fallasleep 
 !flexing 

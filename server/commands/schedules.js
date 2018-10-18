@@ -43,7 +43,7 @@ module.exports = {
 		biphasic: { name: "Biphasic" },
 		dual_core: { name: "Dual Core" },
 		tri_core: { name: "Tri Core" },
-		monophasic: { name: "Monophasic" },
+		monophasic: { name: "Monopleb" },
 		experimental: { name: "Experimental" },
 		nap_only: { name: "Nap only" },
 		random: { name: "Random" }

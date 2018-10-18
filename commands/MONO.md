@@ -1,4 +1,4 @@
-Mono (Monophasic)
+Monoplebian (Monophasic)
 -----------------------------------------------
 **Invented by**: N/A, historically used by humans
 **Alternatively known as**: Hibernation

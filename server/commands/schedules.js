@@ -2,7 +2,7 @@ module.exports = {
 	schedules: {
 		e1: { name: "E1", category: "Biphasic", chart: "http://napchart.com/bqbj1" },
 		biphasic: { name: "E1", category: "Biphasic", chart: "http://napchart.com/bqbj1" },
-		segmented: { name: "Segmented", category: "Biphasic", chart: "http://napchart.com/75e40" },
+		segmented: { name: "Segmented", category: "Biphasic", chart: "http://napchart.com/al3do" },
 		siesta: { name: "Siesta", category: "Biphasic", chart: "http://napchart.com/z9gqx" },
 		e2: { name: "E2", category: "Everyman", chart: "http://napchart.com/bxi17" },
 		e3: { name: "E3", category: "Everyman", chart: "http://napchart.com/lli4y" },

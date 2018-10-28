@@ -20,7 +20,7 @@ module.exports = {
 		triphasic: { name: "Triphasic", category: "Tri Core", chart: "http://napchart.com/ekcdp" },
 		mono: { name: "Mono", category: "Monophasic", chart: "http://napchart.com/hdmmp" },
 		monophasic: { name: "Mono", category: "Monophasic", chart: "http://napchart.com/hdmmp" },
-		sevamayl: { name: "SEVAMAYL", category: "Experimental", chart: "http://napchart.com/nup5h" },
+		sevamayl: { name: "SEVAMAYL", category: "Experimental", chart: "http://napchart.com/yy58k" },
 		dymaxion: { name: "Dymaxion", category: "Nap only", chart: "http://napchart.com/90oo4" },
 		naptation: { name: "Naptation", category: "Nap only", chart: "http://napchart.com/76b7u" },
 		exaptation: { name: "Naptation", category: "Nap only", chart: "http://napchart.com/76b7u" },

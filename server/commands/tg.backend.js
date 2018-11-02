@@ -142,11 +142,9 @@ async function toggle(args, message, dry) {
     }
     if (usr!=null) {
 	console.log("INFO  : ", "User was found by UID", usr.user.tag)
+	console.log("=====\n", usr);
 	toggle_list(usr, split_msg, dry, message);
 	return
-    } else {
-	msg = `Invalid Role`;
-	if(!dry){message.channel.send(msg);}
     }
 }
 

@@ -2,7 +2,7 @@ module.exports = {
 	schedules: {
 		e1: { name: "E1", category: "Biphasic", chart: "http://napchart.com/bqbj1" },
 		biphasic: { name: "E1", category: "Biphasic", chart: "http://napchart.com/bqbj1" },
-		segmented: { name: "Segmented", category: "Biphasic", chart: "http://napchart.com/75e40" },
+		segmented: { name: "Segmented", category: "Biphasic", chart: "http://napchart.com/al3do" },
 		siesta: { name: "Siesta", category: "Biphasic", chart: "http://napchart.com/z9gqx" },
 		e2: { name: "E2", category: "Everyman", chart: "http://napchart.com/bxi17" },
 		e3: { name: "E3", category: "Everyman", chart: "http://napchart.com/lli4y" },
@@ -20,7 +20,7 @@ module.exports = {
 		triphasic: { name: "Triphasic", category: "Tri Core", chart: "http://napchart.com/ekcdp" },
 		mono: { name: "Mono", category: "Monophasic", chart: "http://napchart.com/hdmmp" },
 		monophasic: { name: "Mono", category: "Monophasic", chart: "http://napchart.com/hdmmp" },
-		sevamayl: { name: "SEVAMAYL", category: "Experimental", chart: "http://napchart.com/nup5h" },
+		sevamayl: { name: "SEVAMAYL", category: "Experimental", chart: "http://napchart.com/yy58k" },
 		dymaxion: { name: "Dymaxion", category: "Nap only", chart: "http://napchart.com/90oo4" },
 		naptation: { name: "Naptation", category: "Nap only", chart: "http://napchart.com/76b7u" },
 		exaptation: { name: "Naptation", category: "Nap only", chart: "http://napchart.com/76b7u" },

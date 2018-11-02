@@ -17,15 +17,16 @@
 !dst 
 !dualcore 
 !everyman 
-!exercise 
+!exercise
+!experiments
 !eyestrain 
 !fallasleep 
 !flexing 
 !genetics
 !graveyard 
 !howtobegin 
-!jetlag 
 !latecore 
+!memory 
 !melatonin 
 !nap-eat 
 !naplength 
@@ -46,5 +47,6 @@
 !sleeptracker 
 !stayawake 
 !sugar
-!tankphasic 
+!tankphasic
+!travelling
 !underage

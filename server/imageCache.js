@@ -16,7 +16,7 @@ module.exports = {
 			let { napChartId, imgurl } = makeNapChartImageUrl(nurl);
 
 			is_cached = fs.existsSync('/napcharts/cdn/'+napChartId+".png")
-			cacheurl = "http://cache.polyphasic.net/cdn/"+napChartId+".png"
+			cacheurl = "http://cache.polyphasic.net/cdn/"+napChartId+".png?ver=1"
 			console.log("INFO  : ","Image search res", is_cached);
 			let msgImg = null;
 			if (!is_cached) {
@@ -67,7 +67,7 @@ module.exports = {
 
 function makeNapChartImageUrl(nurl) {
 	let napChartId = nurl.pathname.substring(1);
-	let imgurl = "http://napchart.com/api/getImage?width=600&height=600&chartid=" +
+	let imgurl = "http://napchart.com/api/getImage?width=600&shape=circle&height=600&chartid=" +
 		napChartId;
 	return { napChartId, imgurl };
 }

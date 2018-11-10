@@ -97,6 +97,7 @@ async function unfocus(user, message, dry){
 	    msg = user.user.tag + " isn't focus anymore!"
 	    console.log("MSG: ", msg);
 	    if(!dry){message.channel.send(msg)};
+	    if(!dry && (message.channel.name != "botspam_shitpost")){message.client.channels.find('name', "botspam_shitpost").send(msg);}	    
 	} else {
 	    msg = user.user.tag + " isn't focus in the first place!"
 	    console.log("MSG: ", msg);

@@ -2,7 +2,7 @@ const config = require("../../config.json");
 const FocusModel = require("./../models/focus.model");
 
 
-const days = ["Monday", "Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const days = ["Sunday","Monday", "Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 
@@ -32,6 +32,7 @@ function setRole(user, name_role, message, date, dry){
     msg = user.user.tag + " is now on Forced Productivity until " + formatDate(date) + ' (' + h_n_m((date - new Date())/60000) + ')';
     if(!dry){user.setRoles(Array.from(roles));}
     if(!dry){message.channel.send(msg);}
+    if(!dry && (message.channel.name != "focus")){message.client.channels.find('name', "focus").send(msg);}
 }
 
 

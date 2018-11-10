@@ -15,45 +15,9 @@ whitelist = [
 
 
 module.exports = {
-    toggleInternal: function(args, message, dry) {
+    processToggle: function(args, message, dry) {
 	toggle(args, message, dry);
-    },
-    processToggleBlock: (async function(command, message, args, dry=false) {
-	if (command === "tg") {
-	    permissions = false
-	    if (whitelist.indexOf(message.author.id) > -1) {
-		console.log("INFO  : ", "TOGGLE was whitelisted for", message.author.tag, message.author.id)
-		permissions = true
-	    } else {
-		if (message.author == null || message.member == null) {
-		    console.log("WARN>>: ", "Member or author no longer exists")
-		    return true;
-		}
-		let roles =  message.member.roles
-		roles = new Set(roles.keys())
-		let mods = message.guild.roles.find("name", "Moderators").id
-		let admins = message.guild.roles.find("name", "Admins").id
-		if (roles.has(mods)||roles.has(admins)) {
-		    permissions = true
-		}
-	    }
-	    if (!permissions) {
-		msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+tg`"
-		console.log("MSG   : ", msg)
-		if(!dry){message.channel.send(msg);}
-	    }
-	    else if (args.length >= 2) {
-		await toggle(args, message, dry);
-	    } else {
-		msg = "Valid options are `+tg [role] [username]`"
-		console.log("MSG   : ", msg)
-		if(!dry){message.channel.send(msg);}
-	    }
-	    return true
-	}
-	return false
-    })
-
+    }
 };
 
 
@@ -65,14 +29,9 @@ async function toggle(args, message, dry) {
     let msg = "";
     //We need to extract the username which can containe arbitrary whitespaces
     //First get rid of the prefix and 'tg' command string (3chars long) and trim
-    console.log(message.content);
     message.content = message.content.slice(config.prefix.length+3,message.content.length).trim()
-    console.log(message.content);
     let split_msg = message.content.split(',');
-    console.log(split_msg);
     let user = split_msg.pop();
-    console.log(user);
-
     user = user.trim();
     //Lets see if we can get user id from mention string
     let uid = user.replace(/[<@!>]/g, '');
@@ -148,24 +107,29 @@ async function toggle(args, message, dry) {
 }
 
 
-async function toggle_list(user, role_array, dry, message) {
+function toggle_role (user, roles, name_role, message, dry){
+    let role = message.guild.roles.find("name", name_role.trim());
+    if (role != null){
+	if (roles.has(role.id)){
+	    roles.delete(role.id);
+	    return user.user.tag + " has lost the role " + name_role+"\n";
+	} else {
+	    roles.add(role.id);
+	    return user.user.tag + " has now the role " + name_role+"\n";
+	}
+    } else {
+	return "The role " + name_role+" doesn't exist\n";
+    }
+}
+
+function toggle_list(user, role_array, dry, message) {
     let msg = '';
     let roles = user.roles;
     roles = new Set(roles.keys());
-    role_array.forEach(function(name_role){
-	let role = message.guild.roles.find("name", name_role.trim());
-	if (role != null){
-	    if (roles.has(role.id)){
-		roles.delete(role.id);
-		msg += user.user.tag + " has lost the role " + name_role+"\n";
-	    } else {
-		roles.add(role.id);
-		msg += user.user.tag + " has now the role " + name_role+"\n";
-	    }
-	} else {
-	    msg += "The role " + name_role+" doesn't exist\n";
-	}	
-    })
-    if(!dry){user.setRoles(Array.from(roles));}
-    if(!dry){message.channel.send(msg);}
+    // TODO transform it to a reduce
+    role_array.forEach(function(d){
+	msg += toggle_role(user, roles, d, message, dry);
+    });
+if(!dry){user.setRoles(Array.from(roles));}
+if(!dry){message.channel.send(msg);}
 }

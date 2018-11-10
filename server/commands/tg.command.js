@@ -1,6 +1,6 @@
 const config = require("../../config.json");
 const _ = require("lodash");
-const toggle = require("./tg.backend").toggleInternal;
+const toggle = require("./tg.backend").processToggle;
 
 module.exports = {
     processToggle: function(command, message, args, dry=false) {
@@ -11,10 +11,7 @@ module.exports = {
 	    roles = new Set(roles.keys())
 	    let mods = message.guild.roles.find("name", "Moderator").id
 	    let admins = message.guild.roles.find("name", "Admins").id
-	    permissions = false
-	    if (roles.has(mods)||roles.has(admins)) {
-		permissions = true
-	    }
+	    permissions = (roles.has(mods)||roles.has(admins));
 	    if (!permissions) {
 		msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+tg`"
 		console.log("MSG   : ", msg)

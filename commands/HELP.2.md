@@ -7,4 +7,7 @@
 **To create a new napchart:** Type `+create` followed by a series of time ranges. For example, `+create 03:00-05:00 08:00-08:20 14:00-14:20 21:00-23:00`. A napchart link will then be generated for you. (If you want to set it, you will have to do that manually afterwards)
 **To generate report of Nap God information** Type `+report`.
 **To join/leave the watch group for users of NMO:** Type `+togglewatchgroup`.
+**To toggle the Events role:** Type `+toggleevents`.
+**To enter change to Forced Productivity state for an ammount of time:** Type +focus <Time in minutes>.
+**To leave the Forced Productivity state** Type +unfocus.
 -----------------------------------------------

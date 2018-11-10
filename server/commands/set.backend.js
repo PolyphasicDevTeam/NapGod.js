@@ -255,7 +255,7 @@ async function set(args, message, dry, author, member, silent) {
 	    result = await UserModel.findOneAndUpdate(query, userUpdate, options);
 	    saveHistories();
 	} catch (error) {
-	    console.log("error seraching for User: ", error);
+	    console.log("error searching for User: ", error);
 	    if(!dry&&!silent){message.channel.send("Something done broke.  Call the fire brigade");}
 	    return;
 	}

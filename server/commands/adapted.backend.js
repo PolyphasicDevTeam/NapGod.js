@@ -94,6 +94,7 @@ async function adapt(args, message, dry) {
 	if (member != null) { //We found a valid user
 	    console.log("INFO  : ", "User was found by UID", member.user.tag)
 	    await adapt_one(member, schedfull, is_schedule, message, dry);
+	    return
 	}
     }
 
@@ -155,7 +156,7 @@ async function adapt(args, message, dry) {
 
 async function adapt_one(user, schedule, is_schedule, message, dry){
     let msg="";
-    upd = await UserModel.findOne({id: usr.id});
+    upd = await UserModel.findOne({id: user.id});
     console.log("INFO  : ", "Schedule is ", schedule, " | true? : ",is_schedule);
     roles = user.roles
     roles = new Set(roles.keys())

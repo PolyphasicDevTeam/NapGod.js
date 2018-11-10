@@ -6,4 +6,5 @@
 **To add the adapted-schedule role**: `+adapted [schedule-name] [username]`. It doesn't support modified schedule.
 **To toggle the currently adapted role**: `+adapted [username]`. It add the adapted-schedule role of the currently set schedule. 
 **To toggle roles on someone**: `+tg [role], [role], ... , [username]` If role is set > delete it, else > add it. 
+**To unfocus someone:** +unfocus [username]
 -----------------------------------------------

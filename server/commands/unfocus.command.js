@@ -59,7 +59,7 @@ async function self_unfocus(message, args, dry){
     let member = message.member;
     let time = await expire_time(member);
     if (time == null){
-	msg = "You're not focus in the first place! :baka:"
+	msg = "You're not focus in the first place!"
 	console.log("MSG: ", msg);
 	if(!dry){message.channel.send(msg)};
     } else if (time.endDate > new Date()){

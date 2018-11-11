@@ -69,7 +69,6 @@ async function setFocusOnTimed(usr, time, message, dry){
 	if (!((result != null) && (date < result.endDate))){
 	    let updated = {id: usr.id, endDate: date};
 	    result = await FocusModel.findOneAndUpdate(query, updated ,options);
-	    console.log(result);
 	    return result;
 	} else {
 	    if(!dry){message.channel.send("You cannot set a shorter focus time.")};

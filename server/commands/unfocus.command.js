@@ -105,7 +105,7 @@ async function unfocus(user, message, dry){
 	}
     } catch(error) {
 	console.log("error updating in unfocus", error);
-	if(!dry){message.channel.send("We have a problem here. Call a hero :sexysaska: ")};
+	if(!dry){message.channel.send("We have a problem here. Contact the admin team. ")};
     }
 }
 

@@ -72,12 +72,12 @@ async function setFocusOnTimed(usr, time, message, dry){
 	    console.log(result);
 	    return result;
 	} else {
-	    if(!dry){message.channel.send("You can't set a shorter focus time! :JackRed3:")};
+	    if(!dry){message.channel.send("You cannot set a shorter focus time.")};
 	    return null;
 	}
     } catch(error){
 	console.log("error updating in Focus", error);
-	if(!dry){message.channel.send("We have a problem here. Call a hero :sexysaska: ")};
+	if(!dry){message.channel.send("We have a problem here. Contact the admin team.")};
 	return null;
     }
 }

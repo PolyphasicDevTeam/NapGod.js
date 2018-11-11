@@ -59,11 +59,7 @@ async function self_unfocus(message, args, dry){
     let member = message.member;
     let time = await expire_time(member);
     if (time == null){
-<<<<<<< HEAD
 	msg = "You're not focus in the first place!"
-=======
-	msg = "You're not focus in the first place! " + message.client.emojis.find('name', "baka");
->>>>>>> FIX emoji support for focus
 	console.log("MSG: ", msg);
 	if(!dry){message.channel.send(msg)};
     } else if (time.endDate > new Date()){

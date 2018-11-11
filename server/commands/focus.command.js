@@ -69,15 +69,14 @@ async function setFocusOnTimed(usr, time, message, dry){
 	if (!((result != null) && (date < result.endDate))){
 	    let updated = {id: usr.id, endDate: date};
 	    result = await FocusModel.findOneAndUpdate(query, updated ,options);
-	    console.log(result);
 	    return result;
 	} else {
-	    if(!dry){message.channel.send("You can't set a shorter focus time! :JackRed3:")};
+	    if(!dry){message.channel.send("You can't set a shorter focus time! " + message.client.emojis.find('name', "JackRed3"))};
 	    return null;
 	}
     } catch(error){
 	console.log("error updating in Focus", error);
-	if(!dry){message.channel.send("We have a problem here. Call a hero :sexysaska: ")};
+	if(!dry){message.channel.send("We have a problem here. Call a hero " + message.client.emojis.find('name', "sexysaska") )};
 	return null;
     }
 }

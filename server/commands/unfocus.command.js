@@ -59,7 +59,7 @@ async function self_unfocus(message, args, dry){
     let member = message.member;
     let time = await expire_time(member);
     if (time == null){
-	msg = "You're not focus in the first place! :baka:"
+	msg = "You're not focus in the first place! " + message.client.emojis.find('name', "baka");
 	console.log("MSG: ", msg);
 	if(!dry){message.channel.send(msg)};
     } else if (time.endDate > new Date()){
@@ -105,7 +105,8 @@ async function unfocus(user, message, dry){
 	}
     } catch(error) {
 	console.log("error updating in unfocus", error);
-	if(!dry){message.channel.send("We have a problem here. Call a hero :sexysaska: ")};
+	if(!dry){message.channel.send("We have a problem here. Call a hero " + message.client.emojis.find('name', "sexysaska") )};
+	
     }
 }
 

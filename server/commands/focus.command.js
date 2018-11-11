@@ -47,7 +47,7 @@ async function focus(message, args, dry){
 		setRole(usr, "Focus", message, result.endDate, dry);
 	    }
 	} else {
-	    msg = "you can't set focus for less than 1 minutes and for more than 10h (600)";
+	    msg = "You cannot set focus for less than 1 minutes and for more than 10h (600)";
 	    console.log("MSG   : ", msg)
 	    if(!dry){message.channel.send(msg);}
 	}

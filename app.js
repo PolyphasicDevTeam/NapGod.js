@@ -10,6 +10,8 @@ const { processCommands } = require("./server/command.ctrl");
 const { processHelpCommands } = require("./server/help_command.ctrl");
 const { processDevCommands } = require("./server/devCommand.ctrl")(client);
 
+console.log("NapGod.js is starting...");
+
 client.on("message", message => {
 	//Ignore other bots and messages that do not start with prefix
 	if (message.author.bot) return;

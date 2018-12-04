@@ -60,3 +60,4 @@ typings/
 #vim 
 *.swp
 config.json
+.vscode

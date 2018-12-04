@@ -1,5 +1,4 @@
 const ImgModel = require("./models/img.model");
-const imgur = require("imgur");
 const Discord = require("discord.js");
 const request = require('request')
 const fs = require('fs');

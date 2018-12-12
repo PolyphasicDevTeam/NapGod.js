@@ -9,4 +9,4 @@ Triphasic (Triphasic)
 **Adaptation difficulty**: Somewhat hard
 **Ideal scheduling**: One core sleep around 21:00, one around 05:30, one around noon
 -----------------------------------------------
-More information about Tri Core schedules can be found at <https://ppse.polyphasic.net/scheduling/tri-core/>
+More information about Tri Core schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/tri-core/>

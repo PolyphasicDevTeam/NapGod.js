@@ -11,4 +11,4 @@ Tesla (Tesla)
 **Adaptation difficulty**: Insanely hard
 **Ideal scheduling**: Arranging naps to fit in 4 aforementioned circadian needs to rest
 -----------------------------------------------
-More information about Tesla can be found at <https://ppse.polyphasic.net/scheduling/tesla/>
+More information about Tesla can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/tesla/>

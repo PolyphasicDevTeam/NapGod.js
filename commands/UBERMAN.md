@@ -11,4 +11,4 @@ Uberman (Uberman)
 **Adaptation difficulty**: Insanely hard
 **Ideal scheduling**: Time slots free for rotation, and equidistant sleep is recommended
 -----------------------------------------------
-More information about Uberman and related transitional schedules can be found at <https://ppse.polyphasic.net/scheduling/uberman/>
+More information about Uberman and related transitional schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/uberman/>

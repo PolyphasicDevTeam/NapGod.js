@@ -10,4 +10,4 @@ Trimaxion (Trimaxion)
 **Adaptation difficulty**: Very hard
 **Ideal scheduling**: Distribution of sleep resembles Dymaxion. Transition step to Dymaxion and also as a fallback from Dymaxion should adaptation fail.
 -----------------------------------------------
-More information about Dymaxion and related transitional schedules can be found at <https://ppse.polyphasic.net/scheduling/dymaxion/>
+More information about Dymaxion and related transitional schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/dymaxion/>

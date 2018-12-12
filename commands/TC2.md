@@ -8,4 +8,4 @@ TC2 (Tri Core 2)
 **Adaptation difficulty**: Moderate
 **Ideal scheduling**: Evening core, graveyard core, dawn core and 2 daytime naps
 -----------------------------------------------
-More information about Tri Core schedules can be found at <https://ppse.polyphasic.net/scheduling/tri-core/>
+More information about Tri Core schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/tri-core/>

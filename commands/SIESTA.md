@@ -10,4 +10,4 @@ Siesta (Siesta)
 **Adaptation difficulty**: Easy
 **Ideal scheduling**: Core around midnight, siesta at noon
 -----------------------------------------------
-More information about Biphasic schedules can be found at <https://ppse.polyphasic.net/scheduling/biphasic/>
+More information about Biphasic schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/biphasic/>

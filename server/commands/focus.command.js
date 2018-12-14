@@ -47,7 +47,7 @@ async function focus(message, args, dry){
 		setRole(usr, "Focus", message, result.endDate, dry);
 	    }
 	} else {
-	    msg = "You cannot set focus for less than 1 minutes and for more than 10h (600)";
+	    msg = "You cannot set focus for less than 1 minutes and for more than " + config.maxTimeFocus + " mins";
 	    console.log("MSG   : ", msg)
 	    if(!dry){message.channel.send(msg);}
 	}
@@ -69,7 +69,6 @@ async function setFocusOnTimed(usr, time, message, dry){
 	if (!((result != null) && (date < result.endDate))){
 	    let updated = {id: usr.id, endDate: date};
 	    result = await FocusModel.findOneAndUpdate(query, updated ,options);
-	    console.log(result);
 	    return result;
 	} else {
 	    if(!dry){message.channel.send("You cannot set a shorter focus time.")};
@@ -95,7 +94,7 @@ function h_n_m(minutes){
 
 
 function endDate(time){
-    var actualDate = new Date();
-    var newDate = new Date(actualDate.getTime() + (60000 * time));
+    let actualDate = new Date();
+    let newDate = new Date(actualDate.getTime() + (60000 * time));
     return newDate;
 }

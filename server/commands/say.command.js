@@ -16,7 +16,7 @@ module.exports = {
 				permissions = true
 			}
 			if (!permissions) {
-				msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+mset`"
+				msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+say`"
 				console.log("MSG   : ", msg)
 				if(!dry){message.channel.send(msg);}
 			}

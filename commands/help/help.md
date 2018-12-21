@@ -44,7 +44,8 @@
 !sickness 
 !skipnap 
 !sleepdebt 
-!sleeptracker 
+!sleeptracker
+!smartalarm
 !stayawake 
 !sugar
 !tankphasic

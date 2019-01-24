@@ -2,6 +2,7 @@
 **To set your napchart:** Type `+set` followed by the napchart link. For example, `+set https://napchart.com/ro1mi`. To remove your chart instead, use none in place of a link.
 **To set both at the same time:** Just specify both. For example, `+set DC1 https://napchart.com/ro1mi`
 (Please note that if you change schedules without also setting a napchart, any existing napchart you have will be automatically removed.)
+**To look up a napchart link**: Type `+nc` followed by the napchart link.
 **To look up your own napchart:** Type `+get`.
 **To look up someone else's napchart:** Type `+get` followed by the name of the user. Any of the following name formats will work: `+get Username`, `+get Username#0001`. Mentions should be avoided though as these will ping the user in question.
 **To create a new napchart:** Type `+create` followed by a series of time ranges. For example, `+create 03:00-05:00 08:00-08:20 14:00-14:20 21:00-23:00`. A napchart link will then be generated for you. (If you want to set it, you will have to do that manually afterwards)

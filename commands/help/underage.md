@@ -12,4 +12,4 @@ Segmented is a bit harder, but still easy. It's better to do segmented if you no
 
 They work with different mechanics though; Siesta takes advantage of the statistically more likely rem period that happens at the 4,5-5h mark, and adds a cycle in the day. E1 trades a full cycle (of light sleep and rem) for a rem-filled nap, while segmented removes a cycle and makes the cycles longer to compensate.
 
-You can look at each of them in #botspam_shitpost with the commands +siesta +segmented and +e1.
+You can look at each of them in <#257401368807997440> with the commands +siesta +segmented and +e1.

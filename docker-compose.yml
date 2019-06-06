@@ -13,3 +13,5 @@ services:
       
   database: # name of the service
     image: mongo # specify image to build container from
+    ports:
+      - 27017:27017

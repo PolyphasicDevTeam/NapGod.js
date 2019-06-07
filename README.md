@@ -24,6 +24,7 @@ Run `docker-compose up`
 
 # Creating your own instance of the NapGod bot for testing
 - Create your own private server for testing your private NapGod.
+  - If you have `modonly` set to true in your `config.json` make sure to create an Admins role and give it to yourself
 - Create an application and bot on discord (https://discordapp.com/developers/applications/).
   - Set Public Bot and Requires OAuth2 Code Grant to false
 - In the OAuth2 tab, click the 'bot' scope and choose the permission you need.

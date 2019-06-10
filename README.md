@@ -17,9 +17,12 @@ For the token, create a discord test bot and copy the token (see section on crea
 `sudo docker run --net ng_network -v $HOME/cache:/napcharts -v $HOME/config.json:/usr/src/napgodjs-build/config.json --log-opt max-size=10m --restart always -dit --name ng polyphasic/napgod_js`
 
 ## To use docker-compose
-In `config.json`, set mongo to `"mongodb://database:27017/napgod"`
-Install docker-compose `brew install docker-compose` if you're on a Mac and have Homebrew installed
+In `config.json`, set mongo to `"mongodb://database:27017/napgod"` (the port number might be different if you're already running mongo elswhere on your computer)
+
+Make sure docker-compose is installed (might have been installed along with Docker) (https://docs.docker.com/compose/install/)
+
 Run `npm install` (because of the way docker-compose uses volumes to copy code from your computer to the container, you need to do an npm install before running docker-compose)
+
 Run `docker-compose up`
 
 # Creating your own instance of the NapGod bot for testing

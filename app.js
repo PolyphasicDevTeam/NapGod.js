@@ -8,14 +8,25 @@ mongoose.connect(config.mongo);
 
 const { processCommands } = require("./server/command.ctrl");
 const { processHelpCommands } = require("./server/help_command.ctrl");
+const { processDMCommands } = require("./server/dm_command.ctrl");
 const { processDevCommands } = require("./server/devCommand.ctrl")(client);
 
 console.log("NapGod.js is starting...");
 
+const logsChannelName = 'adaptation_logs';
+
 client.on("message", message => {
 	//Ignore other bots and messages that do not start with prefix
 	if (message.author.bot) return;
-	if (config.modonly != null && config.modonly != undefined && config.modonly == true) {
+	if (message.channel.name === logsChannelName) {
+		message.delete({
+			reason: 'All adaptation logs must be made through DMing NapGod. See +loghelp for details',
+		});
+		message.author.send('You need to write the logs through me. Write `+log` in this direct chat to proceed or `+loghelp` for help');
+		return;
+	}
+	const isDirectMessage = message.channel instanceof Discord.DMChannel;
+	if (config.modonly != null && config.modonly != undefined && config.modonly == true && !isDirectMessage) {
 		//Reject commands from non-mods because we are in Mod-only mode
 		let roles =  message.member.roles
 		roles = new Set(roles.keys())
@@ -40,7 +51,12 @@ client.on("message", message => {
 		//processDevCommands(command, message, args);
 	//} else 
 	if (isValidPrefix(message)) {
-		processCommands(command, message, args);
+		// For now, these are separated b/c a lot of existing commands break in DMs
+		if (!isDirectMessage) {
+			processCommands(command, message, args);
+		} else {
+			processDMCommands(command, message, args);
+		}
 	}
 	if (isValidHelpPrefix(message)) {
 		processHelpCommands(command, message, args);
@@ -74,6 +90,8 @@ client.on("ready", () => {
 		client.channels.size
 	 } channels of ${client.guilds.size} guilds.`
 	);
+	console.log(`Users: ${client.users.map(user => user.username)}`);
+	console.log(`Channels: ${client.channels.map(channel => channel.name)}`);
 	client.user.setActivity(config.prefix + "help");
 });
 

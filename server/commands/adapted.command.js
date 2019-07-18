@@ -1,5 +1,4 @@
 const config = require("../../config.json");
-const _ = require("lodash");
 const adapted = require("./adapted.backend").adapt_to;
 
 

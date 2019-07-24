@@ -21,15 +21,22 @@ module.exports = {
   }
 };
 
-function diffTime(d1, d2=new Date()) {
-  let delta = (d2 - d1) / 1000;
-  let s = delta % 60;
-  delta = (delta - s) / 60;
-  let m = delta % 60;
-  delta = (delta - m) / 60;
-  let h = delta % 24;
-  delta = (delta - h) / 24;
-  return `${delta} day(s) ${h} hour(s) ${m} minute(s)`;
+const timeCut = [
+  {'v': 86400000, 'k': 'day'},
+  {'v': 3600000, 'k': 'hour'},
+  {'v': 60000, 'k': 'minute'}
+];
+function diffTimeCut(d1, d2=new Date()) {
+  let i = 0;
+  let delta = d2 - d1;
+  while ((i < timeCut.length) && !(res = Math.floor(delta/timeCut[i].v))) {
+    i++;
+  }
+  let resUnit = timeCut[i].k;
+  if (res > 1) {
+    resUnit +='s';
+  }
+  return `${res} ${resUnit}`;
 }
 
 async function sendNapchart(message, res, displayName, dry) {
@@ -38,7 +45,7 @@ async function sendNapchart(message, res, displayName, dry) {
     console.log(res.updatedAt);
     let d = new Date(res.updatedAt);
     let n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    let delta = diffTime(d);
+    let delta = diffTimeCut(d);
     msg = `Napchart for **${displayName}** (since ${n}) (${delta}):`;
     console.log("MSG   : ", msg);
     if (!dry){

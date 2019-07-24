@@ -145,9 +145,9 @@ async function set(args, message, dry, author, member, silent) {
     roles = new Set(roles.keys());
 
     let newRole = schedules[schedn].category;
-    let role = message.guild.roles.find("name", newRole);
+    let role = message.guild.roles.find(d => d.name === newRole);
     let attempt_role = null;
-    let adaptedrole = message.guild.roles.find("name", "Currently Adapted");
+    let adaptedrole = message.guild.roles.find(d => d.name === "Currently Adapted");
     if (roles.has(adaptedrole.id)){
       roles.delete(adaptedrole.id);
       msg = member.user.tag + " is no longer adapted";
@@ -155,13 +155,13 @@ async function set(args, message, dry, author, member, silent) {
     } 
     if(schedules[schedn].name != "Naptation" && schedules[schedn].name != "Mono" && schedules[schedn].name != "Experimental") {
       let newAttemptRole = "Attempted-"+schedules[schedn].name;
-      attempt_role = message.guild.roles.find("name", newAttemptRole);
+      attempt_role = message.guild.roles.find(d => d.name === newAttemptRole);
     }
     Object.values(schedules).forEach(sch=>{
-      if(message.guild.roles.find("name",sch.category)==null){
+      if(message.guild.roles.find(d => d.name === sch.category)==null){
 	console.log("WARN  : ", sch.category, "is not present");
       } else {
-	roles.delete(message.guild.roles.find("name",sch.category).id);
+	roles.delete(message.guild.roles.find(d => d.name === sch.category).id);
       }
     });
     roles.add(role.id);

@@ -4,6 +4,7 @@
   "prefix" : "+",
   "help_prefix" : "!",
   "devPrefix" : "|",
-	"modonly": true
+	"modonly": true,
+  "ebayAffiliatePrefix": "https://rover.ebay.com/rover/lorem/ipsum/dolor/sit/amet&mpre="
 }
 

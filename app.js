@@ -45,7 +45,7 @@ client.on("message", message => {
 	if (isValidHelpPrefix(message)) {
 		processHelpCommands(command, message, args);
 	}
-
+	processEbayLinks(message);
 });
 
 function isValidPrefix(message) {
@@ -57,6 +57,21 @@ function isValidHelpPrefix(message) {
 
 function isDevPrefix(message) {
 	return message.content.indexOf(config.devPrefix) === 0;
+}
+
+const ebayRegex = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ebay\.[a-z]{2,5}(:[0-9]{1,5})?\/[^\s]*$/g
+
+function processEbayLinks(message) {
+	const {ebayAffiliatePrefix} = config;
+	if (ebayAffiliatePrefix != null) {
+		const editedMessage = message.content.replace(ebayRegex, each => ebayAffiliatePrefix + encodeURIComponent(each))
+		if (editedMessage !== message.content) {
+			message.delete().then(msg => console.log(`Deleted message from ${message.author.username}`))
+			.catch(console.error);
+			message.channel.send(`${message.author.toString()} posted:
+${editedMessage}`)
+		}
+	}
 }
 
 function getArgs(message) {

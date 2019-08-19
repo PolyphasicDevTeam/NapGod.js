@@ -1,4 +1,4 @@
-FROM node:carbon
+FROM node:dubnium
 WORKDIR /usr/src/napgodjs-build
 COPY package.json /usr/src/napgodjs-build
 COPY package-lock.json /usr/src/napgodjs-build

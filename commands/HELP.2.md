@@ -10,6 +10,7 @@
 **To join/leave the watch group for users of NMO:** Type `+togglewatchgroup`.
 **To toggle the Events role:** Type `+toggleevents`.
 **To toggle the Marketplace role:** Type `+togglemarketplace`.
-**To enter change to Forced Productivity state for an ammount of time:** Type +focus <Time in minutes>.
-**To leave the Forced Productivity state** Type +unfocus.
+**To toggle the No YT plz role:** Type `+noyt`.
+**To enter change to Forced Productivity state for an ammount of time:** Type `+focus <Time in minutes>`.
+**To leave the Forced Productivity state** Type `+unfocus`.
 -----------------------------------------------

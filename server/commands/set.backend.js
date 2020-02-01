@@ -61,7 +61,8 @@ async function set(args, message, dry, author, member, silent) {
   let msg = "";
   let urlPossible = args.length === 2 ? args[1] : args[0];
   let schedulePossible = args[0];
-
+  let { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
+  let { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
   displayname = member.nickname;
   if (!displayname) {
     displayname = author.username;
@@ -85,8 +86,7 @@ async function set(args, message, dry, author, member, silent) {
     return false;
   }
 
-  let { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
-  let { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
+
 
   //console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
   if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||

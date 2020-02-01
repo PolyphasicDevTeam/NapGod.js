@@ -87,7 +87,7 @@ async function get(args, message, dry) {
 	if (!displayName) {
 	  displayName = user.user.username;
 	}
-	sendNapchart(lessage, res, displayName, dry);
+	sendNapchart(message, res, displayName, dry);
 	return;
       }
     }

@@ -26,12 +26,14 @@ const timeCut = [
   {'v': 3600000, 'k': 'hour'},
   {'v': 60000, 'k': 'minute'}
 ];
+
+
 function diffTimeCut(d1, d2=new Date()) {
   let i = 0;
   let delta = d2 - d1;
-  while ((i < timeCut.length) && !(res = Math.floor(delta/timeCut[i].v))) {
-    i++;
-  }
+  let res;
+  while ((++i < timeCut.length) && !(res = Math.floor(delta/timeCut[i].v))) {}
+  i--;
   let resUnit = timeCut[i].k;
   if (res > 1) {
     resUnit +='s';

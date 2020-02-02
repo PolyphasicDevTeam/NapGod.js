@@ -1,5 +1,6 @@
 const config = require("../../config.json");
 const UserModel = require("./../models/user.model");
+const ReportModel = require("./../models/report.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const { URL } = require("url");
 const fs = require('fs');
@@ -19,19 +20,50 @@ module.exports = {
   }
 };
 
-
-async function report(args, message, dry) {
-  let users = await UserModel.find({});
-  generateHTML(message, users, dry);
-  generateJSON(message, users, dry);
+function toMinute(d) {
+  return d/1000/60;
 }
 
-function generateJSON(message, users, dry){
-  fs.writeFile("/napcharts/report.json", JSON.stringify(users), err=> {
-    msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.json>.";
-    console.log("MSG   : ", msg);
-    if(!dry){message.channel.send(msg);}
-  });
+
+async function report(args, message, dry) {
+  let report = await ReportModel.findOne();
+  let msg = '';
+  console.log(new Date(report.updatedAt), report.updatedAt);
+  console.log(new Date(report.lastSetAt), report.lastSetAt);
+  console.log(new Date(report.updateAt) > new Date(report.lastSetAt));
+  if (toMinute(new Date() - new  Date(report.updatedAt))
+      < config.reportInterval ) {
+    msg += "The last report is too recent, it is available at <https://cache.polyphasic.net/report.json> and <https://cache.polyphasic.net/report.html>.";
+  } else if (new Date(report.updatedAt) > new Date(report.lastSetAt)){
+    msg += "The last report was up to date, and is available at <https://cache.polyphasic.net/report.json> and <https://cache.polyphasic.net/report.html>.";
+  } else {
+    msg += 'Generating the report!';
+    let users = await UserModel.find({});
+    generateHTML(message, users, dry);
+    generateJSON(message, users, dry);
+    ReportModel.create({'lastSetAt': report.lastSetAt})
+      .then(console.log)
+      .catch(console.error);
+  }
+  console.log("MSG   : ", msg);
+  if(!dry){ message.channel.send(msg); }
+}
+
+function generateJSON(message, users, dry=false){
+  let a = fs.writeFile("/napcharts/report.json",
+		       JSON.stringify(users),
+		       err=> {
+			 let msg = '';
+			 if (err) {
+			   msg += err;
+			   console.log("ERR>>>: ", err);
+			 } else {
+			   msg += "Report has been updated and is available at <https://cache.polyphasic.net/report.json>.";
+			   console.log("MSG   : ", msg);
+			 }
+			 if(!dry){ message.channel.send(msg); }
+		       });
+  return a;
 }
 
 
@@ -115,12 +147,19 @@ function generateHTML(message, users, dry) {
 	 ${body}\n\
   </body>\n\
 </html>`;
-    fs.writeFile('/napcharts/report.html', html, err=> {
-      msg = "Report has been updated and is available at <https://cache.polyphasic.net/report.html>.";
-      console.log("MSG   : ", msg);
-      if(!dry){message.channel.send(msg);}
+    return fs.writeFile('/napcharts/report.html', html, err=> {
+      let msg = '';
+      if (err) {
+	msg += err;
+	console.log("ERR>>>: ", err);
+      } else {
+	msg += "Report has been updated and is available at <https://cache.polyphasic.net/report.html>.";
+	console.log("MSG   : ", msg);
+      }
+      if(!dry){ message.channel.send(msg); }
     });
   } catch (err) { 
     console.log("ERR>>>: ", err);
+    return 'Error while generating the HTML report';
   }
 }

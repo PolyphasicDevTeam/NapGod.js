@@ -35,8 +35,9 @@ module.exports = {
       }
       return true;
     }
+    return false;
   }
-}
+};
 
 function expire_time(user){
   let result = FocusModel.findOne({id: user.id});

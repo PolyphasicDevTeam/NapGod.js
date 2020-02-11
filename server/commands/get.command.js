@@ -24,7 +24,7 @@ module.exports = {
 const timeCut = [
   {'v': 86400000, 'k': 'day'},
   {'v': 3600000, 'k': 'hour'},
-  {'v': 60000, 'k': 'minute'}
+  {'v': 60000, 'k': 'minute'},
 ];
 
 
@@ -32,8 +32,9 @@ function diffTimeCut(d1, d2=new Date()) {
   let i = 0;
   let delta = d2 - d1;
   let res;
-  while ((++i < timeCut.length) && !(res = Math.floor(delta/timeCut[i].v))) {}
-  i--;
+  while ((i+1 < timeCut.length) && !(res = Math.floor(delta/timeCut[i].v))) {
+    i++;
+  }
   let resUnit = timeCut[i].k;
   if (res > 1) {
     resUnit +='s';

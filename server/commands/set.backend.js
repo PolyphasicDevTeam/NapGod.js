@@ -165,7 +165,9 @@ async function set(args, message, dry, author, member, silent) {
       }
     });
     roles.add(role.id);
-    if(schedules[schedn].name != "Naptation" && schedules[schedn].name != "Mono" && schedules[schedn].name != "Experimental") {
+    console.log(schedules[schedn].name);
+    if(schedules[schedn].name !== "Naptation" && schedules[schedn].name !== "Mono" && schedules[schedn].name !== "Experimental") {
+      console.log(role, attempt_role);
       roles.add(attempt_role.id);
     }
     console.log("ACT   : ", "Change role for " +author.tag + " to "+newRole);
@@ -256,9 +258,15 @@ async function set(args, message, dry, author, member, silent) {
       result = await UserModel.findOneAndUpdate(query, userUpdate, options);
       saveHistories();
       let report = await ReportModel.findOne();
-      ReportModel.create({'updatedAt': report.updatedAt})
-	.then(console.log)
-	.catch(console.error);
+      if (report !== null) {
+	ReportModel.create({'updatedAt': report.updatedAt})
+	  .then(console.log)
+	  .catch(console.error);
+      } else {
+	ReportModel.create()
+	  .then(console.log)
+	  .catch(console.error);
+      }
     } catch (error) {
       console.log("error searching for User: ", error);
       if(!dry&&!silent){message.channel.send("Something done broke.  Call the fire brigade");}

@@ -23,7 +23,6 @@ module.exports = {
     monophasic: { name: "Mono", category: "Monophasic", chart: "http://napchart.com/hdmmp" },
     dymaxion: { name: "Dymaxion", category: "Nap only", chart: "http://napchart.com/90oo4" },
     naptation: { name: "Naptation", category: "Nap only", chart: "http://napchart.com/76b7u" },
-    exaptation: { name: "Naptation", category: "Nap only", chart: "http://napchart.com/76b7u" },
     spamayl: { name: "SPAMAYL", category: "Nap only", chart: "http://napchart.com/d6oef" },
     tesla: { name: "Tesla", category: "Nap only", chart: "http://napchart.com/a62hi" },
     uberman: { name: "Uberman", category: "Nap only", chart: "http://napchart.com/t4pyp" },

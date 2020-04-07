@@ -49,14 +49,13 @@ client.on("message", message => {
 
 	//if (isDevPrefix(message)) {
 		//processDevCommands(command, message, args);
-	//} else 
+	//} else
 	if (isValidPrefix(message)) {
 		// For now, these are separated b/c a lot of existing commands break in DMs
 		if (!isDirectMessage) {
 			processCommands(command, message, args);
-		} else {
-			processDMCommands(command, message, args);
 		}
+    processDMCommands(command, message, args);
 	}
 	if (isValidHelpPrefix(message)) {
 		processHelpCommands(command, message, args);
@@ -79,7 +78,7 @@ function getArgs(message) {
 	return message.content
 		.slice(config.prefix.length)
 		.trimRight()
-		.replace( /\n/g, " " )	
+		.replace( /\n/g, " " )
 		.split(/ +/g);
 }
 
@@ -90,8 +89,6 @@ client.on("ready", () => {
 		client.channels.size
 	 } channels of ${client.guilds.size} guilds.`
 	);
-	console.log(`Users: ${client.users.map(user => user.username)}`);
-	console.log(`Channels: ${client.channels.map(channel => channel.name)}`);
 	client.user.setActivity(config.prefix + "help");
 });
 

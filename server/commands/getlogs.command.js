@@ -9,7 +9,7 @@ const getLogs = 'getlogs';
 module.exports = {
   processGet: function(command, message, args, dry=false) {
     if (command === getLogs) {
-      get(args, message, dry);
+      //get(args, message, dry);
       return true;
     }
     return false;

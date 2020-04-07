@@ -1,7 +1,7 @@
 const config = require("../../config.json");
 const Discord = require('discord.js');
 const request = require('request');
-const client = new Discord.Client()
+const client = new Discord.Client();
 const UserModel = require("./../models/user.model");
 const LogModel = require("./../models/log.model");
 
@@ -9,45 +9,45 @@ const log = 'log';
 const logsChannelName = 'adaptation_logs';
 // In seconds
 const timeout = 100;
-const timeoutMessage = 'This session has expired. Please restart from the begining.'
-const api_url = 'http://thumb.napchart.com:1771/api/'
-const cache_url = 'https://cache.polyphasic.net/cdn/'
-const napMaxLength = 45
+const timeoutMessage = 'This session has expired. Please restart from the begining.';
+const api_url = 'http://thumb.napchart.com:1771/api/';
+const cache_url = 'https://cache.polyphasic.net/cdn/';
+const napMaxLength = 45;
 
 const q1_name = 'user_check';
-const q1_message = 'The following information was pulled from the database, is it correct? Y = yes, N = no'
-const q1_sanity = 'Please answer with either Y or N.'
+const q1_message = 'The following information was pulled from the database, is it correct? y = yes, n = no';
+const q1_sanity = 'Please answer with either y or n.';
 
 const q2_name = 'previous_day';
-const q2_message = 'Do you want to log about a previous day? Y = yes, N = no'
-const q2_sanity = 'Please answer with either Y or N.'
-const q2_n = 'Please contact a moderator and tell them what information in the previous question was incorrect.'
+const q2_message = 'Do you want to log about a previous day? y = yes, n = no';
+const q2_sanity = 'Please answer with either y or n.';
+const q2_n = 'Please contact a moderator and tell them what information in the previous question was incorrect.';
 
-const q3_name = 'day'
-const q3_message = 'Which day do you want to log about? Please write out the number.'
-const q3_sanity = 'Please write a valid integer.'
-const q3_n = 'Please pick a day before the default one, {0}. If the day you are intending to log about is later than the day displayed please contact a moderator.'
+const q3_name = 'day';
+const q3_message = 'Which day do you want to log about? Please write out the number.';
+const q3_sanity = 'Please write a valid integer.';
+const q3_n = 'Please pick a day before the default one, {0}. If the day you are intending to log about is later than the day displayed please contact a moderator.';
 
-const q4_name = 'day segments'
-const q4_message = 'Which cores and naps to you want to log about? If logging about the whole day, simply write X. Otherwise, you can write `C1-3` for your first 3 cores, or `C1 C2` for your first 2 cores. The naps work the same, but with an N instead of a C. Example: `C1-2 N1 N2`'
-const q4_sanity = 'Please answer following the instructions above'
-const q4_regex = /^(X|([CN][1-9](-[1-9])?[ ,])*([CN][1-9](-[1-9])?))$/
+const q4_name = 'day segments';
+const q4_message = 'Which cores and naps to you want to log about? If logging about the whole day, simply write X. Otherwise, you can write `C1-3` for your first 3 cores, or `C1 C2` for your first 2 cores. The naps work the same, but with an N instead of a C. Example: `C1-2 N1 N2`';
+const q4_sanity = 'Please answer following the instructions above';
+const q4_regex = /^(X|([CN][1-9](-[1-9])?[ ,])*([CN][1-9](-[1-9])?))$/;
 
-const q5_name = 'adhere'
-const q5_message = 'Did you adhere to your scheduled sleep times perfectly? Y = yes, N = no.'
-const q5_sanity = 'Please answer with either Y or N.'
+const q5_name = 'adhere';
+const q5_message = 'Did you adhere to your scheduled sleep times perfectly? y = yes, n = no.';
+const q5_sanity = 'Please answer with either y or n.';
 
-const q6_name = 'adhere'
+const q6_name = 'adhere';
 const q6_message = `At what times did you sleep since your previously logged session? For example, if your last logged nap was at 07:00-07:20, and you slept at 08:00-09:00, 10:00-10:10 and 15:00-15:20 since then, write out all sleeps (even oversleeps) and separate them with the “,”-sign, like this:
 \`08:00-09:00,10:00-10:10,15:00-15:20.\`
-Please do not use the AM/PM format.`
-const q6_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm..'
-const q6_regex = /^([0-9]{2}[.:h]?[0-9]{2}-[0-9]{2}[.:h]?[0-9]{2}[,; ]?)+$/
-const rangesSeparators = /[,; ]/
-const rangeSeparators = /-/
-const hourSeparators = /[.:h]/
+Please do not use the AM/PM format.`;
+const q6_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm..';
+const q6_regex = /^([0-9]{2}[.:h]?[0-9]{2}-[0-9]{2}[.:h]?[0-9]{2}[,; ]?)+$/;
+const rangesSeparators = /[,; ]/;
+const rangeSeparators = /-/;
+const hourSeparators = /[.:h]/;
 
-const q7_name = "estimate"
+const q7_name = "estimate";
 const q7_message = `
 Write out the letters corresponding to what you experienced since your previous log. For example, ACEG. If you don't write a particular letter it is assumed that the opposite happened.
 A = easy to fall asleep
@@ -69,10 +69,10 @@ P = was semi-conscious but in a dream-like state outside scheduled sleep times
 Q = deviated from normal sleep hygiene procedures (dark period, fasting, routine before sleep etc)
 R = could not properly accomplish desired activities
 S = switched to alternate activities to stay awake
-X = none of the above`
-const q7_sanity = "Please stick to the letters above."
-const q7_regex = /^[A-SX]+$/
-const q7_wrong_input = "Only write X if no other letters match your situation."
+X = none of the above`;
+const q7_sanity = "Please stick to the letters above.";
+const q7_regex = /^[A-SX]+$/;
+const q7_wrong_input = "Only write X if no other letters match your situation.";
 
 const q7_positives = {
   "A": [0, "It was easy to fall asleep."],
@@ -103,9 +103,9 @@ const q7_negatives = {
   "R": [0, "I properly accomplished desired activities."],
 };
 
-const q8_name = 'stay_awake'
-const q8_message = 'How hard was it to stay awake on a scale from 1 to 7, where 1 is really easy and 7 is really hard? Based on your answers so far it has been approximated that your difficulty staying awake was {0}'
-const q8_sanity = 'Only write a number between 1 and 7.'
+const q8_name = 'stay_awake';
+const q8_message = 'How hard was it to stay awake on a scale from 1 to 7, where 1 is really easy and 7 is really hard? Based on your answers so far it has been approximated that your difficulty staying awake was {0}';
+const q8_sanity = 'Only write a number between 1 and 7.';
 const q8_recap = [
   'It was very easy to stay awake',
   'It was easy to stay awake',
@@ -116,16 +116,16 @@ const q8_recap = [
   'It was very hard to stay awake'
 ];
 
-const q9_name = 'recap'
-const q9_message = `If you have anything else to add please write it here, otherwise write “X”. The current message looks like this:\n`
+const q9_name = 'recap';
+const q9_message = `If you have anything else to add please write it here, otherwise write “X”. The current message looks like this:\n`;
 
-const q10_name = 'sleep_tracker'
-const q10_message = 'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.'
+const q10_name = 'sleep_tracker';
+const q10_message = 'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.';
 
-const end = 'Thank you!'
+const end = 'Thank you!';
 
-const titleTemplate = `{0} day {1}`
-const descriptionTemplate = `Total sleep time: {0}\n`
+const titleTemplate = `{0} day {1}`;
+const descriptionTemplate = `Total sleep time: {0}\n`;
 
 if (!String.format) {
   String.format = function(format) {
@@ -146,19 +146,18 @@ module.exports = {
     }
 
     console.log(`CMD   : ${log.toUpperCase()}`);
-    if (dry) {
-      return true;
-    }
 
     const member = getMember(message);
     if (!member) {
       message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
       return true;
     }
-    let displayName = member.nickname
+    let displayName = member.nickname;
     if (!displayName) {
-      displayName = message.author.username
+      displayName = message.author.username;
     }
+
+    message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
 
     let { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData } = await getMemberData(message, displayName);
     if (!schedule) {
@@ -178,12 +177,12 @@ module.exports = {
     }
 
     if (!q1.check) {
-      let q2 = {name: q2_name, sanity: q2_sanity, check: -1}
+      let q2 = {name: q2_name, sanity: q2_sanity, check: -1};
       if (!await processQ2(message, q2)) {
         return true;
       }
 
-      let q3 = {name: q3_name, sanity: q3_sanity, day: -1}
+      let q3 = {name: q3_name, sanity: q3_sanity, day: -1};
       if (!await processQ3(message, currentDay, q3)) {
         return true;
       }
@@ -216,14 +215,14 @@ module.exports = {
       }
     }
 
-    let q5 = {name: q5_name, sanity: q5_sanity, answer: -1}
+    let q5 = {name: q5_name, sanity: q5_sanity, answer: -1};
     if (!await processQ5(message, q5)) {
       return true;
     }
 
-    let q6 = {name: q6_name, sanity: q6_sanity, naps: 0, oversleepMinutes: 0}
+    let q6 = {name: q6_name, sanity: q6_sanity, naps: 0, oversleepMinutes: 0};
     if (!q5.answer) {
-      totalSleepTime = await processQ6(message, q6, napchartSleeps)
+      totalSleepTime = await processQ6(message, q6, napchartSleeps);
       if (totalSleepTime === false) {
         return true;
       }
@@ -247,10 +246,10 @@ module.exports = {
     let get_recap = async function() {
       let description = String.format(descriptionTemplate, `${Math.floor(totalSleepTime / 60)} hours ${totalSleepTime % 60} minutes`);
       if (q6.oversleepMinutes) {
-        description += `Time oversleeping: ${Math.floor(q6.oversleepMinutes / 60)} hours ${q6.oversleepMinutes % 60} minutes\n`
+        description += `Time oversleeping: ${Math.floor(q6.oversleepMinutes / 60)} hours ${q6.oversleepMinutes % 60} minutes\n`;
       }
       if (q6.naps) {
-        description += `Number of naps: ${q6.naps}\n`
+        description += `Number of naps: ${q6.naps}\n`;
       }
 
       let segmentTitle = (q4.rawAnswer.charAt(0) == 'X' ? 'Whole day' : q4.rawAnswer);
@@ -267,7 +266,11 @@ module.exports = {
           return true;
         }
       }
-      return {description, segmentTitle, segmentField};
+      return { description, segmentTitle, segmentField };
+    }
+
+    if (dry) {
+      return true;
     }
 
     // Sending / editing message in logging channel
@@ -346,7 +349,7 @@ module.exports = {
       for (const num of numbers.values()) {
         let next = num + 1;
         numbers.delete(num);
-        while (numbers.has(next)) { numbers.delete(next++) }
+        while (numbers.has(next)) { numbers.delete(next++); }
         if (counts[next]) { next += counts[next]; }
         max = Math.max(counts[num] = next - num, max);
       }
@@ -375,10 +378,10 @@ async function processQ1(message, q1, schedule, napchart, day, dateSet) {
     "- Date set: " + dateSet + "\n");
 
   if (!(collected = await collectFromUser(message.author, botMessage.channel, q1,
-    collected => (collected.content === "Y" || collected.content === "N") ? "" : q1_sanity ))) {
+    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q1_sanity ))) {
     return false;
   }
-  q1.check = collected.content === "Y";
+  q1.check = collected.content.toLowerCase() === "y";
   return true;
 }
 
@@ -386,10 +389,10 @@ async function processQ2(message, q2) {
   let botMessage = await message.author.send(q2_message);
 
   if (!(collected = await collectFromUser(message.author, botMessage.channel, q2,
-    collected => (collected.content === "Y" || collected.content === "N") ? "" : q2_sanity ))) {
+    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q2_sanity ))) {
     return false;
   }
-  q2.check = collected.content === "Y";
+  q2.check = collected.content.toLowerCase() === "Y";
   if (!q2.check) {
     message.author.send(q2_n);
     return false;
@@ -425,8 +428,8 @@ function formatMinute(time) {
 }
 
 async function processQ4(message, napchartSleeps, q4) {
-  let cores = "Cores:\n"
-  let naps = "\nNaps:\n"
+  let cores = "Cores:\n";
+  let naps = "\nNaps:\n";
   napchartSleeps.cores.forEach((core, i) => {
     let end = core.end > 24*60 ? core.end -24*60 : core.end;
     cores += `\`C${i+1}\`: ${Math.floor(core.begin / 60)}h${formatMinute(core.begin)}-${Math.floor(end / 60)}h${formatMinute(end)}`;
@@ -440,7 +443,7 @@ async function processQ4(message, napchartSleeps, q4) {
     let botMessage = await message.author.send(q4_message + "\n" + cores + naps);
 
     if (!(collected = await collectFromUser(message.author, botMessage.channel, q4,
-      collected => q4_regex.test(collected.content) ? "" : q4_sanity))) {
+      collected => q4_regex.test(collected.content.toUpperCase()) ? "" : q4_sanity))) {
       return false;
     }
     q4.rawAnswer = collected.content;
@@ -501,10 +504,10 @@ function processSegment(message, napchartSleeps, segment, out) {
 async function processQ5(message, q5) {
   let botMessage = await message.author.send(q5_message);
   if (!(collected = await collectFromUser(message.author, botMessage.channel, q5,
-    collected => (collected.content === "Y" || collected.content === "N") ? "" : q5_sanity))) {
+    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q5_sanity))) {
     return false;
   }
-  q5.answer = collected.content === "Y";
+  q5.answer = collected.content.toLowerCase() === "y";
   return true;
 }
 
@@ -588,7 +591,7 @@ async function processQ9(message, recap, q9) {
   if (!(collected = await collectFromUser(message.author, botMessage.channel, q9, collected => ""))) {
     return false;
   }
-  q9.answer = collected.content === "X" ? "" : collected.content;
+  q9.answer = collected.content.toLowerCase() === "x" ? "" : collected.content;
   return true;
 }
 

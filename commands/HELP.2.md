@@ -13,5 +13,4 @@
 **To toggle the No YT plz role:** Type `+noyt`.
 **To enter change to Forced Productivity state for an ammount of time:** Type `+focus <Time in minutes>`.
 **To leave the Forced Productivity state** Type `+unfocus`.
-**To learn how to log your adaptation progress** Type `+loghelp`
 -----------------------------------------------

@@ -4,6 +4,7 @@ const _ = require("lodash");
 
 const timeout = 100;
 const timeoutMessage = 'Timeout: the process was aborted.';
+const abortMessage = 'Process was aborted.';
 const freelog = 'freelog';
 const logsChannelName = 'adaptation_logs';
 
@@ -34,13 +35,14 @@ module.exports = {
           collected = await botMessage.channel.awaitMessages(x => x.author.id === message.author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });
         }
         catch (e) {
-          console.log("LOG\t: ", `${e} Timeout waiting for answer from ${message.author.username} during freelog`);
+          console.log("LOG\t: ", `Timeout waiting for answer from ${message.author.username} during freelog`);
           message.author.send(timeoutMessage);
           return true;
         }
 
         if (collected.first().content.toLowerCase() === "x") {
           console.log("LOG\t: ", `Freelog aborted from ${message.author.username}`);
+          message.author.send(abortMessage);
           return true;
         }
 

@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const UserModel = require("./../models/user.model");
 const LogModel = require("./../models/log.model");
 
-const log = 'log';
+const logCMD = 'log';
 const logsChannelName = 'adaptation_logs';
 // In seconds
 const timeout = 100;
@@ -140,235 +140,239 @@ if (!String.format) {
 }
 
 module.exports = {
-  processLog: async function(command, message, args, dry=false) {
-    if (command !== log) {
-      return false;
-    }
-
-    console.log(`CMD   : ${log.toUpperCase()}`);
-
-    const member = getMember(message);
-    if (!member) {
-      message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
+  processLog: function(command, message, args, dry=false) {
+    if (command === logCMD) {
+      log(message, dry);
       return true;
     }
-    let displayName = member.nickname;
-    if (!displayName) {
-      displayName = message.author.username;
-    }
+    return false;
+  }
+};
 
-    message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
+async function log(message, dry=false) {
+  console.log(`CMD   : ${logCMD.toUpperCase()}`);
 
-    let { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData } = await getMemberData(message, displayName);
-    if (!schedule) {
-      message.author.send('You must first set a schedule and a napchart before writing a log.');
-      return true;
-    }
-
-    let napchart = getNapchart(displayName, napchartUrl);
-    if (napchart === null) {
-      message.author.send('Error retrieving napchart data from API.');
-      return true;
-    }
-
-    let q1 = {name: q1_name, sanity: q1_sanity, check: -1};
-    if (!await processQ1(message, q1, schedule, napchart, currentDay, dateSet)) {
-      return true;
-    }
-
-    if (!q1.check) {
-      let q2 = {name: q2_name, sanity: q2_sanity, check: -1};
-      if (!await processQ2(message, q2)) {
-        return true;
-      }
-
-      let q3 = {name: q3_name, sanity: q3_sanity, day: -1};
-      if (!await processQ3(message, currentDay, q3)) {
-        return true;
-      }
-      currentDay = q3.day;
-    }
-
-    let currentdayLogs = await getLogs({userName: displayName, schedule: schedule, day: currentDay, attempt: attempt});
-
-    const napchartSleeps = minutify_sleeps(extract_ranges(napchart.sleeps));
-
-    let q4 = {name: q4_name, sanity: q4_sanity, answer: null, rawAnswer: ''};
-    if (!await processQ4(message, napchartSleeps, q4)) {
-      return true;
-    }
-
-    let totalSleepTime = 0;
-    q4.answer.cores.forEach(core => totalSleepTime += napchartSleeps.cores[core - 1].diff);
-    q4.answer.naps.forEach(nap => totalSleepTime += napchartSleeps.naps[nap - 1].diff);
-
-    if (currentdayLogs) {
-      if (currentdayLogs.some(el => {
-        let daySegments = processSegments(el.daySegments, {cores: [], naps: []}, napchartSleeps, null);
-        if (daySegments.cores.some(c => q4.answer.cores.includes(c)) || daySegments.naps.some(n => q4.answer.naps.includes(n))) {
-          message.author.send(`You've already logged about ${el.daySegments}. Try again from the begining.`);
-          return true;
-        }
-        return false;
-      })) {
-        return true;
-      }
-    }
-
-    let q5 = {name: q5_name, sanity: q5_sanity, answer: -1};
-    if (!await processQ5(message, q5)) {
-      return true;
-    }
-
-    let q6 = {name: q6_name, sanity: q6_sanity, naps: 0, oversleepMinutes: 0};
-    if (!q5.answer) {
-      totalSleepTime = await processQ6(message, q6, napchartSleeps);
-      if (totalSleepTime === false) {
-        return true;
-      }
-    }
-
-    let q7 = {name: q7_name, sanity: q7_sanity, estimate: -1, rawAnswer: "", moods: ""};
-    if (!await processQ7(message, q7)) {
-      return true;
-    }
-
-    let q8 = {name: q8_name, sanity: q8_sanity, estimate: -1};
-    if (!await processQ8(message, q7, q8)) {
-      return true;
-    }
-
-    //TODO: setcompare
-    let q9 = {name: q9_name, answer: ""};
-    let q10 = {name: q10_name, answer: "", attachment: null};
-
-    // Formatting log
-    let get_recap = async function() {
-      let description = String.format(descriptionTemplate, `${Math.floor(totalSleepTime / 60)} hours ${totalSleepTime % 60} minutes`);
-      if (q6.oversleepMinutes) {
-        description += `Time oversleeping: ${Math.floor(q6.oversleepMinutes / 60)} hours ${q6.oversleepMinutes % 60} minutes\n`;
-      }
-      if (q6.naps) {
-        description += `Number of naps: ${q6.naps}\n`;
-      }
-
-      let segmentTitle = (q4.rawAnswer.charAt(0) == 'X' ? 'Whole day' : q4.rawAnswer);
-      let segmentField = `Difficulty staying awake: ${q8_recap[q8.estimate]}\n`;
-      segmentField += q7.moods ? `\n${q7.moods}\n` : '';
-
-      if (!await processQ9(message, '```' + description + segmentTitle + '\n' + segmentField, q9)) {
-        return { description: null, segmentTitle: null, segmentField: null };
-      }
-      segmentField += q9.answer ? `\n${q9.answer}\n` : '';
-
-      if (hasRole(member, 'Sleep Tracker')) {
-        if (!await processQ10(message, q10)) {
-          return { description: null, segmentTitle: null, segmentField: null };
-        }
-      }
-      return { description, segmentTitle, segmentField };
-    }
-
-    if (dry) {
-      return true;
-    }
-
-    // Sending / editing message in logging channel
-    let logsChannel = getChannel(message, logsChannelName);
-    if (currentdayLogs && currentdayLogs.length > 0) {
-      // Editing message
-      let foundLog;
-      let logMessages;
-      do {
-        logMessages = await logsChannel.fetchMessages({limit: 100});
-        foundLog = logMessages.filter(msg => msg.embeds.length > 0 && msg.embeds[0].author.name == displayName
-          && msg.embeds[0].title == String.format(titleTemplate, schedule, currentDay)).first();
-        if (foundLog) {
-          currentdayLogs.forEach(currentdayLog => {
-            totalSleepTime += currentdayLog.sleepTime;
-            q6.oversleepMinutes += currentdayLog.oversleepTime ? currentdayLog.oversleepTime : 0;
-            q6.naps += currentdayLog.napsNumber ? currentdayLog.napsNumber : 0;
-          });
-          const { description, segmentTitle, segmentField } = await get_recap();
-          if (!description) {
-            return true;
-          }
-
-          const embed = new Discord.RichEmbed(foundLog.embeds[0])
-            .setDescription(description)
-            .addField(segmentTitle, segmentField)
-            .setTimestamp();
-
-          foundLog.edit(embed);
-          if (q10.attachment) {
-            logsChannel.send(`${displayName} EEG ${schedule} - ${q4.rawAnswer.charAt(0) == 'X' ? '' : q4.rawAnswer}\n${q10.answer} of day ${currentDay}`, q10.attachment);
-          }
-        }
-      } while (!foundLog && logMessages.length > 0)
-      if (!foundLog) {
-        console.error(`Could not find a previous log for ${displayName} day ${currentDay}`);
-        return true;
-      }
-    }
-    else {
-      // Sending message
-      const { description, segmentTitle, segmentField } = await get_recap();
-      if (!description) {
-        return true;
-      }
-      let colorRole = member.roles.filter(r => ['Nap only', 'Everyman', 'Dual Core', 'Tri Core', 'Biphasic', 'Experimental'].includes(r.name)).first();
-      const color = colorRole ? colorRole.color : '#ffffff';
-      console.log("URL");
-      console.log(api_url + 'getImage?width=600&height=600&chartid=' + napchartUrl.split('/').pop());
-      const embed = new Discord.RichEmbed()
-        .setColor(color)
-        .setTitle(String.format(titleTemplate, schedule, currentDay))
-        .setAuthor(displayName, message.author.avatarURL)
-        .setDescription(description)
-        .setThumbnail(cache_url + napchartUrl.split('/').pop() + '.png')
-        .addField(segmentTitle, segmentField)
-        .setTimestamp();
-      logsChannel.send(embed);
-      if (q10.attachment) {
-        logsChannel.send(`${displayName} EEG ${schedule} - ${q4.rawAnswer.charAt(0) == 'X' ? '' : q4.rawAnswer}\n${q10.answer} of day ${currentDay}`, q10.attachment);
-      }
-    }
-
-    // Saving the log
-    message.author.send(end);
-    logInstance = buildLogInstance(displayName, schedule, attempt, currentDay, q4.rawAnswer,
-      q7.rawAnswer, q8.estimate,
-      totalSleepTime, q6.oversleepMinutes, q6.naps,
-      q9.answer ? q9.answer + q10.answer : q10.answer, q10.attachment ? q10.attachment.file : null);
-
-    if (!await saveLogInstance(logInstance, message.author.id)) {
-      message.author.send("An error occurred while saving the log");
-      return true;
-    }
-
-    // Updating consecutive logging of schedule
-    let currentScheduleLogs = await getLogs({userName: displayName, schedule: schedule, attempt: attempt});
-    let currentScheduleLoggedDays = currentScheduleLogs.map(o => o.day);
-    const longestSequence = (arr) => {
-      const numbers = new Set(arr), counts = {};
-      var max = 0;
-      for (const num of numbers.values()) {
-        let next = num + 1;
-        numbers.delete(num);
-        while (numbers.has(next)) { numbers.delete(next++); }
-        if (counts[next]) { next += counts[next]; }
-        max = Math.max(counts[num] = next - num, max);
-      }
-      return max;
-    }
-
-    memberData.currentScheduleMaxLogged = Math.max(...currentScheduleLoggedDays);
-    memberData.save();
-
-    processTimeRoles(message, member, memberData.currentScheduleMaxLogged,
-      longestSequence(currentScheduleLoggedDays), historicLogged);
+  const member = getMember(message);
+  if (!member) {
+    message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
     return true;
   }
+  let displayName = member.nickname;
+  if (!displayName) {
+    displayName = message.author.username;
+  }
+
+  message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
+
+  let { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData } = await getMemberData(message, displayName);
+  if (!schedule) {
+    message.author.send('You must first set a schedule and a napchart before writing a log.');
+    return true;
+  }
+
+  let napchart = getNapchart(displayName, napchartUrl);
+  if (napchart === null) {
+    message.author.send('Error retrieving napchart data from API.');
+    return true;
+  }
+
+  let q1 = {name: q1_name, sanity: q1_sanity, check: -1};
+  if (!await processQ1(message, q1, schedule, napchart, currentDay, dateSet)) {
+    return true;
+  }
+
+  if (!q1.check) {
+    let q2 = {name: q2_name, sanity: q2_sanity, check: -1};
+    if (!await processQ2(message, q2)) {
+      return true;
+    }
+
+    let q3 = {name: q3_name, sanity: q3_sanity, day: -1};
+    if (!await processQ3(message, currentDay, q3)) {
+      return true;
+    }
+    currentDay = q3.day;
+  }
+
+  let currentdayLogs = await getLogs({userName: displayName, schedule: schedule, day: currentDay, attempt: attempt});
+
+  const napchartSleeps = minutify_sleeps(extract_ranges(napchart.sleeps));
+
+  let q4 = {name: q4_name, sanity: q4_sanity, answer: null, rawAnswer: ''};
+  if (!await processQ4(message, napchartSleeps, q4)) {
+    return true;
+  }
+
+  let totalSleepTime = 0;
+  q4.answer.cores.forEach(core => totalSleepTime += napchartSleeps.cores[core - 1].diff);
+  q4.answer.naps.forEach(nap => totalSleepTime += napchartSleeps.naps[nap - 1].diff);
+
+  if (currentdayLogs) {
+    if (currentdayLogs.some(el => {
+      let daySegments = processSegments(el.daySegments, {cores: [], naps: []}, napchartSleeps, null);
+      if (daySegments.cores.some(c => q4.answer.cores.includes(c)) || daySegments.naps.some(n => q4.answer.naps.includes(n))) {
+        message.author.send(`You've already logged about ${el.daySegments}. Try again from the begining.`);
+        return true;
+      }
+      return false;
+    })) {
+      return true;
+    }
+  }
+
+  let q5 = {name: q5_name, sanity: q5_sanity, answer: -1};
+  if (!await processQ5(message, q5)) {
+    return true;
+  }
+
+  let q6 = {name: q6_name, sanity: q6_sanity, naps: 0, oversleepMinutes: 0};
+  if (!q5.answer) {
+    totalSleepTime = await processQ6(message, q6, napchartSleeps);
+    if (totalSleepTime === false) {
+      return true;
+    }
+  }
+
+  let q7 = {name: q7_name, sanity: q7_sanity, estimate: -1, rawAnswer: "", moods: ""};
+  if (!await processQ7(message, q7)) {
+    return true;
+  }
+
+  let q8 = {name: q8_name, sanity: q8_sanity, estimate: -1};
+  if (!await processQ8(message, q7, q8)) {
+    return true;
+  }
+
+  //TODO: setcompare
+  let q9 = {name: q9_name, answer: ""};
+  let q10 = {name: q10_name, answer: "", attachment: null};
+
+  // Formatting log
+  let get_recap = async function() {
+    let description = String.format(descriptionTemplate, `${Math.floor(totalSleepTime / 60)} hours ${totalSleepTime % 60} minutes`);
+    if (q6.oversleepMinutes) {
+      description += `Time oversleeping: ${Math.floor(q6.oversleepMinutes / 60)} hours ${q6.oversleepMinutes % 60} minutes\n`;
+    }
+    if (q6.naps) {
+      description += `Number of naps: ${q6.naps}\n`;
+    }
+
+    let segmentTitle = (q4.rawAnswer.charAt(0) == 'X' ? 'Whole day' : q4.rawAnswer);
+    let segmentField = `Difficulty staying awake: ${q8_recap[q8.estimate]}\n`;
+    segmentField += q7.moods ? `\n${q7.moods}\n` : '';
+
+    if (!await processQ9(message, '```' + description + segmentTitle + '\n' + segmentField, q9)) {
+      return { description: null, segmentTitle: null, segmentField: null };
+    }
+    segmentField += q9.answer ? `\n${q9.answer}\n` : '';
+
+    if (hasRole(member, 'Sleep Tracker')) {
+      if (!await processQ10(message, q10)) {
+        return { description: null, segmentTitle: null, segmentField: null };
+      }
+    }
+    return { description, segmentTitle, segmentField };
+  }
+
+  if (dry) {
+    return true;
+  }
+
+  // Sending / editing message in logging channel
+  let logsChannel = getChannel(message, logsChannelName);
+  if (currentdayLogs && currentdayLogs.length > 0) {
+    // Editing message
+    let foundLog;
+    let logMessages;
+    do {
+      logMessages = await logsChannel.fetchMessages({limit: 100});
+      foundLog = logMessages.filter(msg => msg.embeds.length > 0 && msg.embeds[0].author.name == displayName
+        && msg.embeds[0].title == String.format(titleTemplate, schedule, currentDay)).first();
+      if (foundLog) {
+        currentdayLogs.forEach(currentdayLog => {
+          totalSleepTime += currentdayLog.sleepTime;
+          q6.oversleepMinutes += currentdayLog.oversleepTime ? currentdayLog.oversleepTime : 0;
+          q6.naps += currentdayLog.napsNumber ? currentdayLog.napsNumber : 0;
+        });
+        const { description, segmentTitle, segmentField } = await get_recap();
+        if (!description) {
+          return true;
+        }
+
+        const embed = new Discord.RichEmbed(foundLog.embeds[0])
+          .setDescription(description)
+          .addField(segmentTitle, segmentField)
+          .setTimestamp();
+
+        foundLog.edit(embed);
+        if (q10.attachment) {
+          logsChannel.send(`${displayName} EEG ${schedule} - ${q4.rawAnswer.charAt(0) == 'X' ? '' : q4.rawAnswer}\n${q10.answer} of day ${currentDay}`, q10.attachment);
+        }
+      }
+    } while (!foundLog && logMessages.length > 0)
+    if (!foundLog) {
+      console.error(`Could not find a previous log for ${displayName} day ${currentDay}`);
+      return true;
+    }
+  }
+  else {
+    // Sending message
+    const { description, segmentTitle, segmentField } = await get_recap();
+    if (!description) {
+      return true;
+    }
+    let colorRole = member.roles.filter(r => ['Nap only', 'Everyman', 'Dual Core', 'Tri Core', 'Biphasic', 'Experimental'].includes(r.name)).first();
+    const color = colorRole ? colorRole.color : '#ffffff';
+    console.log("URL");
+    console.log(api_url + 'getImage?width=600&height=600&chartid=' + napchartUrl.split('/').pop());
+    const embed = new Discord.RichEmbed()
+      .setColor(color)
+      .setTitle(String.format(titleTemplate, schedule, currentDay))
+      .setAuthor(displayName, message.author.avatarURL)
+      .setDescription(description)
+      .setThumbnail(cache_url + napchartUrl.split('/').pop() + '.png')
+      .addField(segmentTitle, segmentField)
+      .setTimestamp();
+    logsChannel.send(embed);
+    if (q10.attachment) {
+      logsChannel.send(`${displayName} EEG ${schedule} - ${q4.rawAnswer.charAt(0) == 'X' ? '' : q4.rawAnswer}\n${q10.answer} of day ${currentDay}`, q10.attachment);
+    }
+  }
+
+  // Saving the log
+  message.author.send(end);
+  logInstance = buildLogInstance(displayName, schedule, attempt, currentDay, q4.rawAnswer,
+    q7.rawAnswer, q8.estimate,
+    totalSleepTime, q6.oversleepMinutes, q6.naps,
+    q9.answer ? q9.answer + q10.answer : q10.answer, q10.attachment ? q10.attachment.file : null);
+
+  if (!await saveLogInstance(logInstance, message.author.id)) {
+    message.author.send("An error occurred while saving the log");
+    return true;
+  }
+
+  // Updating consecutive logging of schedule
+  let currentScheduleLogs = await getLogs({userName: displayName, schedule: schedule, attempt: attempt});
+  let currentScheduleLoggedDays = currentScheduleLogs.map(o => o.day);
+  const longestSequence = (arr) => {
+    const numbers = new Set(arr), counts = {};
+    var max = 0;
+    for (const num of numbers.values()) {
+      let next = num + 1;
+      numbers.delete(num);
+      while (numbers.has(next)) { numbers.delete(next++); }
+      if (counts[next]) { next += counts[next]; }
+      max = Math.max(counts[num] = next - num, max);
+    }
+    return max;
+  }
+
+  memberData.currentScheduleMaxLogged = Math.max(...currentScheduleLoggedDays);
+  memberData.save();
+
+  processTimeRoles(message, member, memberData.currentScheduleMaxLogged,
+    longestSequence(currentScheduleLoggedDays), historicLogged);
+  return true;
 }
 
 
@@ -740,10 +744,10 @@ function hasRole(member, role) {
 }
 
 function processTimeRoles(message, member, currentScheduleMaxLogged, maxConsecutive, historicLogged) {
-  let oneMonthRole = getGuild(message).roles.find(role => role.name == "1 mths poly");
-  let threeMonthsRole = getGuild(message).roles.find(role => role.name == "3 mths poly");
-  let sixMonthsRole = getGuild(message).roles.find(role => role.name == "6 mths poly");
-  let oneYearRole = getGuild(message).roles.find(role =>  role.name == "1+ year poly");
+  let oneMonthRole = getGuild(message).roles.find(role => role.name == "1 Month Poly");
+  let threeMonthsRole = getGuild(message).roles.find(role => role.name == "3 Months Poly");
+  let sixMonthsRole = getGuild(message).roles.find(role => role.name == "6 Months Poly");
+  let oneYearRole = getGuild(message).roles.find(role =>  role.name == "1+ Year Poly");
   let loggerRole = getGuild(message).roles.find(role => role.name == "Logger");
 
   if (maxConsecutive > 30 && !member.roles.has(loggerRole.id)) {

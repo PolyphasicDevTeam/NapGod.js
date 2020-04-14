@@ -47,20 +47,24 @@ client.on("message", message => {
 	if (command == '') { return } //There is probably space after prefix, reject
 
 
-	//if (isDevPrefix(message)) {
-		//processDevCommands(command, message, args);
-	//} else
-	if (isValidPrefix(message)) {
-		// For now, these are separated b/c a lot of existing commands break in DMs
-		if (!isDirectMessage) {
-			processCommands(command, message, args);
-		}
-    processDMCommands(command, message, args);
-	}
-	if (isValidHelpPrefix(message)) {
-		processHelpCommands(command, message, args);
-	}
-
+  //if (isDevPrefix(message)) {
+  //processDevCommands(command, message, args);
+  //} else
+  if (isValidPrefix(message)) {
+    // For now, these are separated b/c a lot of existing commands break in DMs
+    let handled = false;
+    if (!isDirectMessage) {
+      handled = processCommands(command, message, args);
+    }
+    if (!handled) {
+      if (!processDMCommands(command, message, args)) {
+        console.error("WARN>>: ", "Command was not handled:", command, args);
+      }
+    }
+  }
+  if (isValidHelpPrefix(message)) {
+    processHelpCommands(command, message, args);
+  }
 });
 
 function isValidPrefix(message) {

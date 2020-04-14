@@ -257,13 +257,13 @@ module.exports = {
       segmentField += q7.moods ? `\n${q7.moods}\n` : '';
 
       if (!await processQ9(message, '```' + description + segmentTitle + '\n' + segmentField, q9)) {
-        return true;
+        return { description: null, segmentTitle: null, segmentField: null };
       }
       segmentField += q9.answer ? `\n${q9.answer}\n` : '';
 
       if (hasRole(member, 'Sleep Tracker')) {
         if (!await processQ10(message, q10)) {
-          return true;
+          return { description: null, segmentTitle: null, segmentField: null };
         }
       }
       return { description, segmentTitle, segmentField };
@@ -289,7 +289,10 @@ module.exports = {
             q6.oversleepMinutes += currentdayLog.oversleepTime ? currentdayLog.oversleepTime : 0;
             q6.naps += currentdayLog.napsNumber ? currentdayLog.napsNumber : 0;
           });
-          const {description, segmentTitle, segmentField} = await get_recap();
+          const { description, segmentTitle, segmentField } = await get_recap();
+          if (!description) {
+            return true;
+          }
 
           const embed = new Discord.RichEmbed(foundLog.embeds[0])
             .setDescription(description)
@@ -309,7 +312,10 @@ module.exports = {
     }
     else {
       // Sending message
-      const {description, segmentTitle, segmentField} = await get_recap();
+      const { description, segmentTitle, segmentField } = await get_recap();
+      if (!description) {
+        return true;
+      }
       let colorRole = member.roles.filter(r => ['Nap only', 'Everyman', 'Dual Core', 'Tri Core', 'Biphasic', 'Experimental'].includes(r.name)).first();
       const color = colorRole ? colorRole.color : '#ffffff';
       console.log("URL");
@@ -447,7 +453,7 @@ async function processQ4(message, napchartSleeps, q4) {
       return false;
     }
     q4.rawAnswer = collected.content;
-    q4.answer = processSegments(collected.content, {cores: [], naps: []}, napchartSleeps, message);
+    q4.answer = processSegments(collected.content.toUpperCase(), {cores: [], naps: []}, napchartSleeps, message);
   }
   return true;
 }
@@ -617,7 +623,7 @@ async function collectFromUser(author, channel, step, checkInput) {
     }
   }
   catch (e) {
-    console.log("WARN\t: ", `${e} Timeout waiting for answer from ${author.username} during step ${step.name}`);
+    console.log("WARN\t: ", `Timeout waiting for answer from ${author.username} during step ${step.name}`);
     author.send(timeoutMessage);
     return null;
   }

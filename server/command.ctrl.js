@@ -17,7 +17,8 @@ module.exports = {
       handled = handled || fn(command, message, args, dry);
     });
     if(!handled){
-      console.error("WARN>>: ", "Command was not handled:", command, args);
+      return false;
     }
+    return true;
   }
 };

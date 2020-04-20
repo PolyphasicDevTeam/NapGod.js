@@ -1,7 +1,7 @@
 const config = require("../../config.json");
 const FocusModel = require("./../models/focus.model");
 
-const days = ["Monday", "Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const days = ["Sunday", "Monday", "Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 
@@ -55,6 +55,16 @@ function h_n_m(minutes){
   return heures + 'h ' + minutes + "m";  
 }
 
+function setPermissionUnfocus(message, member) {
+  console.log(member.displayName);
+  message.guild.channels.forEach((chan) => {
+    if (chan.name !== 'focus') {
+      console.log(chan.name);
+      chan.overwritePermissions(member, { VIEW_CHANNEL: null });
+    }
+  });
+}
+
 async function self_unfocus(message, args, dry){
   let msg = "";
   let member = message.member;
@@ -64,7 +74,7 @@ async function self_unfocus(message, args, dry){
     console.log("MSG: ", msg);
     if(!dry){message.channel.send(msg);};
   } else if (time.endDate > new Date()){
-    msg = "You can't be unfocused yet! Focus end at " + formatDate(time.endDate) + ' (' + h_n_m((time.endDate - new Date())/60000) + ')';
+    msg = "You can't be unfocused yet! Focus end on " + formatDate(time.endDate) + ' (' + h_n_m((time.endDate - new Date())/60000) + ')';
     console.log("MSG: ", msg);
     if(!dry){message.channel.send(msg);};
   } else {
@@ -94,11 +104,12 @@ async function unfocus(user, message, dry){
   try {
     let result = await FocusModel.findOneAndRemove(query);
     if (result != null){
-      unsetRole(user, "Focus", message, dry);
-      msg = user.user.tag + " isn't focus anymore!";
+      await unsetRole(user, "Focus", message, dry);
+      await setPermissionUnfocus(message, user);
+      let msg = user.user.tag + " isn't focus anymore!";
       console.log("MSG: ", msg);
       if(!dry){message.channel.send(msg);};
-      if(!dry && (message.channel.name != "botspam_shitpost")){message.client.channels.find('name', "botspam_shitpost").send(msg);}	    
+      if(!dry && (message.channel.name != "botspam")){message.client.channels.find('name', "botspam").send(msg);}	    
     } else {
       msg = user.user.tag + " isn't focus in the first place!";
       console.log("MSG: ", msg);

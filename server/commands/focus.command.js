@@ -29,10 +29,19 @@ function setRole(user, name_role, message, date, dry){
   let roles = user.roles;
   roles = new Set(roles.keys());
   roles.add(role.id);
-  msg = user.user.tag + " is now on Forced Productivity until " + formatDate(date) + ' (' + h_n_m((date - new Date())/60000) + ')';
+  let msg = user.user.tag + " is now on Forced Productivity until " + formatDate(date) + ' (' + h_n_m((date - new Date())/60000) + ')';
   if(!dry){user.setRoles(Array.from(roles));}
   if(!dry){message.channel.send(msg);}
   if(!dry && (message.channel.name != "focus")){message.client.channels.find('name', "focus").send(msg);}
+}
+
+
+function setPermissionFocus(message) {
+  message.guild.channels.forEach((chan) => {
+    if (chan.name !== 'focus') {
+      chan.overwritePermissions(message.author, { VIEW_CHANNEL: false });
+    }
+  });
 }
 
 
@@ -45,6 +54,7 @@ async function focus(message, args, dry){
       let result = await setFocusOnTimed(usr, time, message, dry);
       if (result != null){ // result == normal return value
 	setRole(usr, "Focus", message, result.endDate, dry);
+	setPermissionFocus(message);
       }
     } else {
       msg = "You cannot set focus for less than 1 minutes and for more than " + config.maxTimeFocus + " mins";

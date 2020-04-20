@@ -99,6 +99,51 @@ function unsetRole(user, name_role, message, dry){
   if(!dry){user.setRoles(Array.from(roles));}
 }
 
+
+async function deleteReturnLast(chan, option, prevMsg, cond) {
+  return chan.fetchMessages(option)
+    .then(async msgs => {
+      if (msgs.size === 0){
+	if (cond(prevMsg)) {
+	  prevMsg.delete()
+	    .then(d => console.log('last message deleted: ' + d.content))
+	    .catch(err => console.log('ERR>>', err, prevMsg.content, option.before));	}
+	return prevMsg;
+      };
+      let last = msgs.last();
+      for (const[id, msg] of msgs) {
+	let tmp = (id === last.id) ? prevMsg : msg;
+	if (cond(tmp)) {
+	  tmp.delete()
+	    .then(d => console.log('Message deleted: ' + tmp.content))
+	    .catch(err => console.log('ERR>>', err));
+	}
+      };
+      return last;
+    })
+    .catch(err => console.log('ERR>>', err));
+}
+
+
+function cond(msg, author) {
+  return ((msg.member === author) || ((msg.member === msg.guild.me)));
+}
+
+
+async function deleteMessages(user, message) {
+  const chan = message.guild.channels.find(d => d.name === 'focus');
+  let last = chan.lastMessage;
+  while ((last !== (last = await deleteReturnLast(chan, {limit: 50 , before: last.id}, last, msg => cond(msg, user))))){
+  };
+  if (cond(last, user)) {
+    last.delete();
+  }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function unfocus(user, message, dry){
   let query = {id: user.id};
   try {
@@ -108,8 +153,14 @@ async function unfocus(user, message, dry){
       await setPermissionUnfocus(message, user);
       let msg = user.user.tag + " isn't focus anymore!";
       console.log("MSG: ", msg);
-      if(!dry){message.channel.send(msg);};
-      if(!dry && (message.channel.name != "botspam")){message.client.channels.find('name', "botspam").send(msg);}	    
+      if(!dry){
+	message.channel.send(msg).then(async msg => {
+	  await sleep(5000);
+	  msg.delete();
+	});
+      };
+      if(!dry && (message.channel.name != "botspam")){message.client.channels.find('name', "botspam").send(msg);}
+      await deleteMessages(user, message);
     } else {
       msg = user.user.tag + " isn't focus in the first place!";
       console.log("MSG: ", msg);

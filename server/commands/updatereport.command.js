@@ -28,20 +28,17 @@ function toMinute(d) {
 async function report(args, message, dry) {
   let report = await ReportModel.findOne();
   let msg = '';
-  console.log(new Date(report.updatedAt), report.updatedAt);
-  console.log(new Date(report.lastSetAt), report.lastSetAt);
-  console.log(new Date(report.updateAt) > new Date(report.lastSetAt));
-  if (toMinute(new Date() - new  Date(report.updatedAt))
-      < config.reportInterval ) {
+  if ((report !== null) && (toMinute(new Date() - new  Date(report.updatedAt))
+			    < (config.reportInterval || 5) )) { // default value 5 mins
     msg += "The last report is too recent, it is available at <https://cache.polyphasic.net/report.json> and <https://cache.polyphasic.net/report.html>.";
-  } else if (new Date(report.updatedAt) > new Date(report.lastSetAt)){
+  } else if ((report !== null) && (new Date(report.updatedAt) > new Date(report.lastSetAt))){
     msg += "The last report was up to date, and is available at <https://cache.polyphasic.net/report.json> and <https://cache.polyphasic.net/report.html>.";
   } else {
     msg += 'Generating the report!';
     let users = await UserModel.find({});
     generateHTML(message, users, dry);
     generateJSON(message, users, dry);
-    ReportModel.create({'lastSetAt': report.lastSetAt})
+    ReportModel.create({'lastSetAt': (report !== null) ? report.lastSetAt : Date.now()})
       .then(console.log)
       .catch(console.error);
   }

@@ -8,11 +8,13 @@ const LogModel = require("./../models/log.model");
 const logCMD = 'log';
 const logsChannelName = 'adaptation_logs';
 // In seconds
-const timeout = 100;
+const timeout = 500;
 const timeoutMessage = 'This session has expired. Please restart from the begining.';
 const api_url = 'http://thumb.napchart.com:1771/api/';
 const cache_url = 'https://cache.polyphasic.net/cdn/';
 const napMaxLength = 45;
+
+let currentUsers = [];
 
 const q1_name = 'user_check';
 const q1_message = 'The following information was pulled from the database, is it correct? y = yes, n = no';
@@ -50,10 +52,10 @@ const hourSeparators = /[.:h]/;
 const q7_name = "estimate";
 const q7_message = `
 Write out the letters corresponding to what you experienced since your previous log. For example, ACEG. If you don't write a particular letter it is assumed that the opposite happened.
-A = easy to fall asleep
-B = hard to fall asleep
-C = easy to wake up (woke up refreshed without sleep inertia)
-D = hard to wake up (woke up groggy or with sleep inertia)
+A = hard to fall asleep
+B = neither easy nor hard to fall asleep
+C = hard to wake up (woke up groggy with sleep inertia)
+D = neither easy nor hard to wake up
 E = woke up before the alarm
 F = remembered a dream
 G = had issues staying productive between sleeps
@@ -74,30 +76,34 @@ const q7_sanity = "Please stick to the letters above.";
 const q7_regex = /^[A-SX]+$/;
 const q7_wrong_input = "Only write X if no other letters match your situation.";
 
-const q7_positives = {
-  "A": [0, "It was easy to fall asleep."],
-  "B": [0, "It was hard to fall asleep."],
-  "C": [0, "I woke up refreshed without sleep inertia."],
-  "D": [3, "I woke up groggy with sleep inertia."],
-  "E": [0, "I managed to wake up before the alarm."],
-  "F": [0, "I remembered a dream."],
-  "G": [1, "I had issues staying productive between sleeps."],
-  "H": [2, "I found it hard to focus on simple activities."],
-  "I": [0, "I experienced large mood swings between sleeps."],
-  "J": [0, "I generally had a bad mood."],
-  "K": [0, "I had a bad or irregular appetite."],
-  "L": [0, "I experienced memory-related issues."],
-  "M": [2, "I experienced microsleeps outside of my scheduled sleep times."],
-  "N": [1, "I experienced tiredness bombs."],
-  "O": [3, "I experienced very rough tiredness bombs."],
-  "P": [2, "I was semi-conscious but in a dream-like state outside scheduled sleep times."],
-  "Q": [0, "I deviated from normal sleep hygiene procedures (dark period, fasting, routine before sleep etc)."],
-  "R": [0, "I could not properly accomplish desired activities."],
-  "S": [1, "I switched to alternate activities to stay awake."]
+// Letter : [Modifier, Statement, Displayed
+const q7_statements = {
+  "A": [0, "It was hard to fall asleep.", true],
+  "B": [0, "A - middle ground", false],
+  "C": [3, "I woke up groggy with sleep inertia.", true],
+  "D": [1, "C - middle ground", false],
+  "E": [0, "I managed to wake up before the alarm.", true],
+  "F": [0, "I remembered a dream.", true],
+  "G": [1, "I had issues staying productive between sleeps.", true],
+  "H": [2, "I found it hard to focus on simple activities.", true],
+  "I": [0, "I experienced large mood swings between sleeps.", true],
+  "J": [0, "I generally had a bad mood.", true],
+  "K": [0, "I had a bad or irregular appetite.", true],
+  "L": [0, "I experienced memory-related issues.", true],
+  "M": [2, "I experienced microsleeps outside of my scheduled sleep times.", true],
+  "N": [1, "I experienced tiredness bombs.", true],
+  "O": [3, "I experienced very rough tiredness bombs.", true],
+  "P": [2, "I was semi-conscious but in a dream-like state outside scheduled sleep times.", true],
+  "Q": [0, "I deviated from normal sleep hygiene procedures (dark period, fasting, routine before sleep etc).", true],
+  "R": [0, "I could not properly accomplish desired activities.", true],
+  "S": [1, "I switched to alternate activities to stay awake.", true]
 };
 
-const q7_negatives = {
-  "F": [0, "I sadly do not remember any dream."],
+// Letter : [Modifier, Statement, Middle Ground
+const q7_negations = {
+  "A": [0, "It was easy to fall asleep.", "B"],
+  "C": [0, "I woke up refreshed without sleep inertia.", "D"],
+  "F": [0, "I sadly did not remember any dream."],
   "G": [0, "I did not find it hard staying productive between sleeps."],
   "H": [0, "I found it easy to focus on simple activities."],
   "R": [0, "I properly accomplished desired activities."],
@@ -157,6 +163,11 @@ async function log(message, dry=false) {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
     return true;
   }
+
+  if (currentUsers.includes(message.author.id)) {
+    return true;
+  }
+
   let displayName = member.nickname;
   if (!displayName) {
     displayName = message.author.username;
@@ -176,19 +187,24 @@ async function log(message, dry=false) {
     return true;
   }
 
+  currentUsers.push(message.author.id);
+
   let q1 = {name: q1_name, sanity: q1_sanity, check: -1};
   if (!await processQ1(message, q1, schedule, napchart, currentDay, dateSet)) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
   if (!q1.check) {
     let q2 = {name: q2_name, sanity: q2_sanity, check: -1};
     if (!await processQ2(message, q2)) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
 
     let q3 = {name: q3_name, sanity: q3_sanity, day: -1};
     if (!await processQ3(message, currentDay, q3)) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
     currentDay = q3.day;
@@ -200,6 +216,7 @@ async function log(message, dry=false) {
 
   let q4 = {name: q4_name, sanity: q4_sanity, answer: null, rawAnswer: ''};
   if (!await processQ4(message, napchartSleeps, q4)) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
@@ -216,12 +233,14 @@ async function log(message, dry=false) {
       }
       return false;
     })) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
   }
 
   let q5 = {name: q5_name, sanity: q5_sanity, answer: -1};
   if (!await processQ5(message, q5)) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
@@ -229,17 +248,20 @@ async function log(message, dry=false) {
   if (!q5.answer) {
     totalSleepTime = await processQ6(message, q6, napchartSleeps);
     if (totalSleepTime === false) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
   }
 
   let q7 = {name: q7_name, sanity: q7_sanity, estimate: -1, rawAnswer: "", moods: ""};
   if (!await processQ7(message, q7)) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
   let q8 = {name: q8_name, sanity: q8_sanity, estimate: -1};
   if (!await processQ8(message, q7, q8)) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
@@ -275,6 +297,7 @@ async function log(message, dry=false) {
   }
 
   if (dry) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
@@ -296,6 +319,7 @@ async function log(message, dry=false) {
         });
         const { description, segmentTitle, segmentField } = await get_recap();
         if (!description) {
+          currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
           return true;
         }
 
@@ -312,6 +336,7 @@ async function log(message, dry=false) {
     } while (!foundLog && logMessages.length > 0)
     if (!foundLog) {
       console.error(`Could not find a previous log for ${displayName} day ${currentDay}`);
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
   }
@@ -319,12 +344,11 @@ async function log(message, dry=false) {
     // Sending message
     const { description, segmentTitle, segmentField } = await get_recap();
     if (!description) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
     let colorRole = member.roles.filter(r => ['Nap only', 'Everyman', 'Dual Core', 'Tri Core', 'Biphasic', 'Experimental'].includes(r.name)).first();
     const color = colorRole ? colorRole.color : '#ffffff';
-    console.log("URL");
-    console.log(api_url + 'getImage?width=600&height=600&chartid=' + napchartUrl.split('/').pop());
     const embed = new Discord.RichEmbed()
       .setColor(color)
       .setTitle(String.format(titleTemplate, schedule, currentDay))
@@ -348,6 +372,7 @@ async function log(message, dry=false) {
 
   if (!await saveLogInstance(logInstance, message.author.id)) {
     message.author.send("An error occurred while saving the log");
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
@@ -372,6 +397,7 @@ async function log(message, dry=false) {
 
   processTimeRoles(message, member, memberData.currentScheduleMaxLogged,
     longestSequence(currentScheduleLoggedDays), historicLogged);
+  currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   return true;
 }
 
@@ -402,7 +428,7 @@ async function processQ2(message, q2) {
     collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q2_sanity ))) {
     return false;
   }
-  q2.check = collected.content.toLowerCase() === "Y";
+  q2.check = collected.content.toLowerCase() === "y";
   if (!q2.check) {
     message.author.send(q2_n);
     return false;
@@ -528,6 +554,10 @@ async function processQ6(message, q6, napchartSleeps, schedule) {
     return false;
   }
   let sleeps = minutify_sleeps(extract_ranges(collected.content));
+  if (!sleeps) {
+    message.author.send("Detected overlapping or invalid time, please check your times and try again.");
+    return processQ6(message, q6, napchartSleeps, schedule);
+  }
   for (const sleep of sleeps.cores.concat(sleeps.naps)) {
     let bestDiff = 9999;
     for (const chartSleep of napchartSleeps.cores.concat(napchartSleeps.naps)) {
@@ -561,20 +591,22 @@ async function processQ7(message, q7) {
         q7.estimate = 0;
       }
     } else {
-      q7.estimate = !q7.rawAnswer.includes("C") && !q7.rawAnswer.includes("D");
+      q7.estimate = 0;
     }
   }
-  for (const [letter, value] of Object.entries(q7_positives)) {
+  for (const [letter, value] of Object.entries(q7_statements)) {
     if (q7.rawAnswer.includes(letter)) {
-      if (q7.moods) {
+      if (q7.moods && value[2]) {
         q7.moods += " ";
       }
       q7.estimate += value[0];
-      q7.moods += value[1];
+      if (value[2]) {
+        q7.moods += value[1];
+      }
     }
   }
-  for (const [letter, value] of Object.entries(q7_negatives)) {
-    if (!q7.rawAnswer.includes(letter)) {
+  for (const [letter, value] of Object.entries(q7_negations)) {
+    if (!q7.rawAnswer.includes(letter) && !q7.rawAnswer.includes(value[2])) {
       if (q7.moods) {
         q7.moods += " ";
       }
@@ -656,6 +688,10 @@ function minutify_sleeps(sleeps) {
       end: sleeps[i + 2] * 60 + sleeps[i + 3]
     };
     range.diff = range.end - range.begin;
+    const overlap = el => range.begin < el.end && range.begin > el.begin;
+    if (range.diff <= 0 || out.naps.some(overlap) || out.cores.some(overlap)) {
+      return null;
+    }
     if (range.diff <= napMaxLength) {
       insertSort(out.naps, range);
     }
@@ -795,7 +831,7 @@ async function getMemberData(message, displayName) {
     let napchartUrl = res.currentScheduleChart;
     let attempt = res.historicSchedules.filter(s => s.name == schedule).length;
 
-    if (!res.historicSchedules[0].maxLogged || res.historicSchedules[0].maxLogged == -Infinity) {
+    if (res.historicSchedules && !res.historicSchedules[0].maxLogged || res.historicSchedules[0].maxLogged == -Infinity) {
       let schedulesAttempted = res.historicSchedules.map(s => s.name);
       for (const scheduleAttempted of schedulesAttempted) {
         let scheduleAttempts = res.historicSchedules.filter(s => s.name == scheduleAttempted);

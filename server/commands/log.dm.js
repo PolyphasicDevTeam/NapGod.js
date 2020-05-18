@@ -482,7 +482,7 @@ async function processQ4(message, napchartSleeps, q4) {
       collected => q4_regex.test(collected.content.toUpperCase()) ? "" : q4_sanity))) {
       return false;
     }
-    q4.rawAnswer = collected.content;
+    q4.rawAnswer = collected.content.toUpperCase();
     q4.answer = processSegments(collected.content.toUpperCase(), {cores: [], naps: []}, napchartSleeps, message);
   }
   return true;

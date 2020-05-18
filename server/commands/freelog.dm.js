@@ -2,7 +2,9 @@ const config = require("../../config.json");
 const Discord = require('discord.js');
 const _ = require("lodash");
 
-const timeout = 100;
+let currentUsers = [];
+
+const timeout = 500;
 const timeoutMessage = 'Timeout: the process was aborted.';
 const abortMessage = 'Process was aborted.';
 const freelogCMD = 'freelog';
@@ -36,20 +38,26 @@ async function freelog(message, dry=false) {
   // }
   const member = getMember(message);
   if (member) {
+    if (currentUsers.includes(message.author.id)) {
+      return true;
+    }
     let collected;
     let botMessage = await message.author.send('Write your adaptation log here. If you want to abort, wait a few minutes or answer here with the letter `x`.');
+    currentUsers.push(message.author.id);
     try {
       collected = await botMessage.channel.awaitMessages(x => x.author.id === message.author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });
     }
     catch (e) {
       console.log("LOG\t: ", `Timeout waiting for answer from ${message.author.username} during freelog`);
       message.author.send(timeoutMessage);
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
 
     if (collected.first().content.toLowerCase() === "x") {
       console.log("LOG\t: ", `Freelog aborted from ${message.author.username}`);
       message.author.send(abortMessage);
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
 
@@ -69,9 +77,11 @@ async function freelog(message, dry=false) {
 
     console.log("MSG   : ", `Printing user input to #${logsChannelName}`);
     if (dry) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
     getChannel(message, logsChannelName).send(embed);
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   } else {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
   }

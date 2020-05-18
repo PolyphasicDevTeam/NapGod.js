@@ -614,7 +614,7 @@ async function processQ7(message, q7) {
       q7.moods += value[1];
     }
   }
-  q7.estimate = Math.floor((q7.estimate + 2) / 2);
+  q7.estimate = Math.max(7, Math.floor((q7.estimate + 2) / 2));
   return true;
 }
 

@@ -1,10 +1,12 @@
-const { URL } = require("url");
+const url = require("url");
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const ReportModel = require("./../models/report.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
+
+const napchartPathRegex = /^\w{5}$/
 
 
 module.exports = {
@@ -219,8 +221,8 @@ async function set(args, message, dry, author, member, silent) {
 
   function checkIsUrlAndGet(urlPossible) {
     try {
-      let nurl = new URL(urlPossible);
-      if (nurl.host == "napchart.com" || nurl.host == "www.napchart.com") {
+      let nurl = url.parse(urlPossible);
+      if ((nurl.host == "napchart.com" || nurl.host == "www.napchart.com") && napchartPathRegex.test(nurl.pathname.substr(1))) {
 	return { is_nurl: true, nurl: nurl };
       }
     } catch (err) {

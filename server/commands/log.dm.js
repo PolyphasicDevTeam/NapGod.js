@@ -280,7 +280,7 @@ async function log(message, dry=false) {
     }
 
     let segmentTitle = (q4.rawAnswer.charAt(0) == 'X' ? 'Whole day' : q4.rawAnswer);
-    let segmentField = `Difficulty staying awake: ${q8_recap[q8.estimate]}\n`;
+    let segmentField = `Difficulty staying awake: ${q8_recap[q8.estimate - 1]}\n`;
     segmentField += q7.moods ? `\n${q7.moods}\n` : '';
 
     if (!await processQ9(message, '```' + description + segmentTitle + '\n' + segmentField, q9)) {

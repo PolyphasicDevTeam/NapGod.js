@@ -7,6 +7,7 @@ const LogModel = require("./../models/log.model");
 
 const logCMD = 'log';
 const logsChannelName = 'adaptation_logs';
+const flexibleSchedules = ["DUCAMAYL", "SEVAMAYL", "SPAMAYL", "Random"];
 // In seconds
 const timeout = 500;
 const timeoutMessage = 'This session has expired. Please restart from the begining.';
@@ -44,7 +45,7 @@ const q6_message = `At what times did you sleep since your previously logged ses
 \`08:00-09:00,10:00-10:10,15:00-15:20.\`
 Please do not use the AM/PM format.`;
 const q6_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm..';
-const q6_regex = /^([0-9]{2}[.:h]?[0-9]{2}-[0-9]{2}[.:h]?[0-9]{2}[,; ]?)+$/;
+const q6_regex = /^([0-9]{1,2}[.:h]?[0-9]{2}-[0-9]{1,2}[.:h]?[0-9]{2}[,; ]?)+$/;
 const rangesSeparators = /[,; ]/;
 const rangeSeparators = /-/;
 const hourSeparators = /[.:h]/;
@@ -173,7 +174,6 @@ async function log(message, dry=false) {
     displayName = message.author.username;
   }
 
-  message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
 
   let { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData } = await getMemberData(message, displayName);
   if (!schedule) {
@@ -181,11 +181,13 @@ async function log(message, dry=false) {
     return true;
   }
 
-  let napchart = getNapchart(displayName, napchartUrl);
-  if (napchart === null) {
-    message.author.send('Error retrieving napchart data from API.');
+  let napchart = await getNapchart(displayName, napchartUrl);
+  if (napchart == null || napchart.sleeps === "") {
+    message.author.send('Error retrieving napchart data from API, or invalid napchart.');
     return true;
   }
+
+  message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
 
   currentUsers.push(message.author.id);
 
@@ -208,6 +210,14 @@ async function log(message, dry=false) {
       return true;
     }
     currentDay = q3.day;
+  }
+
+  let qReasonChange = {name: "Reason schedule change", sanity: null, answer: null};
+  if (historicLogged && currentDay === 0) {
+    if (!await processQReasonChange(message, qReasonChange)) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+      return true;
+    }
   }
 
   let currentdayLogs = await getLogs({userName: displayName, schedule: schedule, day: currentDay, attempt: attempt});
@@ -277,6 +287,9 @@ async function log(message, dry=false) {
     }
     if (q6.naps) {
       description += `Number of naps: ${q6.naps}\n`;
+    }
+    if (qReasonChange.answer) {
+      description += `Reason for switching schedule: ${qReasonChange.answer}\n`;
     }
 
     let segmentTitle = (q4.rawAnswer.charAt(0) == 'X' ? 'Whole day' : q4.rawAnswer);
@@ -453,6 +466,15 @@ async function processQ3(message, currentDay, q3) {
   return true;
 }
 
+async function processQReasonChange(message, qReasonChange) {
+  let botMessage = await message.author.send("Why did you quit your last schedule?");
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qReasonChange, collected => ""))) {
+    return false;
+  }
+  qReasonChange.answer = collected.content;
+  return true;
+}
+
 function formatMinute(time) {
   if (time % 60 === 0) {
     return '00';
@@ -567,7 +589,7 @@ async function processQ6(message, q6, napchartSleeps, schedule) {
       bestDiff = Math.min(diff, bestDiff);
     }
 
-    if ((schedule === "DUCAMAYL" || schedule === "SEVAMAYL" || schedule === "SPAMAYL") && sleep.diff <= napMaxLength) {
+    if (flexibleSchedules.includes(schedule) && sleep.diff <= napMaxLength) {
       q6.naps++;
     } else {
       q6.oversleepMinutes += Math.min(bestDiff, sleep.diff);
@@ -588,7 +610,7 @@ async function processQ7(message, q7) {
       if (q7.rawAnswer.length > 1) {
         botMessage = await message.author.send(q7_wrong_input);
       } else {
-        q7.estimate = 0;
+        q7.estimate = -99;
       }
     } else {
       q7.estimate = 0;
@@ -614,7 +636,7 @@ async function processQ7(message, q7) {
       q7.moods += value[1];
     }
   }
-  q7.estimate = Math.max(7, Math.floor((q7.estimate + 2) / 2));
+  q7.estimate = Math.min(1, Math.max(7, Math.floor((q7.estimate + 2) / 2)));
   return true;
 }
 
@@ -707,8 +729,10 @@ function check_ranges(ranges) {
   if (!q6_regex.test(ranges))
     return q6_sanity;
   ranges.split(rangesSeparators).forEach(range => range.split(rangeSeparators).forEach((time) => {
-    if (!hourSeparators.test(time))
-      time = time.substr(0, 2) + '-' + time.substr(2);
+    if (!hourSeparators.test(time)) {
+      let hourIndex = time.length === 3 ? 1 : 2;
+      time = time.substr(0, hourIndex) + '-' + time.substr(hourIndex);
+    }
     time = time.split(hourSeparators);
     if (parseInt(time[0]) > 60)
       return `Hours must be between 0 and 23 (got ${parseInt(time[0])})`;
@@ -722,7 +746,8 @@ function extract_ranges(ranges) {
   let out = [];
   ranges.split(rangesSeparators).forEach(range => range.split(rangeSeparators).forEach((time) => {
     if (!hourSeparators.test(time)) {
-      out = out.concat([time.substr(0, 2), time.substr(2)]);
+      let hourIndex = time.length === 3 ? 1 : 2;
+      out = out.concat([time.substr(0, hourIndex), time.substr(hourIndex)]);
     }
     else {
       out = out.concat(time.split(hourSeparators));
@@ -731,32 +756,38 @@ function extract_ranges(ranges) {
   return out.map(x => parseInt(x));
 }
 
-function getNapchart(username, napchartUrl) {
-  let napchart = { url: napchartUrl, sleeps: "" };
-  request.get({
-    url: api_url + 'get?chartid=' + napchart.url.split('/').pop(),
-    json: true,
-    headers: {'User-Agent': 'request'}
-  }, (err, res, data) => {
-    if (err) {
-      console.error(`ERR\t: Fetching napchart times for user ${username}: ${err}`);
-      return null;
-    } else if (res.statusCode != 200) {
-      console.error(`ERR\t: Napchart api returned ${res.statusCode} fetching ${username}'s napchart`);
-      return null;
-    } else {
-      data.chartData.elements.forEach(element => {
-        if (element.color === 'red' && element.lane === 0) {
-          if (napchart.sleeps) {
-            napchart.sleeps += ",";
-          }
-          napchart.sleeps += `${("00" + Math.floor(element.start / 60)).substr(-2)}${("00" + element.start % 60).substr(-2)}-`;
-          napchart.sleeps += `${("00" + Math.floor(element.end / 60)).substr(-2)}${("00" + element.end % 60).substr(-2)}`;
+function getNapchartPromise(napchartUrl) {
+  return new Promise((resolve, reject) => {
+    request({url: api_url + 'get?chartid=' + napchartUrl.split('/').pop(), json: true,
+      headers: {'User-Agent': 'request'}}, (error, response, body) => {
+        if (error) { reject(error); }
+        if (response.statusCode != 200) {
+          reject('Invalid status code <' + response.statusCode + '>');
         }
+        resolve(body);
       });
-    }
   });
-  return napchart;
+}
+
+async function getNapchart(username, napchartUrl) {
+  let napchart = { url: napchartUrl, sleeps: "" };
+  try {
+    const data = await getNapchartPromise(napchartUrl);
+    data.chartData.elements.forEach(element => {
+      if (element.color === 'red' && element.lane === 0) {
+        if (napchart.sleeps) {
+          napchart.sleeps += ",";
+        }
+        napchart.sleeps += `${("00" + Math.floor(element.start / 60)).substr(-2)}${("00" + element.start % 60).substr(-2)}-`;
+        napchart.sleeps += `${("00" + Math.floor(element.end / 60)).substr(-2)}${("00" + element.end % 60).substr(-2)}`;
+      }
+    });
+    return napchart;
+  }
+  catch (error) {
+    console.error(`ERR\t: Fetching ${username}'s napchart: ${error}`);
+    return null;
+  }
 }
 
 
@@ -831,13 +862,15 @@ async function getMemberData(message, displayName) {
     let napchartUrl = res.currentScheduleChart;
     let attempt = res.historicSchedules.filter(s => s.name == schedule).length;
 
-    if (res.historicSchedules && !res.historicSchedules[0].maxLogged || res.historicSchedules[0].maxLogged == -Infinity) {
+    // Retrieves the number of time each schedule was attempted, and fill
+    // maxLogged property using that. Ideally should be done by set only
+    if (res.historicSchedules && (res.historicSchedules.map(hs => hs.maxLogged).every(el => el === 0))) {
       let schedulesAttempted = res.historicSchedules.map(s => s.name);
       for (const scheduleAttempted of schedulesAttempted) {
         let scheduleAttempts = res.historicSchedules.filter(s => s.name == scheduleAttempted);
         for (i = 0; i < scheduleAttempts.length; i++) {
           let scheduleAttemptLogs = await getLogs({userName: displayName, schedule: scheduleAttempted, attempt: i});
-          scheduleAttempts[i].maxLogged = scheduleAttemptLogs.length ? Math.max(...scheduleAttemptLogs.map(l => l.day)) : 0;
+          scheduleAttempts[i].maxLogged = scheduleAttemptLogs.length && Math.max(...scheduleAttemptLogs.map(l => l.day));
         }
       }
     }

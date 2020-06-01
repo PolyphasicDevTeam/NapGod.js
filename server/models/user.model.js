@@ -12,7 +12,7 @@ let schema = {
       name: { type: String, required: true },
       setAt: { type: Date, requried: true },
       adapted: { type: Boolean, required: true },
-      maxLogged: { type: Number, required: true }
+      maxLogged: { type: Number, required: true, default: 0 }
     }
   ],
   historicScheduleCharts: [

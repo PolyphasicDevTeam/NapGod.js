@@ -358,8 +358,8 @@ async function log(message, dry=false) {
   }
 
   let totalSleepTime = 0;
-  qDaySegments.answer.cores.forEach(core => totalSleepTime += napchartSleeps.cores[core - 1].diff);
-  qDaySegments.answer.naps.forEach(nap => totalSleepTime += napchartSleeps.naps[nap - 1].diff);
+  qDaySegments.answer.cores.forEach(core => totalSleepTime += napchartSleeps.cores[core].diff);
+  qDaySegments.answer.naps.forEach(nap => totalSleepTime += napchartSleeps.naps[nap].diff);
 
   if (currentDayLogs) {
     if (currentDayLogs.some(el => {
@@ -643,10 +643,10 @@ async function processqDaySegments(message, napchartSleeps, qDaySegments) {
 function processSegments(str, out, napchartSleeps, message) {
   if (str.charAt(0) == 'X') {
     for (i = 0; i < napchartSleeps.cores.length; i++){
-      out.cores[i] = 1;
+      out.cores.push(i);
     }
     for (i = 0; i < napchartSleeps.naps.length; i++){
-      out.naps[i] = 1;
+      out.naps.push(i);
     }
   }
   else {
@@ -674,7 +674,7 @@ function processSegment(message, napchartSleeps, segment, out) {
         }
         return false;
       }
-      out.cores[i] = 1;
+      out.cores.push(i);
     }
     else {
       if (end >= napchartSleeps.naps.length) {
@@ -683,7 +683,7 @@ function processSegment(message, napchartSleeps, segment, out) {
         }
         return false;
       }
-      out.naps[i] = 1;
+      out.naps.push(i);
     }
   }
   return true;

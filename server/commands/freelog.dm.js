@@ -42,7 +42,20 @@ async function freelog(message, dry=false) {
       return true;
     }
     let collected;
-    let botMessage = await message.author.send('Write your adaptation log here. If you want to abort, wait a few minutes or answer here with the letter `x`.');
+
+
+    let botMessage;
+    try {
+      botMessage = await message.author.send('Write your adaptation log here. If you want to abort, wait a few minutes or answer here with the letter `x`.');
+    }
+    catch (err) {
+      console.warn(`WARN\t: Couldn't send message to ${message.author.username}: ${err}`);
+      if (message.channel.name != logsChannelName) {
+        message.channel.send(`${message.author}: \`+freelog\` cannot work if I cannot DM you.`).catch(console.warn);
+      }
+      return true;
+    }
+
     currentUsers.push(message.author.id);
     try {
       collected = await botMessage.channel.awaitMessages(x => x.author.id === message.author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });

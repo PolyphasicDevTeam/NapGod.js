@@ -219,7 +219,7 @@ async function log(message, dry=false) {
 
   const member = getMember(message);
   if (!member) {
-    message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.').catch(console.error);
+    message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.').catch(console.warn);
     return true;
   }
 
@@ -235,13 +235,13 @@ async function log(message, dry=false) {
 
   let { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData } = await getMemberData(message, displayName);
   if (!schedule) {
-    message.author.send('You must first set a schedule and a napchart before writing a log.').catch(console.error);
+    message.author.send('You must first set a schedule and a napchart before writing a log.').catch(console.warn);
     return true;
   }
 
   let napchart = await getNapchart(displayName, napchartUrl);
   if (napchart == null || napchart.sleeps === "") {
-    message.author.send('Error retrieving napchart data from API, or invalid napchart.').catch(console.error);
+    message.author.send('Error retrieving napchart data from API, or invalid napchart.').catch(console.warn);
     return true;
   }
 
@@ -249,7 +249,10 @@ async function log(message, dry=false) {
     await message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
   }
   catch (err) {
-    console.error(`ERR\t: Couldn't send message to ${displayName}: ${err}`);
+    console.warn(`WARN\t: Couldn't send message to ${displayName}: ${err}`);
+    if (message.channel.name != logsChannelName) {
+      message.channel.send(`${message.author}: \`+log\` cannot work if I cannot DM you.`).catch(console.warn);
+    }
     return true;
   }
   currentUsers.push(message.author.id);

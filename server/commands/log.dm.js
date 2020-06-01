@@ -1,6 +1,7 @@
 const config = require("../../config.json");
 const Discord = require('discord.js');
 const request = require('request');
+const BitSet = require('bitset');
 const client = new Discord.Client();
 const UserModel = require("./../models/user.model");
 const LogModel = require("./../models/log.model");
@@ -713,12 +714,7 @@ async function processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule
   for (const sleep of sleeps.cores.concat(sleeps.naps)) {
     let bestDiff = 9999;
     for (const chartSleep of napchartSleeps.cores.concat(napchartSleeps.naps)) {
-      let diff = 0;
-      diff += sleep.begin < chartSleep.begin ? chartSleep.begin - sleep.begin : 0;
-      diff += sleep.end > chartSleep.end ? sleep.end - chartSleep.end : 0;
-      if (chartSleep.end >= 1440) {
-        diff -= sleep.begin < (chartSleep.end - 1440) ? chartSleep.end - 1440 - sleep.begin : 0;
-      }
+      let diff = sleep.arr.and(chartSleep.arr.not()).cardinality();
       bestDiff = Math.min(diff, bestDiff);
     }
 
@@ -843,8 +839,21 @@ function minutify_sleeps(sleeps) {
       end: sleeps[i + 2] * 60 + sleeps[i + 3]
     };
     range.diff = range.end - range.begin;
+    if (range.diff >= 1440) {
+      return null;
+    }
+
+    range.arr = new BitSet;
+    if (range.end >= 1440) {
+      range.arr.setRange(range.begin, 1439);
+      range.arr.setRange(0, range.end - 1440);
+    }
+    else {
+      range.arr.setRange(range.begin, range.end);
+    }
+
     const overlap = el => range.begin < el.end && range.begin > el.begin;
-    if (range.diff <= 0 || range.diff >= 1440 || out.naps.some(overlap) || out.cores.some(overlap)) {
+    if (range.diff <= 0 || out.naps.some(overlap) || out.cores.some(overlap)) {
       return null;
     }
     if (range.diff <= napMaxLength) {

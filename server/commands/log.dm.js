@@ -219,7 +219,7 @@ async function log(message, dry=false) {
 
   const member = getMember(message);
   if (!member) {
-    message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
+    message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.').catch(console.error);
     return true;
   }
 
@@ -235,18 +235,23 @@ async function log(message, dry=false) {
 
   let { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData } = await getMemberData(message, displayName);
   if (!schedule) {
-    message.author.send('You must first set a schedule and a napchart before writing a log.');
+    message.author.send('You must first set a schedule and a napchart before writing a log.').catch(console.error);
     return true;
   }
 
   let napchart = await getNapchart(displayName, napchartUrl);
   if (napchart == null || napchart.sleeps === "") {
-    message.author.send('Error retrieving napchart data from API, or invalid napchart.');
+    message.author.send('Error retrieving napchart data from API, or invalid napchart.').catch(console.error);
     return true;
   }
 
-  message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
-
+  try {
+    await message.author.send('In order to generate your adaptation log, the bot needs to have a dozen questions answered. Please answer the following ones.');
+  }
+  catch (err) {
+    console.error(`ERR\t: Couldn't send message to ${displayName}: ${err}`);
+    return true;
+  }
   currentUsers.push(message.author.id);
 
   let qUserName = {name: qUserName_name, sanity: qUserName_sanity, check: -1};

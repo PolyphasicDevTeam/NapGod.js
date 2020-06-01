@@ -940,7 +940,7 @@ function processTimeRoles(message, member, currentScheduleMaxLogged, maxConsecut
   let threeMonthsRole = getGuild(message).roles.find(role => role.name == "3 Months Poly");
   let sixMonthsRole = getGuild(message).roles.find(role => role.name == "6 Months Poly");
   let oneYearRole = getGuild(message).roles.find(role =>  role.name == "1+ Year Poly");
-  let loggerRole = getGuild(message).roles.find(role => role.name == "Logger");
+  let loggerRole = getGuild(message).roles.find(role => role.name == "Experienced Logger");
   let masterLoggerRole = getGuild(message).roles.find(role => role.name == "Master Logger");
 
   if (maxConsecutive > 30 && !member.roles.has(loggerRole.id)) {

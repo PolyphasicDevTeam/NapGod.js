@@ -19,8 +19,9 @@ client.on("message", message => {
 	//Ignore other bots and messages that do not start with prefix
 	if (message.author.bot) return;
 	if (message.channel.name === logsChannelName) {
-    message.author.send(message.content);
-		message.author.send('You need to write the logs through me. Write `+log` in this direct chat to proceed or `+loghelp` for help');
+    message.author.send(message.content)
+      .then(message.author.send('You need to write the logs through me. Write `+log` in this direct chat to proceed or `+loghelp` for help').catch(console.error))
+      .catch(err => console.warn(`ERR\t: Sending message to ${message.author.username}: ${err}`));
 		message.delete({
 			reason: 'All adaptation logs must be made through DMing NapGod. See +loghelp for details',
 		});

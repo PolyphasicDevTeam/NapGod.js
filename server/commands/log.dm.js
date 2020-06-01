@@ -713,6 +713,9 @@ async function processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule
       let diff = 0;
       diff += sleep.begin < chartSleep.begin ? chartSleep.begin - sleep.begin : 0;
       diff += sleep.end > chartSleep.end ? sleep.end - chartSleep.end : 0;
+      if (chartSleep.end >= 1440) {
+        diff -= sleep.begin < (chartSleep.end - 1440) ? chartSleep.end - 1440 - sleep.begin : 0;
+      }
       bestDiff = Math.min(diff, bestDiff);
     }
 
@@ -838,7 +841,7 @@ function minutify_sleeps(sleeps) {
     };
     range.diff = range.end - range.begin;
     const overlap = el => range.begin < el.end && range.begin > el.begin;
-    if (range.diff <= 0 || out.naps.some(overlap) || out.cores.some(overlap)) {
+    if (range.diff <= 0 || range.diff >= 1440 || out.naps.some(overlap) || out.cores.some(overlap)) {
       return null;
     }
     if (range.diff <= napMaxLength) {

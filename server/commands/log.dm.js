@@ -8,6 +8,7 @@ const LogModel = require("./../models/log.model");
 const logCMD = 'log';
 const logsChannelName = 'adaptation_logs';
 const flexibleSchedules = ["DUCAMAYL", "SEVAMAYL", "SPAMAYL", "Random"];
+
 // In seconds
 const timeout = 500;
 const timeoutMessage = 'This session has expired. Please restart from the begining.';
@@ -17,41 +18,98 @@ const napMaxLength = 45;
 
 let currentUsers = [];
 
-const q1_name = 'user_check';
-const q1_message = 'The following information was pulled from the database, is it correct? y = yes, n = no';
-const q1_sanity = 'Please answer with either y or n.';
+const qUserName_name = 'user check';
+const qUserName_message = 'The following information was pulled from the database, is it correct? `y` = yes, `n` = no';
+const qUserName_sanity = 'Please answer with either `y` or `n`.';
 
-const q2_name = 'previous_day';
-const q2_message = 'Do you want to log about a previous day? y = yes, n = no';
-const q2_sanity = 'Please answer with either y or n.';
-const q2_n = 'Please contact a moderator and tell them what information in the previous question was incorrect.';
+// Schedule First Log
+const qSFLagreement_message = 'Hello! Are you OK with answering a few extra questions since this is your first time logging on this schedule? `y` = yes, `n` = no';
+const qSFLagreement_sanity = 'Please answer with either `y` or `n`.';
+const qSFLagreement_regex = /^[yYnN]$/;
 
-const q3_name = 'day';
-const q3_message = 'Which day do you want to log about? Please write out the number.';
-const q3_sanity = 'Please write a valid integer.';
-const q3_n = 'Please pick a day before the default one, {0}. If the day you are intending to log about is later than the day displayed please contact a moderator.';
+const qSFLmonoSleep_message = "How much sleep do you need when you are sleeping monophasically (in hours)? Typing `?` = I don't know.";
+const qSFLmonoSleep_sanity = 'Please simply answer with a reasonable number of hours, without any other character, or `?`.';
+const qSFLmonoSleep_regex = /^\?|1[0-2]|[5-9]$/;
 
-const q4_name = 'day segments';
-const q4_message = 'Which cores and naps to you want to log about? If logging about the whole day, simply write X. Otherwise, you can write `C1-3` for your first 3 cores, or `C1 C2` for your first 2 cores. The naps work the same, but with an N instead of a C. Example: `C1-2 N1 N2`';
-const q4_sanity = 'Please answer following the instructions above';
-const q4_regex = /^(X|([CN][1-9](-[1-9])?[ ,])*([CN][1-9](-[1-9])?))$/;
+const qSFLexperience_message = 'Are you an experienced polyphasic sleeper? `y` = yes, `n` = no';
+const qSFLexperience_sanity = 'Please answer with either `y` or `n`.';
+const qSFLexperience_regex = /^[yYnN]$/;
 
-const q5_name = 'adhere';
-const q5_message = 'Did you adhere to your scheduled sleep times perfectly? y = yes, n = no.';
-const q5_sanity = 'Please answer with either y or n.';
+const qSFLpreviousFeeling_message = "How good did you feel on your previous schedule on a scale from 1 to 7? Typing `?` = I don't know";
+const qSFLpreviousFeeling_sanity = 'Please answer with either `?` or a number from 1 to 7.';
+const qSFLpreviousFeeling_regex = /^\?|[1-7]$/;
 
-const q6_name = 'adhere';
-const q6_message = `At what times did you sleep since your previously logged session? For example, if your last logged nap was at 07:00-07:20, and you slept at 08:00-09:00, 10:00-10:10 and 15:00-15:20 since then, write out all sleeps (even oversleeps) and separate them with the “,”-sign, like this:
+const qSFLsleepDep_message = 'Are you sleep deprived right now? `y` = yes, `n` = no';
+const qSFLsleepDep_sanity = 'Please answer with either `y` or `n`.';
+const qSFLsleepDep_regex = /^[yYnN]$/;
+
+const qSFLpreviousSched_message = 'Was your previous schedule monophasic sleep? `y` = yes, `n` = no';
+const qSFLpreviousSched_sanity = 'Please answer with either `y` or `n`.';
+const qSFLpreviousSched_regex = /^[yYnN]$/;
+
+const qSFLmonoDep_message = `
+Which of the following scenarios describes your current attempt the best?
+a/ I started by sleeping less than I need, but still got some sleep.
+b/ I started by purposefully skipping my whole core.
+c/ I started by napping every few hours before switching to my current schedule.
+d/ I would have to catch up on sleep every weekend/I would have different rhythms on the weekend vs weekdays
+e/ I don't know"
+`;
+const qSFLmonoDep_sanity = 'Please answer with either `e` or a combination of `abcd`.';
+const qSFLmonoDep_regex = /^e|[a-d]+$/;
+
+const qSFLpolyDep_message = `
+Which of the following scenarios describes your current attempt the best?
+a/ I started by purposefully skipping my whole core.
+b/ I started by napping every few hours before switching to my current schedule.
+c/ Compared to my previous polyphasic sleep schedule I reduced my total sleep time.
+d/ Compared to my previous polyphasic sleep schedule I increased my total sleep time.
+e/ I don't know"
+`;
+const qSFLpolyDep_sanity = 'Please answer with either `e` or a combination of `abcd`.';
+const qSFLpolyDep_regex = /^e|[a-d]+$/;
+
+const qSFLpolyNDep_message = `
+Which of the following scenarios describes your current attempt the best?
+a/ Compared to my previous polyphasic sleep schedule I increased my total sleep time. I am doing a reverse gradual adaptation.
+b/ Compared to my previous polyphasic sleep schedule I reduced my total sleep time. I am doing a gradual adaptation.
+c/ Compared to my previous polyphasic sleep schedule I reduced my total sleep time. I am doing a rhythmic preservation.
+`;
+const qSFLpolyNDep_sanity = 'Please answer with `a` or `b` or `c`.';
+const qSFLpolyNDep_regex = /^[a-c]$/;
+// --
+
+const qPreviousDay_name = 'previous_day';
+const qPreviousDay_message = 'Do you want to log about a previous day? `y` = yes, `n` = no';
+const qPreviousDay_sanity = 'Please answer with either `y` or `n`.';
+const qPreviousDay_n = 'Please contact a moderator and tell them what information in the previous question was incorrect.';
+
+const qDay_name = 'day';
+const qDay_message = 'Which day do you want to log about? Please write out the number.';
+const qDay_sanity = 'Please write a valid integer.';
+const qDay_n = 'Please pick a day before the default one, {0}. If the day you are intending to log about is later than the day displayed please contact a moderator.';
+
+const qDaySegments_name = 'day segments';
+const qDaySegments_message = 'Which cores and naps to you want to log about? If logging about the whole day, simply write X. Otherwise, you can write `C1-3` for your first 3 cores, or `C1 C2` for your first 2 cores. The naps work the same, but with an N instead of a C. Example: `C1-2 N1 N2`';
+const qDaySegments_sanity = 'Please answer following the instructions above';
+const qDaySegments_regex = /^(X|([CN][1-9](-[1-9])?[ ,])*([CN][1-9](-[1-9])?))$/;
+
+const qAdhere_name = 'adhere';
+const qAdhere_message = 'Did you adhere to your scheduled sleep times perfectly? `y` = yes, `n` = no.';
+const qAdhere_sanity = 'Please answer with either `y` or `n`.';
+
+const qSleepTimes_name = 'sleep times';
+const qSleepTimes_message = `At what times did you sleep since your previously logged session? For example, if your last logged nap was at 07:00-07:20, and you slept at 08:00-09:00, 10:00-10:10 and 15:00-15:20 since then, write out all sleeps (even oversleeps) and separate them with the “,”-sign, like this:
 \`08:00-09:00,10:00-10:10,15:00-15:20.\`
 Please do not use the AM/PM format.`;
-const q6_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm..';
-const q6_regex = /^([0-9]{1,2}[.:h]?[0-9]{2}-[0-9]{1,2}[.:h]?[0-9]{2}[,; ]?)+$/;
+const qSleepTimes_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm..';
+const qSleepTimes_regex = /^([0-9]{1,2}[.:h]?[0-9]{2}-[0-9]{1,2}[.:h]?[0-9]{2}[,; ]?)+$/;
 const rangesSeparators = /[,; ]/;
 const rangeSeparators = /-/;
 const hourSeparators = /[.:h]/;
 
-const q7_name = "estimate";
-const q7_message = `
+const qEstimate_name = "estimate";
+const qEstimate_message = `
 Write out the letters corresponding to what you experienced since your previous log. For example, ACEG. If you don't write a particular letter it is assumed that the opposite happened.
 A = hard to fall asleep
 B = neither easy nor hard to fall asleep
@@ -73,12 +131,12 @@ Q = deviated from normal sleep hygiene procedures (dark period, fasting, routine
 R = could not properly accomplish desired activities
 S = switched to alternate activities to stay awake
 X = none of the above`;
-const q7_sanity = "Please stick to the letters above.";
-const q7_regex = /^[A-SX]+$/;
-const q7_wrong_input = "Only write X if no other letters match your situation.";
+const qEstimate_sanity = "Please stick to the letters above.";
+const qEstimate_regex = /^[A-SX]+$/;
+const qEstimate_wrong_input = "Only write X if no other letters match your situation.";
 
 // Letter : [Modifier, Statement, Displayed
-const q7_statements = {
+const qEstimate_statements = {
   "A": [0, "It was hard to fall asleep.", true],
   "B": [0, "A - middle ground", false],
   "C": [3, "I woke up groggy with sleep inertia.", true],
@@ -101,7 +159,7 @@ const q7_statements = {
 };
 
 // Letter : [Modifier, Statement, Middle Ground
-const q7_negations = {
+const qEstimate_negations = {
   "A": [0, "It was easy to fall asleep.", "B"],
   "C": [0, "I woke up refreshed without sleep inertia.", "D"],
   "F": [0, "I sadly did not remember any dream."],
@@ -110,10 +168,10 @@ const q7_negations = {
   "R": [0, "I properly accomplished desired activities."],
 };
 
-const q8_name = 'stay_awake';
-const q8_message = 'How hard was it to stay awake on a scale from 1 to 7, where 1 is really easy and 7 is really hard? Based on your answers so far it has been approximated that your difficulty staying awake was {0}';
-const q8_sanity = 'Only write a number between 1 and 7.';
-const q8_recap = [
+const qStayAwake_name = 'stay awake';
+const qStayAwake_message = 'How hard was it to stay awake on a scale from 1 to 7, where 1 is really easy and 7 is really hard? Based on your answers so far it has been approximated that your difficulty staying awake was {0}';
+const qStayAwake_sanity = 'Only write a number between 1 and 7.';
+const qStayAwake_recap = [
   'It was very easy to stay awake',
   'It was easy to stay awake',
   'It was somewhat easy to stay awake',
@@ -123,11 +181,11 @@ const q8_recap = [
   'It was very hard to stay awake'
 ];
 
-const q9_name = 'recap';
-const q9_message = `If you have anything else to add please write it here, otherwise write “X”. The current message looks like this:\n`;
+const qRecap_name = 'recap';
+const qRecap_message = `If you have anything else to add please write it here, otherwise write “X”. The current message looks like this:\n`;
 
-const q10_name = 'sleep_tracker';
-const q10_message = 'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.';
+const qSleepTracker_name = 'sleep tracker';
+const qSleepTracker_message = 'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.';
 
 const end = 'Thank you!';
 
@@ -191,54 +249,115 @@ async function log(message, dry=false) {
 
   currentUsers.push(message.author.id);
 
-  let q1 = {name: q1_name, sanity: q1_sanity, check: -1};
-  if (!await processQ1(message, q1, schedule, napchart, currentDay, dateSet)) {
+  let qUserName = {name: qUserName_name, sanity: qUserName_sanity, check: -1};
+  if (!await processQUserName(message, qUserName, schedule, napchart, currentDay, dateSet)) {
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
-  if (!q1.check) {
-    let q2 = {name: q2_name, sanity: q2_sanity, check: -1};
-    if (!await processQ2(message, q2)) {
+  if (!qUserName.check) {
+    let qPreviousDay = {name: qPreviousDay_name, sanity: qPreviousDay_sanity, check: -1};
+    if (!await processqPreviousDay(message, qPreviousDay)) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
 
-    let q3 = {name: q3_name, sanity: q3_sanity, day: -1};
-    if (!await processQ3(message, currentDay, q3)) {
+    let qDay = {name: qDay_name, sanity: qDay_sanity, day: -1};
+    if (!await processqDay(message, currentDay, qDay)) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
-    currentDay = q3.day;
+    currentDay = qDay.day;
   }
 
-  let qReasonChange = {name: "Reason schedule change", sanity: null, answer: null};
-  if (historicLogged && currentDay === 0) {
-    if (!await processQReasonChange(message, qReasonChange)) {
+  let currentScheduleLogs = await getLogs(true, {userName: displayName, schedule: schedule, attempt: attempt});
+  let currentDayLogs = currentScheduleLogs ? currentScheduleLogs.entries.filter(e => e.day === currentDay) : null;
+
+  let qScheduleFirstLog = {};
+  if (!currentDayLogs && currentDay == 0) {
+    qScheduleFirstLog.agreement = {name: 'sfl: agreement', message: qSFLagreement_message, parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
+    if (!await processqGeneric(message, qScheduleFirstLog.agreement)) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+      return true;
+    }
+
+    if (qScheduleFirstLog.agreement.answer === "y") {
+      qScheduleFirstLog.monoSleep = {name: 'sfl: mono sleep', message: qSFLmonoSleep_message, parse: c => qSFLmonoSleep_regex.test(c) ? "" : qSFLmonoSleep_sanity, answer: ""};
+      if (!await processqGeneric(message, qScheduleFirstLog.monoSleep)) {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+        return true;
+      }
+      qScheduleFirstLog.experience = {name: 'sfl: experience', message: qSFLexperience_message, parse: c => qSFLexperience_regex.test(c) ? "" : qSFLexperience_sanity, answer: ""};
+      if (!await processqGeneric(message, qScheduleFirstLog.experience)) {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+        return true;
+      }
+      qScheduleFirstLog.previousFeeling = {name: 'sfl: previous feeling', message: qSFLpreviousFeeling_message, parse: c => qSFLpreviousFeeling_regex.test(c) ? "" : qSFLpreviousFeeling_sanity, answer: ""};
+      if (!await processqGeneric(message, qScheduleFirstLog.previousFeeling)) {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+        return true;
+      }
+      qScheduleFirstLog.sleepDep = {name: 'sfl: sleep dep', message: qSFLsleepDep_message, parse: c => qSFLsleepDep_regex.test(c) ? "" : qSFLsleepDep_sanity, answer: ""};
+      if (!await processqGeneric(message, qScheduleFirstLog.sleepDep)) {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+        return true;
+      }
+      qScheduleFirstLog.previousSched = {name: 'sfl: previous sched', message: qSFLpreviousSched_message, parse: c => qSFLpreviousSched_regex.test(c) ? "" : qSFLpreviousSched_sanity, answer: ""};
+      if (!await processqGeneric(message, qScheduleFirstLog.previousSched)) {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+        return true;
+      }
+      if (qScheduleFirstLog.sleepDep.answer === 'y') {
+        if (qScheduleFirstLog.previousSched.answer === 'y') {
+          qScheduleFirstLog.monoDep = {name: 'sfl: mono dep', message: qSFLmonoDep_message, parse: c => qSFLmonoDep_regex.test(c) ? "" : qSFLmonoDep_sanity, answer: ""};
+          if (!await processqGeneric(message, qScheduleFirstLog.monoDep)) {
+            currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+            return true;
+          }
+        }
+        else {
+          qScheduleFirstLog.polyDep = {name: 'sfl: poly dep', message: qSFLpolyDep_message, parse: c => qSFLpolyDep_regex.test(c) ? "" : qSFLpolyDep_sanity, answer: ""};
+          if (!await processqGeneric(message, qScheduleFirstLog.polyDep)) {
+            currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+            return true;
+          }
+        }
+      }
+      else if (qScheduleFirstLog.previousSched.answer === 'n') {
+        qScheduleFirstLog.polyNDep = {name: 'sfl: poly no dep', message: qSFLpolyNDep_message, parse: c => qSFLpolyNDep_regex.test(c) ? "" : qSFLpolyNDep_sanity, answer: ""};
+        if (!await processqGeneric(message, qScheduleFirstLog.polyNDep)) {
+          currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+          return true;
+        }
+      }
+    }
+  }
+
+  let qReasonChange = {name: "Reason schedule change", message: "Why did you choose to change your schedule?", parse: c => "", answer: null};
+  if (historicLogged && currentDay === 0 && !currentDayLogs) {
+    if (!await processqGeneric(message, qReasonChange)) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
   }
-
-  let currentdayLogs = await getLogs({userName: displayName, schedule: schedule, day: currentDay, attempt: attempt});
 
   const napchartSleeps = minutify_sleeps(extract_ranges(napchart.sleeps));
 
-  let q4 = {name: q4_name, sanity: q4_sanity, answer: null, rawAnswer: ''};
-  if (!await processQ4(message, napchartSleeps, q4)) {
+  let qDaySegments = {name: qDaySegments_name, sanity: qDaySegments_sanity, answer: null, rawAnswer: ''};
+  if (!await processqDaySegments(message, napchartSleeps, qDaySegments)) {
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
   let totalSleepTime = 0;
-  q4.answer.cores.forEach(core => totalSleepTime += napchartSleeps.cores[core - 1].diff);
-  q4.answer.naps.forEach(nap => totalSleepTime += napchartSleeps.naps[nap - 1].diff);
+  qDaySegments.answer.cores.forEach(core => totalSleepTime += napchartSleeps.cores[core - 1].diff);
+  qDaySegments.answer.naps.forEach(nap => totalSleepTime += napchartSleeps.naps[nap - 1].diff);
 
-  if (currentdayLogs) {
-    if (currentdayLogs.some(el => {
+  if (currentDayLogs) {
+    if (currentDayLogs.some(el => {
       let daySegments = processSegments(el.daySegments, {cores: [], naps: []}, napchartSleeps, null);
-      if (daySegments.cores.some(c => q4.answer.cores.includes(c)) || daySegments.naps.some(n => q4.answer.naps.includes(n))) {
-        message.author.send(`You've already logged about ${el.daySegments}. Try again from the begining.`);
+      if (daySegments.cores.some(c => qDaySegments.answer.cores.includes(c)) || daySegments.naps.some(n => qDaySegments.answer.naps.includes(n))) {
+        message.author.send(`You've already logged about ${el.daySegments === 'X' ? 'the whole day' : el.daySegments}. Try again from the begining.`);
         return true;
       }
       return false;
@@ -248,61 +367,61 @@ async function log(message, dry=false) {
     }
   }
 
-  let q5 = {name: q5_name, sanity: q5_sanity, answer: -1};
-  if (!await processQ5(message, q5)) {
+  let qAdhere = {name: qAdhere_name, sanity: qAdhere_sanity, answer: -1};
+  if (!await processqAdhere(message, qAdhere)) {
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
-  let q6 = {name: q6_name, sanity: q6_sanity, naps: 0, oversleepMinutes: 0};
-  if (!q5.answer) {
-    totalSleepTime = await processQ6(message, q6, napchartSleeps);
+  let qSleepTimes = {name: qSleepTimes_name, sanity: qSleepTimes_sanity, naps: 0, oversleepMinutes: 0};
+  if (!qAdhere.answer) {
+    totalSleepTime = await processqSleepTimes(message, qSleepTimes, napchartSleeps);
     if (totalSleepTime === false) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
   }
 
-  let q7 = {name: q7_name, sanity: q7_sanity, estimate: -1, rawAnswer: "", moods: ""};
-  if (!await processQ7(message, q7)) {
+  let qEstimate = {name: qEstimate_name, sanity: qEstimate_sanity, estimate: -1, rawAnswer: "", moods: ""};
+  if (!await processqEstimate(message, qEstimate)) {
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
-  let q8 = {name: q8_name, sanity: q8_sanity, estimate: -1};
-  if (!await processQ8(message, q7, q8)) {
+  let qStayAwake = {name: qStayAwake_name, sanity: qStayAwake_sanity, estimate: -1};
+  if (!await processqStayAwake(message, qEstimate, qStayAwake)) {
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
   //TODO: setcompare
-  let q9 = {name: q9_name, answer: ""};
-  let q10 = {name: q10_name, answer: "", attachment: null};
+  let qRecap = {name: qRecap_name, answer: ""};
+  let qSleepTracker = {name: qSleepTracker_name, answer: "", attachment: null};
 
   // Formatting log
   let get_recap = async function() {
     let description = String.format(descriptionTemplate, `${Math.floor(totalSleepTime / 60)} hours ${totalSleepTime % 60} minutes`);
-    if (q6.oversleepMinutes) {
-      description += `Time oversleeping: ${Math.floor(q6.oversleepMinutes / 60)} hours ${q6.oversleepMinutes % 60} minutes\n`;
+    if (qSleepTimes.oversleepMinutes) {
+      description += `Time oversleeping: ${Math.floor(qSleepTimes.oversleepMinutes / 60)} hours ${qSleepTimes.oversleepMinutes % 60} minutes\n`;
     }
-    if (q6.naps) {
-      description += `Number of naps: ${q6.naps}\n`;
+    if (qSleepTimes.naps) {
+      description += `Number of naps: ${qSleepTimes.naps}\n`;
     }
     if (qReasonChange.answer) {
       description += `Reason for switching schedule: ${qReasonChange.answer}\n`;
     }
 
-    let segmentTitle = (q4.rawAnswer.charAt(0) == 'X' ? 'Whole day' : q4.rawAnswer);
-    let segmentField = `Difficulty staying awake: ${q8_recap[q8.estimate - 1]}\n`;
-    segmentField += q7.moods ? `\n${q7.moods}\n` : '';
+    let segmentTitle = (qDaySegments.rawAnswer.charAt(0) == 'X' ? 'Whole day' : qDaySegments.rawAnswer);
+    let segmentField = `Difficulty staying awake: ${qStayAwake_recap[qStayAwake.estimate - 1]}\n`;
+    segmentField += qEstimate.moods ? `\n${qEstimate.moods}\n` : '';
 
-    if (!await processQ9(message, '```' + description + segmentTitle + '\n' + segmentField, q9)) {
+    if (!await processqRecap(message, '```' + description + segmentTitle + '\n' + segmentField, qRecap)) {
       return { description: null, segmentTitle: null, segmentField: null };
     }
-    segmentField += q9.answer ? `\n${q9.answer}\n` : '';
+    segmentField += qRecap.answer ? `\n${qRecap.answer}\n` : '';
 
     if (hasRole(member, 'Sleep Tracker')) {
-      if (!await processQ10(message, q10)) {
+      if (!await processqSleepTracker(message, qSleepTracker)) {
         return { description: null, segmentTitle: null, segmentField: null };
       }
     }
@@ -316,7 +435,7 @@ async function log(message, dry=false) {
 
   // Sending / editing message in logging channel
   let logsChannel = getChannel(message, logsChannelName);
-  if (currentdayLogs && currentdayLogs.length > 0) {
+  if (currentDayLogs && currentDayLogs.length > 0) {
     // Editing message
     let foundLog;
     let logMessages;
@@ -325,10 +444,10 @@ async function log(message, dry=false) {
       foundLog = logMessages.filter(msg => msg.embeds.length > 0 && msg.embeds[0].author.name == displayName
         && msg.embeds[0].title == String.format(titleTemplate, schedule, currentDay)).first();
       if (foundLog) {
-        currentdayLogs.forEach(currentdayLog => {
+        currentDayLogs.forEach(currentdayLog => {
           totalSleepTime += currentdayLog.sleepTime;
-          q6.oversleepMinutes += currentdayLog.oversleepTime ? currentdayLog.oversleepTime : 0;
-          q6.naps += currentdayLog.napsNumber ? currentdayLog.napsNumber : 0;
+          qSleepTimes.oversleepMinutes += currentdayLog.oversleepTime ? currentdayLog.oversleepTime : 0;
+          qSleepTimes.naps += currentdayLog.napsNumber ? currentdayLog.napsNumber : 0;
         });
         const { description, segmentTitle, segmentField } = await get_recap();
         if (!description) {
@@ -342,8 +461,8 @@ async function log(message, dry=false) {
           .setTimestamp();
 
         foundLog.edit(embed);
-        if (q10.attachment) {
-          logsChannel.send(`${displayName} EEG ${schedule} - ${q4.rawAnswer.charAt(0) == 'X' ? '' : q4.rawAnswer}\n${q10.answer} of day ${currentDay}`, q10.attachment);
+        if (qSleepTracker.attachment) {
+          logsChannel.send(`${displayName} EEG ${schedule} - ${qDaySegments.rawAnswer.charAt(0) == 'X' ? '' : qDaySegments.rawAnswer}\n${qSleepTracker.answer} of day ${currentDay}`, qSleepTracker.attachment);
         }
       }
     } while (!foundLog && logMessages.length > 0)
@@ -371,45 +490,48 @@ async function log(message, dry=false) {
       .addField(segmentTitle, segmentField)
       .setTimestamp();
     logsChannel.send(embed);
-    if (q10.attachment) {
-      logsChannel.send(`${displayName} EEG ${schedule} - ${q4.rawAnswer.charAt(0) == 'X' ? '' : q4.rawAnswer}\n${q10.answer} of day ${currentDay}`, q10.attachment);
+    if (qSleepTracker.attachment) {
+      logsChannel.send(`${displayName} EEG ${schedule} - ${qDaySegments.rawAnswer.charAt(0) == 'X' ? '' : qDaySegments.rawAnswer}\n${qSleepTracker.answer} of day ${currentDay}`, qSleepTracker.attachment);
     }
   }
 
-  // Saving the log
-  message.author.send(end);
-  logInstance = buildLogInstance(displayName, schedule, attempt, currentDay, q4.rawAnswer,
-    q7.rawAnswer, q8.estimate,
-    totalSleepTime, q6.oversleepMinutes, q6.naps,
-    q9.answer ? q9.answer + q10.answer : q10.answer, q10.attachment ? q10.attachment.file : null);
+  try {
+    // Saving the log
+    message.author.send(end);
+    logInstance = buildLogInstance(displayName, schedule, attempt, qReasonChange.answer, qScheduleFirstLog, currentDay, qDaySegments.rawAnswer,
+      qEstimate.rawAnswer, qStayAwake.estimate,
+      totalSleepTime, qSleepTimes.oversleepMinutes, qSleepTimes.naps,
+      qRecap.answer ? qRecap.answer + qSleepTracker.answer : qSleepTracker.answer, qSleepTracker.attachment ? qSleepTracker.attachment.file : null);
 
-  if (!await saveLogInstance(logInstance, message.author.id)) {
-    message.author.send("An error occurred while saving the log");
-    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-    return true;
-  }
+    await saveLogInstance(logInstance, message.author.id);
 
-  // Updating consecutive logging of schedule
-  let currentScheduleLogs = await getLogs({userName: displayName, schedule: schedule, attempt: attempt});
-  let currentScheduleLoggedDays = currentScheduleLogs.map(o => o.day);
-  const longestSequence = (arr) => {
-    const numbers = new Set(arr), counts = {};
-    var max = 0;
-    for (const num of numbers.values()) {
-      let next = num + 1;
-      numbers.delete(num);
-      while (numbers.has(next)) { numbers.delete(next++); }
-      if (counts[next]) { next += counts[next]; }
-      max = Math.max(counts[num] = next - num, max);
+    // Updating consecutive logging of schedule
+    currentScheduleLogs = await getLogs(true, {userName: displayName, schedule: schedule, attempt: attempt});
+    let currentScheduleLoggedDays = currentScheduleLogs.entries.map(e => e.day);
+    const longestSequence = (arr) => {
+      const numbers = new Set(arr), counts = {};
+      var max = 0;
+      for (const num of numbers.values()) {
+        let next = num + 1;
+        numbers.delete(num);
+        while (numbers.has(next)) { numbers.delete(next++); }
+        if (counts[next]) { next += counts[next]; }
+        max = Math.max(counts[num] = next - num, max);
+      }
+      return max;
     }
-    return max;
+
+    memberData.currentScheduleMaxLogged = Math.max(...currentScheduleLoggedDays) + 1;
+    memberData.save();
+
+    let userLogs = await getLogs(false, {userName: displayName});
+    let totalDailyLogs = userLogs.reduce((acc, logs) => acc + new Set(logs.entries.map(e => e.day)).size, 0);
+    processTimeRoles(message, member, memberData.currentScheduleMaxLogged,
+      longestSequence(currentScheduleLoggedDays), historicLogged, totalDailyLogs);
   }
-
-  memberData.currentScheduleMaxLogged = Math.max(...currentScheduleLoggedDays);
-  memberData.save();
-
-  processTimeRoles(message, member, memberData.currentScheduleMaxLogged,
-    longestSequence(currentScheduleLoggedDays), historicLogged);
+  catch (err) {
+    console.warn("WARN:\t", "Something went wrong: ", err);
+  }
   currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   return true;
 }
@@ -419,59 +541,59 @@ async function log(message, dry=false) {
 // =============================
 
 
-async function processQ1(message, q1, schedule, napchart, day, dateSet) {
-  let botMessage = await message.author.send(q1_message + "\n" +
+async function processQUserName(message, qUserName, schedule, napchart, day, dateSet) {
+  let botMessage = await message.author.send(qUserName_message + "\n" +
     "- Schedule: " + schedule + "\n" +
     "- Napchart: " + napchart.url + "\n" +
     "- Day: " + day + "\n" +
     "- Date set: " + dateSet + "\n");
 
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q1,
-    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q1_sanity ))) {
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qUserName,
+    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : qUserName_sanity ))) {
     return false;
   }
-  q1.check = collected.content.toLowerCase() === "y";
+  qUserName.check = collected.content.toLowerCase() === "y";
   return true;
 }
 
-async function processQ2(message, q2) {
-  let botMessage = await message.author.send(q2_message);
+async function processqPreviousDay(message, qPreviousDay) {
+  let botMessage = await message.author.send(qPreviousDay_message);
 
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q2,
-    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q2_sanity ))) {
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qPreviousDay,
+    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : qPreviousDay_sanity ))) {
     return false;
   }
-  q2.check = collected.content.toLowerCase() === "y";
-  if (!q2.check) {
-    message.author.send(q2_n);
+  qPreviousDay.check = collected.content.toLowerCase() === "y";
+  if (!qPreviousDay.check) {
+    message.author.send(qPreviousDay_n);
     return false;
   }
   return true;
 }
 
-async function processQ3(message, currentDay, q3) {
-  let botMessage = await message.author.send(q3_message);
-  while (q3.day === -1) {
-    if (!(collected = await collectFromUser(message.author, botMessage.channel, q3,
-      collected => (/^(0|[1-9]\d*)$/.test(collected.content)) ? "" : q3_sanity))) {
+async function processqDay(message, currentDay, qDay) {
+  let botMessage = await message.author.send(qDay_message);
+  while (qDay.day === -1) {
+    if (!(collected = await collectFromUser(message.author, botMessage.channel, qDay,
+      collected => (/^(0|[1-9]\d*)$/.test(collected.content)) ? "" : qDay_sanity))) {
       return false;
     }
     if (collected.content > currentDay) {
-      botMessage = await message.author.send(String.format(q3_n, currentDay));
+      botMessage = await message.author.send(String.format(qDay_n, currentDay));
     }
     else {
-      q3.day = collected.content;
+      qDay.day = collected.content;
     }
   }
   return true;
 }
 
-async function processQReasonChange(message, qReasonChange) {
-  let botMessage = await message.author.send("Why did you quit your last schedule?");
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, qReasonChange, collected => ""))) {
+async function processqGeneric(message, q) {
+  let botMessage = await message.author.send(q.message);
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, q, collected => q.parse(collected.content)))) {
     return false;
   }
-  qReasonChange.answer = collected.content;
+  q.answer = collected.content.toLowerCase();
   return true;
 }
 
@@ -485,27 +607,27 @@ function formatMinute(time) {
   return time % 60;
 }
 
-async function processQ4(message, napchartSleeps, q4) {
+async function processqDaySegments(message, napchartSleeps, qDaySegments) {
   let cores = "Cores:\n";
   let naps = "\nNaps:\n";
   napchartSleeps.cores.forEach((core, i) => {
     let end = core.end > 24*60 ? core.end -24*60 : core.end;
-    cores += `\`C${i+1}\`: ${Math.floor(core.begin / 60)}h${formatMinute(core.begin)}-${Math.floor(end / 60)}h${formatMinute(end)}`;
+    cores += `\`C${i+1}\`: ${Math.floor(core.begin / 60)}h${formatMinute(core.begin)}-${Math.floor(end / 60)}h${formatMinute(end)}\n`;
   });
   napchartSleeps.naps.forEach((nap, i) => {
     let end = nap.end > 24*60 ? nap.end -24*60 : nap.end;
-    naps += `\`N${i+1}\`: ${Math.floor(nap.begin / 60)}h${formatMinute(nap.begin)}-${Math.floor(end / 60)}h${formatMinute(end)}`;
+    naps += `\`N${i+1}\`: ${Math.floor(nap.begin / 60)}h${formatMinute(nap.begin)}-${Math.floor(end / 60)}h${formatMinute(end)}\n`;
   });
 
-  while (!q4.answer) {
-    let botMessage = await message.author.send(q4_message + "\n" + cores + naps);
+  while (!qDaySegments.answer) {
+    let botMessage = await message.author.send(qDaySegments_message + "\n" + cores + naps);
 
-    if (!(collected = await collectFromUser(message.author, botMessage.channel, q4,
-      collected => q4_regex.test(collected.content.toUpperCase()) ? "" : q4_sanity))) {
+    if (!(collected = await collectFromUser(message.author, botMessage.channel, qDaySegments,
+      collected => qDaySegments_regex.test(collected.content.toUpperCase()) ? "" : qDaySegments_sanity))) {
       return false;
     }
-    q4.rawAnswer = collected.content.toUpperCase();
-    q4.answer = processSegments(collected.content.toUpperCase(), {cores: [], naps: []}, napchartSleeps, message);
+    qDaySegments.rawAnswer = collected.content.toUpperCase();
+    qDaySegments.answer = processSegments(collected.content.toUpperCase(), {cores: [], naps: []}, napchartSleeps, message);
   }
   return true;
 }
@@ -559,26 +681,26 @@ function processSegment(message, napchartSleeps, segment, out) {
   return true;
 }
 
-async function processQ5(message, q5) {
-  let botMessage = await message.author.send(q5_message);
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q5,
-    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : q5_sanity))) {
+async function processqAdhere(message, qAdhere) {
+  let botMessage = await message.author.send(qAdhere_message);
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qAdhere,
+    collected => (collected.content.toLowerCase() === "y" || collected.content.toLowerCase() === "n") ? "" : qAdhere_sanity))) {
     return false;
   }
-  q5.answer = collected.content.toLowerCase() === "y";
+  qAdhere.answer = collected.content.toLowerCase() === "y";
   return true;
 }
 
-async function processQ6(message, q6, napchartSleeps, schedule) {
-  let botMessage = await message.author.send(q6_message);
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q6,
+async function processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule) {
+  let botMessage = await message.author.send(qSleepTimes_message);
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qSleepTimes,
     collected => check_ranges(collected.content)))) {
     return false;
   }
   let sleeps = minutify_sleeps(extract_ranges(collected.content));
   if (!sleeps) {
     message.author.send("Detected overlapping or invalid time, please check your times and try again.");
-    return processQ6(message, q6, napchartSleeps, schedule);
+    return processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule);
   }
   for (const sleep of sleeps.cores.concat(sleeps.naps)) {
     let bestDiff = 9999;
@@ -590,82 +712,82 @@ async function processQ6(message, q6, napchartSleeps, schedule) {
     }
 
     if (flexibleSchedules.includes(schedule) && sleep.diff <= napMaxLength) {
-      q6.naps++;
+      qSleepTimes.naps++;
     } else {
-      q6.oversleepMinutes += Math.min(bestDiff, sleep.diff);
+      qSleepTimes.oversleepMinutes += Math.min(bestDiff, sleep.diff);
     }
   }
   return sleeps.totalSleepTime;
 }
 
-async function processQ7(message, q7) {
-  let botMessage = await message.author.send(q7_message);
-  while (q7.estimate === -1) {
-    if (!(collected = await collectFromUser(message.author, botMessage.channel, q7,
-      collected => q7_regex.test(collected.content.toUpperCase() ? "" : q7_sanity)))) {
+async function processqEstimate(message, qEstimate) {
+  let botMessage = await message.author.send(qEstimate_message);
+  while (qEstimate.estimate === -1) {
+    if (!(collected = await collectFromUser(message.author, botMessage.channel, qEstimate,
+      collected => qEstimate_regex.test(collected.content.toUpperCase() ? "" : qEstimate_sanity)))) {
       return false;
     }
-    q7.rawAnswer = collected.content.toUpperCase();
-    if (q7.rawAnswer.includes("X")) {
-      if (q7.rawAnswer.length > 1) {
-        botMessage = await message.author.send(q7_wrong_input);
+    qEstimate.rawAnswer = collected.content.toUpperCase();
+    if (qEstimate.rawAnswer.includes("X")) {
+      if (qEstimate.rawAnswer.length > 1) {
+        botMessage = await message.author.send(qEstimate_wrong_input);
       } else {
-        q7.estimate = -99;
+        qEstimate.estimate = -99;
       }
     } else {
-      q7.estimate = 0;
+      qEstimate.estimate = 0;
     }
   }
-  for (const [letter, value] of Object.entries(q7_statements)) {
-    if (q7.rawAnswer.includes(letter)) {
-      if (q7.moods && value[2]) {
-        q7.moods += " ";
+  for (const [letter, value] of Object.entries(qEstimate_statements)) {
+    if (qEstimate.rawAnswer.includes(letter)) {
+      if (qEstimate.moods && value[2]) {
+        qEstimate.moods += " ";
       }
-      q7.estimate += value[0];
+      qEstimate.estimate += value[0];
       if (value[2]) {
-        q7.moods += value[1];
+        qEstimate.moods += value[1];
       }
     }
   }
-  for (const [letter, value] of Object.entries(q7_negations)) {
-    if (!q7.rawAnswer.includes(letter) && !q7.rawAnswer.includes(value[2])) {
-      if (q7.moods) {
-        q7.moods += " ";
+  for (const [letter, value] of Object.entries(qEstimate_negations)) {
+    if (!qEstimate.rawAnswer.includes(letter) && !qEstimate.rawAnswer.includes(value[2])) {
+      if (qEstimate.moods) {
+        qEstimate.moods += " ";
       }
-      q7.estimate += value[0];
-      q7.moods += value[1];
+      qEstimate.estimate += value[0];
+      qEstimate.moods += value[1];
     }
   }
-  q7.estimate = Math.min(1, Math.max(7, Math.floor((q7.estimate + 2) / 2)));
+  qEstimate.estimate = Math.min(1, Math.max(7, Math.floor((qEstimate.estimate + 2) / 2)));
   return true;
 }
 
-async function processQ8(message, q7, q8) {
-  let botMessage = await message.author.send(String.format(q8_message, q7.estimate));
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q8,
-    collected => /^[1-7]$/.test(collected.content) ? "" : q8_sanity))) {
+async function processqStayAwake(message, qEstimate, qStayAwake) {
+  let botMessage = await message.author.send(String.format(qStayAwake_message, qEstimate.estimate));
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qStayAwake,
+    collected => /^[1-7]$/.test(collected.content) ? "" : qStayAwake_sanity))) {
     return false;
   }
-  q8.estimate = parseInt(collected.content);
+  qStayAwake.estimate = parseInt(collected.content);
   return true;
 }
 
-async function processQ9(message, recap, q9) {
-  let botMessage = await message.author.send(q9_message + "\n" + recap + '```');
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q9, collected => ""))) {
+async function processqRecap(message, recap, qRecap) {
+  let botMessage = await message.author.send(qRecap_message + "\n" + recap + '```');
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qRecap, collected => ""))) {
     return false;
   }
-  q9.answer = collected.content.toLowerCase() === "x" ? "" : collected.content;
+  qRecap.answer = collected.content.toLowerCase() === "x" ? "" : collected.content;
   return true;
 }
 
-async function processQ10(message, q10) {
-  let botMessage = await message.author.send(q10_message);
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q10, collected => ""))) {
+async function processqSleepTracker(message, qSleepTracker) {
+  let botMessage = await message.author.send(qSleepTracker_message);
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qSleepTracker, collected => ""))) {
     return false;
   }
-  q10.attachment = collected.attachments.size > 0 ? new Discord.Attachment(collected.attachments.first().url) : null;
-  q10.answer = collected.content ? "\n" + collected.content : "";
+  qSleepTracker.attachment = collected.attachments.size > 0 ? new Discord.Attachment(collected.attachments.first().url) : null;
+  qSleepTracker.answer = collected.content ? "\n" + collected.content : "";
   return true;
 }
 
@@ -726,8 +848,8 @@ function minutify_sleeps(sleeps) {
 }
 
 function check_ranges(ranges) {
-  if (!q6_regex.test(ranges))
-    return q6_sanity;
+  if (!qSleepTimes_regex.test(ranges))
+    return qSleepTimes_sanity;
   ranges.split(rangesSeparators).forEach(range => range.split(rangeSeparators).forEach((time) => {
     if (!hourSeparators.test(time)) {
       let hourIndex = time.length === 3 ? 1 : 2;
@@ -790,6 +912,8 @@ async function getNapchart(username, napchartUrl) {
   }
 }
 
+// Helpers
+// =======
 
 function getMember(message) {
   const guild = getGuild(message);
@@ -810,14 +934,19 @@ function hasRole(member, role) {
   return member.roles.find(role => role.name == role);
 }
 
-function processTimeRoles(message, member, currentScheduleMaxLogged, maxConsecutive, historicLogged) {
+
+function processTimeRoles(message, member, currentScheduleMaxLogged, maxConsecutive, historicLogged, totalDailyLogs) {
   let oneMonthRole = getGuild(message).roles.find(role => role.name == "1 Month Poly");
   let threeMonthsRole = getGuild(message).roles.find(role => role.name == "3 Months Poly");
   let sixMonthsRole = getGuild(message).roles.find(role => role.name == "6 Months Poly");
   let oneYearRole = getGuild(message).roles.find(role =>  role.name == "1+ Year Poly");
   let loggerRole = getGuild(message).roles.find(role => role.name == "Logger");
+  let masterLoggerRole = getGuild(message).roles.find(role => role.name == "Master Logger");
 
   if (maxConsecutive > 30 && !member.roles.has(loggerRole.id)) {
+    member.addRole(loggerRole).catch(console.error);
+  }
+  if (maxConsecutive > 30 && totalDailyLogs >= 150 && !member.roles.has(masterLoggerRole.id)) {
     member.addRole(loggerRole).catch(console.error);
   }
 
@@ -838,10 +967,8 @@ function processTimeRoles(message, member, currentScheduleMaxLogged, maxConsecut
   }
 }
 
-
 // DB retrieval / saving
 // =======================
-
 
 async function getMemberData(message, displayName) {
   let res;
@@ -856,37 +983,41 @@ async function getMemberData(message, displayName) {
     let today = new Date();
 
     let dateSet = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    let currentDay = Math.floor((today.getTime() - d.getTime()) / (1000 * 3600 * 24))
-      + (d.getHours() > today.getHours() ? 1 : 0);
+    let currentDay = Math.floor((today.getTime() - d.getTime()) / (1000 * 3600 * 24)) + (d.getHours() > today.getHours() ? 1 : 0);
     let schedule = res.currentScheduleName;
     let napchartUrl = res.currentScheduleChart;
     let attempt = res.historicSchedules.filter(s => s.name == schedule).length;
 
     // Retrieves the number of time each schedule was attempted, and fill
     // maxLogged property using that. Ideally should be done by set only
-    if (res.historicSchedules && (res.historicSchedules.map(hs => hs.maxLogged).every(el => el === 0))) {
-      let schedulesAttempted = res.historicSchedules.map(s => s.name);
-      for (const scheduleAttempted of schedulesAttempted) {
-        let scheduleAttempts = res.historicSchedules.filter(s => s.name == scheduleAttempted);
-        for (i = 0; i < scheduleAttempts.length; i++) {
-          let scheduleAttemptLogs = await getLogs({userName: displayName, schedule: scheduleAttempted, attempt: i});
-          scheduleAttempts[i].maxLogged = scheduleAttemptLogs.length && Math.max(...scheduleAttemptLogs.map(l => l.day));
-        }
-      }
-    }
+    //if (res.historicSchedules && (res.historicSchedules.map(hs => hs.maxLogged).every(el => el === 0))) {
+    //  let schedulesAttempted = res.historicSchedules.map(s => s.name);
+    //  for (const scheduleAttempted of schedulesAttempted) {
+    //    let scheduleAttempts = res.historicSchedules.filter(s => s.name == scheduleAttempted);
+    //    for (i = 0; i < scheduleAttempts.length; i++) {
+    //      let scheduleAttemptLogs = await getLogs(true, {userName: displayName, schedule: scheduleAttempted, attempt: i});
+    //      scheduleAttempts[i].maxLogged = scheduleAttemptLogs && Math.max(...scheduleAttemptLogs.entries.map(e => e.day));
+    //    }
+    //  }
+    //  res.save();
+    //}
 
     let historicLogged = res.historicSchedules.reduce((acc, sched) => acc + sched.maxLogged, 0);
 
-    res.save();
     return { schedule, napchartUrl, currentDay, attempt, dateSet, historicLogged, memberData: res };
   }
   return { schedule: null, napchart: null, currentDay: null, attempt: null, dateSet: null, historicLogged: null, memberData: null };
 }
 
-async function getLogs(filter) {
+async function getLogs(first, filter) {
   let res = null;
   try {
-    res = await LogModel.find(filter);
+    if (first) {
+      res = await LogModel.findOne(filter);
+    }
+    else {
+      res = await LogModel.find(filter);
+    }
   }
   catch (err) {
     console.warn("WARN  : ", "Could not get log: ", err);
@@ -894,43 +1025,59 @@ async function getLogs(filter) {
   return res;
 }
 
-function buildLogInstance(username, schedule, attempt, day, daySegments, moods, awakeDifficulty, sleepTime, oversleepTime, napsNumber, logMessage, attachment) {
+function buildLogInstance(username, schedule, attempt, reasonChange, qScheduleFirstLog, day, daySegments, moods, awakeDifficulty, sleepTime, oversleepTime, napsNumber, logMessage, attachment) {
   let logInstance = {
-    userName: username,
-    schedule: schedule,
-    attempt: attempt,
-    day: day,
-    daySegments: daySegments,
-    moods: moods,
-    awakeDifficulty: awakeDifficulty,
-    sleepTime: sleepTime
+    filter: {
+      userName: username,
+      schedule: schedule,
+      attempt: attempt
+    },
+    data: {
+      reasonChange: reasonChange
+    },
+    entries: {
+      day: day,
+      daySegments: daySegments,
+      moods: moods,
+      awakeDifficulty: awakeDifficulty,
+      sleepTime: sleepTime
+    }
   };
 
   if (oversleepTime) {
-    logInstance.oversleepTime = oversleepTime;
+    logInstance.entries.oversleepTime = oversleepTime;
   }
   if (napsNumber) {
-    logInstance.napsNumber = napsNumber;
+    logInstance.entries.napsNumber = napsNumber;
   }
   if (attachment) {
-    logInstance.attachment = attachment;
+    logInstance.entries.attachment = attachment;
   }
   if (logMessage) {
-    logInstance.logMessage = logMessage;
+    logInstance.entries.logMessage = logMessage;
+  }
+  if (qScheduleFirstLog.agreement && qScheduleFirstLog.agreement.answer === 'y') {
+    logInstance.data.monoSleep = qScheduleFirstLog.monoSleep.answer;
+    logInstance.data.experience = qScheduleFirstLog.experience.answer;
+    logInstance.data.previousFeeling = qScheduleFirstLog.previousFeeling.answer;
+    logInstance.data.sleepDep = qScheduleFirstLog.sleepDep.answer;
+    logInstance.data.previousSched = qScheduleFirstLog.previousSched.answer;
+  }
+  if (qScheduleFirstLog.monoDep) {
+    logInstance.data.monoDep = qScheduleFirstLog.monoDep.answer;
+  }
+  if (qScheduleFirstLog.polyDep) {
+    logInstance.data.polyDep = qScheduleFirstLog.polyDep.answer;
+  }
+  if (qScheduleFirstLog.polyNDep) {
+    logInstance.data.polyNDep = qScheduleFirstLog.polyNDep.answer;
   }
   return logInstance;
 }
 
 async function saveLogInstance(logInstance, userId) {
-  try {
-    await LogModel.create(logInstance, (error, result) => {
-      if (error) {
-        console.warn("Error inserting log: ", error);
-        throw error;
-      }
-    });
-  } catch (error) {
-    return false;
-  }
+  await LogModel.updateOne(logInstance.filter,
+    { ...logInstance.filter, ...logInstance.data, $push: { entries: { ...logInstance.entries } } },
+    { upsert: true });
   return true;
 }

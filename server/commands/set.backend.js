@@ -285,14 +285,13 @@ async function set(args, message, dry, author, member, silent) {
           name: userUpdate.currentScheduleName,
           setAt: new Date(message.createdTimestamp),
           adapted: false,
-          maxLogged: result.currentScheduleMaxLogged
+          maxLogged: result.currentScheduleMaxLogged || 0
         });
       }
       if ('currentScheduleChart' in userUpdate && userUpdate.currentScheduleChart != null) {
         result.historicScheduleCharts.push({
           url: userUpdate.currentScheduleChart,
-          setAt: new Date(message.createdTimestamp),
-          maxLogged: result.currentScheduleMaxLogged
+          setAt: new Date(message.createdTimestamp)
         });
       }
       result.currentScheduleMaxLogged = 0;

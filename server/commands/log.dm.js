@@ -384,7 +384,7 @@ async function log(message, dry=false) {
 
   let qSleepTimes = {name: qSleepTimes_name, sanity: qSleepTimes_sanity, naps: 0, oversleepMinutes: 0};
   if (!qAdhere.answer) {
-    totalSleepTime = await processqSleepTimes(message, qSleepTimes, napchartSleeps);
+    totalSleepTime = await processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule, qDaySegments.answer);
     if (totalSleepTime === false) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
@@ -471,7 +471,7 @@ async function log(message, dry=false) {
 
         foundLog.edit(embed);
         if (qSleepTracker.attachment) {
-          logsChannel.send(`${displayName} EEG ${schedule} - ${qDaySegments.rawAnswer.charAt(0) == 'X' ? '' : qDaySegments.rawAnswer}\n${qSleepTracker.answer} of day ${currentDay}`, qSleepTracker.attachment);
+          logsChannel.send(`${displayName} EEG ${schedule} - D${currentDay}: ${qDaySegments.rawAnswer.charAt(0) == 'X' ? '' : qDaySegments.rawAnswer}\n${qSleepTracker.answer}`, qSleepTracker.attachment);
         }
       }
     } while (!foundLog && logMessages.length > 0)
@@ -500,7 +500,7 @@ async function log(message, dry=false) {
       .setTimestamp();
     logsChannel.send(embed);
     if (qSleepTracker.attachment) {
-      logsChannel.send(`${displayName} EEG ${schedule} - ${qDaySegments.rawAnswer.charAt(0) == 'X' ? '' : qDaySegments.rawAnswer}\n${qSleepTracker.answer} of day ${currentDay}`, qSleepTracker.attachment);
+      logsChannel.send(`${displayName} EEG ${schedule} - D${currentDay}: ${qDaySegments.rawAnswer.charAt(0) == 'X' ? '' : qDaySegments.rawAnswer}\n${qSleepTracker.answer}`, qSleepTracker.attachment);
     }
   }
 
@@ -700,16 +700,22 @@ async function processqAdhere(message, qAdhere) {
   return true;
 }
 
-async function processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule) {
+async function processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule, daySegments) {
   let botMessage = await message.author.send(qSleepTimes_message);
   if (!(collected = await collectFromUser(message.author, botMessage.channel, qSleepTimes,
     collected => check_ranges(collected.content)))) {
     return false;
   }
-  let sleeps = minutify_sleeps(extract_ranges(collected.content));
+  let ranges = extract_ranges(collected.content);
+  if (ranges.length / 4 != daySegments.cores.length + daySegments.naps.length) {
+    message.author.send(
+      `You need to match the number of naps / cores you are logging (${daySegments.cores.length + daySegments.naps.length}) with the times you indicate (${ranges.length / 4}).`);
+    return processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule, daySegments);
+  }
+  let sleeps = minutify_sleeps(ranges);
   if (!sleeps) {
     message.author.send("Detected overlapping or invalid time, please check your times and try again.");
-    return processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule);
+    return processqSleepTimes(message, qSleepTimes, napchartSleeps, schedule, daySegments);
   }
   for (const sleep of sleeps.cores.concat(sleeps.naps)) {
     let bestDiff = 9999;
@@ -831,6 +837,15 @@ function minutify_sleeps(sleeps) {
     return out;
   }
   for (i = 0; i < sleeps.length; i += 4) {
+    if (sleeps[i] > 24 || sleeps[i + 2] > 24) {
+      return null;
+    }
+    if (sleeps[i] === 24) {
+      sleeps[i] = 0;
+    }
+    if (sleeps[i + 2] === 24) {
+      sleeps[i + 2] = 0;
+    }
     if (sleeps[i + 2] < sleeps[i]) {
       sleeps[i + 2] += 24;
     }

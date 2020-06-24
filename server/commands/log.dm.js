@@ -103,7 +103,7 @@ const qSleepTimes_name = 'sleep times';
 const qSleepTimes_message = `At what times did you sleep since your previously logged session? For example, if your last logged nap was at 07:00-07:20, and you slept at 08:00-09:00, 10:00-10:10 and 15:00-15:20 since then, write out all sleeps (even oversleeps) and separate them with the “,”-sign, like this:
 \`08:00-09:00,10:00-10:10,15:00-15:20.\`
 Please do not use the AM/PM format.`;
-const qSleepTimes_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm..';
+const qSleepTimes_sanity = 'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm... (range is 00.00-23.59)';
 const qSleepTimes_regex = /^([0-9]{1,2}[.:h]?[0-9]{2}-[0-9]{1,2}[.:h]?[0-9]{2}[,; ]?)+$/;
 const rangesSeparators = /[,; ]/;
 const rangeSeparators = /-/;

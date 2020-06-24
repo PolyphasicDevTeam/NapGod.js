@@ -837,7 +837,7 @@ function minutify_sleeps(sleeps) {
     return out;
   }
   for (i = 0; i < sleeps.length; i += 4) {
-    if (sleeps[i] > 24 || sleeps[i + 2] > 24) {
+    if (sleeps[i] > 24 || sleeps[i + 2] > 24 || sleeps[i + 1] > 60 || sleeps[i + 3] > 60) {
       return null;
     }
     if (sleeps[i] === 24) {

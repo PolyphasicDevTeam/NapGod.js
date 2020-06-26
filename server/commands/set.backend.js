@@ -1,10 +1,12 @@
-const { URL } = require("url");
+const url = require("url");
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const ReportModel = require("./../models/report.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
+
+const napchartPathRegex = /^\w{5}$/
 
 
 module.exports = {
@@ -110,7 +112,7 @@ async function set(args, message, dry, author, member, silent) {
   let userUpdate = buildUserInstance();
 
   let result = await saveUserSchedule(message, userUpdate);
-  
+
 
   fullmsg = "";
   msgopt = {};
@@ -152,7 +154,7 @@ async function set(args, message, dry, author, member, silent) {
       roles.delete(adaptedrole.id);
       msg = member.user.tag + " is no longer adapted";
       if(!dry){message.channel.send(msg);}
-    } 
+    }
     if(schedules[schedn].name != "Naptation" && schedules[schedn].name != "Mono" && schedules[schedn].name != "Experimental") {
       let newAttemptRole = "Attempted-"+schedules[schedn].name;
       attempt_role = message.guild.roles.find(d => d.name === newAttemptRole);
@@ -195,7 +197,7 @@ async function set(args, message, dry, author, member, silent) {
     if (args.length == 1) { complete = false; }
   } else {
     complete = false;
-  } 
+  }
   if(!dry&&!silent){message.channel.send(fullmsg, msgopt);}
   return complete;
 
@@ -219,8 +221,8 @@ async function set(args, message, dry, author, member, silent) {
 
   function checkIsUrlAndGet(urlPossible) {
     try {
-      let nurl = new URL(urlPossible);
-      if (nurl.host == "napchart.com" || nurl.host == "www.napchart.com") {
+      let nurl = url.parse(urlPossible);
+      if ((nurl.host == "napchart.com" || nurl.host == "www.napchart.com") && napchartPathRegex.test(nurl.pathname.substr(1))) {
 	return { is_nurl: true, nurl: nurl };
       }
     } catch (err) {
@@ -276,21 +278,23 @@ async function set(args, message, dry, author, member, silent) {
 
     function saveHistories() {
       if (!result) {
-	return;
+        return;
       }
       if ('currentScheduleName' in userUpdate) {
-	result.historicSchedules.push({
-	  name: userUpdate.currentScheduleName,
-	  setAt: new Date(message.createdTimestamp),
-	  adapted: false
-	});
+        result.historicSchedules.push({
+          name: userUpdate.currentScheduleName,
+          setAt: new Date(message.createdTimestamp),
+          adapted: false,
+          maxLogged: result.currentScheduleMaxLogged || 0
+        });
       }
       if ('currentScheduleChart' in userUpdate && userUpdate.currentScheduleChart != null) {
-	result.historicScheduleCharts.push({
-	  url: userUpdate.currentScheduleChart,
-	  setAt: new Date(message.createdTimestamp)
-	});
+        result.historicScheduleCharts.push({
+          url: userUpdate.currentScheduleChart,
+          setAt: new Date(message.createdTimestamp)
+        });
       }
+      result.currentScheduleMaxLogged = 0;
       result.save();
     }
   }

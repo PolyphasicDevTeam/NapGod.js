@@ -1,6 +1,6 @@
 const commands = require("require-all")({
   dirname: __dirname + "/commands",
-  filter: /(.+command)\.js$/
+  filter: /(.+dm)\.js$/
 });
 const flat = require("flat");
 const _ = require("lodash");
@@ -10,12 +10,15 @@ const c2 = _.values(commandsFlat);
 
 module.exports = {
 
-  processCommands: function(command, message, args, dry=false) {
+  processDMCommands: function(command, message, args, dry=false) {
     handled = false;
     //console.error("INFO  : ", c2)
     c2.forEach(fn => {
       handled = handled || fn(command, message, args, dry);
     });
-    return handled;
+    if(!handled){
+      return false;
+    }
+    return true;
   }
 };

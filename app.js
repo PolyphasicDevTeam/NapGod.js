@@ -8,14 +8,27 @@ mongoose.connect(config.mongo);
 
 const { processCommands } = require("./server/command.ctrl");
 const { processHelpCommands } = require("./server/help_command.ctrl");
+const { processDMCommands } = require("./server/dm_command.ctrl");
 const { processDevCommands } = require("./server/devCommand.ctrl")(client);
 
 console.log("NapGod.js is starting...");
 
+const logsChannelName = 'adaptation_logs';
+
 client.on("message", message => {
 	//Ignore other bots and messages that do not start with prefix
 	if (message.author.bot) return;
-	if (config.modonly != null && config.modonly != undefined && config.modonly == true) {
+	if (message.channel.name === logsChannelName) {
+    message.author.send(message.content)
+      .then(message.author.send('You need to write the logs through me. Write `+log` in this direct chat to proceed or `+loghelp` for help').catch(console.warn))
+      .catch(err => console.warn(`WARN\t: Sending message to ${message.author.username}: ${err}`));
+		message.delete({
+			reason: 'All adaptation logs must be made through DMing NapGod. See +loghelp for details',
+		});
+		return;
+	}
+	const isDirectMessage = message.channel instanceof Discord.DMChannel;
+	if (config.modonly != null && config.modonly != undefined && config.modonly == true && !isDirectMessage) {
 		//Reject commands from non-mods because we are in Mod-only mode
 		let roles =  message.member.roles
 		roles = new Set(roles.keys())
@@ -36,16 +49,24 @@ client.on("message", message => {
 	if (command == '') { return } //There is probably space after prefix, reject
 
 
-	//if (isDevPrefix(message)) {
-		//processDevCommands(command, message, args);
-	//} else 
-	if (isValidPrefix(message)) {
-		processCommands(command, message, args);
-	}
-	if (isValidHelpPrefix(message)) {
-		processHelpCommands(command, message, args);
-	}
-
+  //if (isDevPrefix(message)) {
+  //processDevCommands(command, message, args);
+  //} else
+  if (isValidPrefix(message)) {
+    // For now, these are separated b/c a lot of existing commands break in DMs
+    let handled = false;
+    if (!isDirectMessage) {
+      handled = processCommands(command, message, args);
+    }
+    if (!handled) {
+      if (!processDMCommands(command, message, args)) {
+        console.error("WARN>>: ", "Command was not handled:", command, args);
+      }
+    }
+  }
+  if (isValidHelpPrefix(message)) {
+    processHelpCommands(command, message, args);
+  }
 });
 
 function isValidPrefix(message) {
@@ -63,7 +84,7 @@ function getArgs(message) {
 	return message.content
 		.slice(config.prefix.length)
 		.trimRight()
-		.replace( /\n/g, " " )	
+		.replace( /\n/g, " " )
 		.split(/ +/g);
 }
 

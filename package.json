@@ -17,14 +17,15 @@
   },
   "homepage": "https://github.com/PolyphasicDevTeam/NapGod.js#readme",
   "dependencies": {
+    "@discordjs/uws": "^10.149.0",
     "axios": "^0.18.0",
-    "bufferutil": "^3.0.3",
-    "discord.js": "^11.4.2",
-    "erlpack": "github:discordapp/erlpack",
+    "bufferutil": "^4.0.1",
+    "discord.js": "^11.5.1",
     "flat": "^4.1.0",
     "lodash": "^4.17.5",
     "mongoose": "^5.3.14",
     "request": "^2.88.0",
-    "require-all": "^3.0.0"
+    "require-all": "^3.0.0",
+    "bitset": "^5.1.1"
   }
 }

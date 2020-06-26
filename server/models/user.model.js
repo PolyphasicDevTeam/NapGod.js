@@ -6,11 +6,13 @@ let schema = {
   id: { type: String, required: true, index: true },
   currentScheduleName: { type: String},
   currentScheduleChart: { type: String },
+  currentScheduleMaxLogged: { type: Number },
   historicSchedules: [
     {
       name: { type: String, required: true },
       setAt: { type: Date, requried: true },
-      adapted: { type: Boolean, required: true }
+      adapted: { type: Boolean, required: true },
+      maxLogged: { type: Number, required: true, default: 0 }
     }
   ],
   historicScheduleCharts: [

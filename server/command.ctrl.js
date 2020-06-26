@@ -16,9 +16,6 @@ module.exports = {
     c2.forEach(fn => {
       handled = handled || fn(command, message, args, dry);
     });
-    if(!handled){
-      return false;
-    }
-    return true;
+    return handled;
   }
 };

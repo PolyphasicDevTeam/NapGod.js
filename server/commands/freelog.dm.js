@@ -24,20 +24,6 @@ module.exports = {
 
 async function freelog(message, dry=false) {
   console.log(`CMD   : ${freelogCMD.toUpperCase()}`);
-  // let roles =  message.member.roles;
-  // roles = new Set(roles.keys());
-  // let mods = message.guild.roles.find("name", "Moderator").id;
-  // let admins = message.guild.roles.find("name", "Admins").id;
-  // permissions = false;
-  // if (roles.has(mods) || roles.has(admins)) {
-  //   permissions = true;
-  // }
-  // if (!permissions) {
-  //   msg = "You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+freelog`";
-  //   console.log("MSG   : ", msg);
-  //   if (!dry) { message.channel.send(msg); }
-  //   return true;
-  // }
   const member = getMember(message);
   if (member) {
     if (currentUsers.includes(message.author.id)) {
@@ -48,7 +34,7 @@ async function freelog(message, dry=false) {
 
     let botMessage;
     try {
-      botMessage = await message.author.send('Write your adaptation log here. If you want to abort, wait a few minutes or answer here with the letter `x`.');
+      botMessage = await message.author.send('Write your adaptation log here. If you want to abort, wait an hour or answer here with `abort`.');
     }
     catch (err) {
       console.warn(`WARN\t: Couldn't send message to ${message.author.username}: ${err}`);
@@ -58,16 +44,9 @@ async function freelog(message, dry=false) {
       return true;
     }
 
-
     currentUsers.push(message.author.id);
 
-    if (!(collected = collectFromUser(message.author, botMessage.channel, "freelog"))) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-      return true;
-    }
-    if (collected.first().content.toLowerCase() === "x") {
-      console.log("LOG\t: ", `Freelog aborted from ${message.author.username}`);
-      message.author.send(abortMessage);
+    if (!(collected = await collectFromUser(message.author, botMessage.channel, "freelog"))) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
@@ -75,6 +54,7 @@ async function freelog(message, dry=false) {
     let qSleepTracker = {name: "sleep tracker", answer: "", attachment: null};
     if (hasRole(member, 'Sleep Tracker')) {
       if (!await processqSleepTracker(message, qSleepTracker)) {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
         return true;
       }
     }
@@ -90,18 +70,16 @@ async function freelog(message, dry=false) {
       .setColor(color)
       .setTitle('Freelog')
       .setAuthor(displayName, message.author.avatarURL)
-      .setDescription(collected.first().content);
+      .setDescription(collected.content);
 
-    console.log("MSG   : ", `Printing user input to #${logsChannelName}`);
     if (dry) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
     getChannel(message, logsChannelName).send(embed);
     if (qSleepTracker.attachment) {
-      getChannel(message, logsChannelName).send(`${displayName} EEG`, qSleepTracker.attachment);
+      getChannel(message, logsChannelName).send(`${message.author} EEG\n` + qSleepTracker.answer, qSleepTracker.attachment);
     }
-
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   } else {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
@@ -112,6 +90,10 @@ async function freelog(message, dry=false) {
 async function collectFromUser(author, channel, step) {
   try {
     let collected = await channel.awaitMessages(x => x.author.id === author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });
+    if (collected.first().content.toLowerCase() === 'abort') {
+      author.send('Aborted.');
+      return null;
+    }
     return collected.first();
   }
   catch (e) {
@@ -127,7 +109,7 @@ async function processqSleepTracker(message, qSleepTracker) {
     return false;
   }
   qSleepTracker.attachment = collected.attachments.size > 0 ? new Discord.Attachment(collected.attachments.first().url) : null;
-  qSleepTracker.answer = collected.content ? "\n" + collected.content : "";
+  qSleepTracker.answer = collected.content ? collected.content : "";
   return true;
 }
 
@@ -144,4 +126,8 @@ function getChannel(message, channelName) {
 
 function getGuild(message) {
   return message.client.guilds.first();
+}
+
+function hasRole(member, role) {
+  return member.roles.find(role => role.name == role);
 }

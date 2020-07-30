@@ -81,11 +81,6 @@ const qSFLpolyNDep_sanity = 'Please answer with `a` or `b` or `c`.';
 const qSFLpolyNDep_regex = /^[a-c]$/;
 // --
 
-const qPreviousDay_name = 'previous_day';
-const qPreviousDay_message = 'Do you want to log about a previous day? `y` = yes, `n` = no';
-const qPreviousDay_sanity = 'Please answer with either `y` or `n`.';
-const qPreviousDay_n = 'Please contact a moderator and tell them what information in the previous question was incorrect.';
-
 const qDay_name = 'day';
 const qDay_message = 'Which day do you want to log about? Please write out the number.';
 const qDay_sanity = 'Please write a valid integer.';
@@ -260,25 +255,23 @@ async function log(message, dry=false) {
   currentUsers.push(message.author.id);
 
   let qUserName = {name: qUserName_name, sanity: qUserName_sanity, check: -1};
-  if (!await processQUserName(message, qUserName, schedule, napchart, currentDay, dateSet)) {
+  if (!await processQUserName(message, qUserName, schedule, napchart, dateSet)) {
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
     return true;
   }
 
   if (!qUserName.check) {
-    let qPreviousDay = {name: qPreviousDay_name, sanity: qPreviousDay_sanity, check: -1};
-    if (!await processqPreviousDay(message, qPreviousDay)) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-      return true;
-    }
-
-    let qDay = {name: qDay_name, sanity: qDay_sanity, day: -1};
-    if (!await processqDay(message, currentDay, qDay)) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-      return true;
-    }
-    currentDay = qDay.day;
+    message.author.send("Please contact a moderator if there is an issue with the data above.");
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+    return true;
   }
+
+  let qDay = {name: qDay_name, sanity: qDay_sanity, day: -1};
+  if (!await processqDay(message, qDay)) {
+    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+    return true;
+  }
+  currentDay = qDay.day;
 
   let currentScheduleLogs = await getLogs(true, {userName: displayName, schedule: schedule, attempt: attempt});
   let currentDayLogs = currentScheduleLogs ? currentScheduleLogs.entries.filter(e => e.day === currentDay) : null;
@@ -343,7 +336,7 @@ async function log(message, dry=false) {
     }
   }
 
-  let qReasonChange = {name: "Reason schedule change", message: "Why did you choose to change your schedule?", parse: c => "", answer: null};
+  let qReasonChange = {name: "Reason schedule change", message: "Why did you choose to change your schedule? Answer with `x` if you do not wish to answer.", parse: c => "", answer: null};
   if (historicLogged && currentDay === 0 && !currentDayLogs) {
     if (!await processqGeneric(message, qReasonChange)) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
@@ -421,7 +414,7 @@ async function log(message, dry=false) {
     if (qSleepTimes.naps) {
       description += `Number of naps: ${qSleepTimes.naps}\n`;
     }
-    if (qReasonChange.answer) {
+    if (qReasonChange.answer && qReasonChange.answer.toLowerCase() !== 'x') {
       description += `Reason for switching schedule: ${qReasonChange.answer}\n`;
     }
 
@@ -567,11 +560,10 @@ async function log(message, dry=false) {
 // =============================
 
 
-async function processQUserName(message, qUserName, schedule, napchart, day, dateSet) {
+async function processQUserName(message, qUserName, schedule, napchart, dateSet) {
   let botMessage = await message.author.send(qUserName_message + "\n" +
     "- Schedule: " + schedule + "\n" +
     "- Napchart: " + napchart.url + "\n" +
-    "- Day: " + day + "\n" +
     "- Date set: " + dateSet + "\n");
 
   if (!(collected = await collectFromUser(message.author, botMessage.channel, qUserName,
@@ -597,19 +589,14 @@ async function processqPreviousDay(message, qPreviousDay) {
   return true;
 }
 
-async function processqDay(message, currentDay, qDay) {
+async function processqDay(message, qDay) {
   let botMessage = await message.author.send(qDay_message);
   while (qDay.day === -1) {
     if (!(collected = await collectFromUser(message.author, botMessage.channel, qDay,
       collected => (/^(0|[1-9]\d*)$/.test(collected.content)) ? "" : qDay_sanity))) {
       return false;
     }
-    if (collected.content > currentDay) {
-      botMessage = await message.author.send(String.format(qDay_n, currentDay));
-    }
-    else {
-      qDay.day = collected.content;
-    }
+    qDay.day = collected.content;
   }
   return true;
 }
@@ -1089,7 +1076,6 @@ function buildLogInstance(username, schedule, attempt, reasonChange, qScheduleFi
       attempt: attempt
     },
     data: {
-      reasonChange: reasonChange
     },
     entries: {
       day: day,
@@ -1111,6 +1097,9 @@ function buildLogInstance(username, schedule, attempt, reasonChange, qScheduleFi
   }
   if (logMessage) {
     logInstance.entries.logMessage = logMessage;
+  }
+  if (reasonChange.toLowerCase() !== 'x') {
+    reasonChange: reasonChange;
   }
   if (qScheduleFirstLog.agreement && qScheduleFirstLog.agreement.answer === 'y') {
     logInstance.data.monoSleep = qScheduleFirstLog.monoSleep.answer;

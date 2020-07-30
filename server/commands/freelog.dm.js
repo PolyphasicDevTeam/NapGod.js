@@ -4,11 +4,13 @@ const _ = require("lodash");
 
 let currentUsers = [];
 
-const timeout = 500;
+const timeout = 3600;
 const timeoutMessage = 'Timeout: the process was aborted.';
 const abortMessage = 'Process was aborted.';
 const freelogCMD = 'freelog';
 const logsChannelName = 'adaptation_logs';
+
+const qSleepTracker_message = 'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.';
 
 module.exports = {
   processFreelog: function(command, message, args, dry=false) {
@@ -56,22 +58,25 @@ async function freelog(message, dry=false) {
       return true;
     }
 
+
     currentUsers.push(message.author.id);
-    try {
-      collected = await botMessage.channel.awaitMessages(x => x.author.id === message.author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });
-    }
-    catch (e) {
-      console.log("LOG\t: ", `Timeout waiting for answer from ${message.author.username} during freelog`);
-      message.author.send(timeoutMessage);
+
+    if (!(collected = collectFromUser(message.author, botMessage.channel, "freelog"))) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
-
     if (collected.first().content.toLowerCase() === "x") {
       console.log("LOG\t: ", `Freelog aborted from ${message.author.username}`);
       message.author.send(abortMessage);
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
+    }
+
+    let qSleepTracker = {name: "sleep tracker", answer: "", attachment: null};
+    if (hasRole(member, 'Sleep Tracker')) {
+      if (!await processqSleepTracker(message, qSleepTracker)) {
+        return true;
+      }
     }
 
     let displayName = member.nickname;
@@ -85,8 +90,7 @@ async function freelog(message, dry=false) {
       .setColor(color)
       .setTitle('Freelog')
       .setAuthor(displayName, message.author.avatarURL)
-      .setDescription(collected.first().content)
-      .setTimestamp();
+      .setDescription(collected.first().content);
 
     console.log("MSG   : ", `Printing user input to #${logsChannelName}`);
     if (dry) {
@@ -94,10 +98,36 @@ async function freelog(message, dry=false) {
       return true;
     }
     getChannel(message, logsChannelName).send(embed);
+    if (qSleepTracker.attachment) {
+      getChannel(message, logsChannelName).send(`${displayName} EEG`, qSleepTracker.attachment);
+    }
+
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   } else {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
   }
+  return true;
+}
+
+async function collectFromUser(author, channel, step) {
+  try {
+    let collected = await channel.awaitMessages(x => x.author.id === author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });
+    return collected.first();
+  }
+  catch (e) {
+    console.log("WARN\t: ", `Timeout waiting for answer from ${author.username} during step ${step.name}`);
+    author.send(timeoutMessage);
+    return null;
+  }
+}
+
+async function processqSleepTracker(message, qSleepTracker) {
+  let botMessage = await message.author.send(qSleepTracker_message);
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, qSleepTracker))) {
+    return false;
+  }
+  qSleepTracker.attachment = collected.attachments.size > 0 ? new Discord.Attachment(collected.attachments.first().url) : null;
+  qSleepTracker.answer = collected.content ? "\n" + collected.content : "";
   return true;
 }
 

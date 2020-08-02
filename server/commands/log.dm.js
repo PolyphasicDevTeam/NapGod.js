@@ -396,7 +396,7 @@ async function log(message, dry=false) {
   let get_recap = async function() {
     let description = String.format(descriptionTemplate, `${Math.floor(totalSleepTime / 60)} hours ${totalSleepTime % 60 === 0 ? '' : (Math.floor(totalSleepTime % 60) + 'minutes')}`);
     if (qSleepTimes.oversleepMinutes) {
-      description += `Time oversleeping: ${Math.floor(qSleepTimes.oversleepMinutes / 60)} hours ${qSleepTimes.oversleepMinutes % 60 === 0 ? '' : (Math.floor(totalSleepTime % 60) + 'minutes')}\n`;
+      description += `Time oversleeping: ${Math.floor(qSleepTimes.oversleepMinutes / 60)} hours ${qSleepTimes.oversleepMinutes % 60 === 0 ? '' : (Math.floor(qSleepTimes.oversleepMinutes % 60) + 'minutes')}\n`;
     }
     if (qSleepTimes.naps) {
       description += `Number of naps: ${qSleepTimes.naps}\n`;
@@ -677,7 +677,7 @@ async function processqDaySegments(message, napchartSleeps, qDaySegments) {
 }
 
 function processSegments(str, out, napchartSleeps, message) {
-  if (str.charAt(0) == 'X') {
+  if (str.charAt(0) === 'X') {
     for (i = 0; i < napchartSleeps.cores.length; i++){
       out.cores.push(i);
     }
@@ -703,7 +703,7 @@ function processSegment(message, napchartSleeps, segment, out) {
     end = parseInt(segment.substring(3)) - 1;
   }
   for (i = begin; i <= end; i++) {
-    if (segment.charAt(0) == 'C') {
+    if (segment.charAt(0) === 'C') {
       if (end >= napchartSleeps.cores.length) {
         if (message) {
           message.author.send(`You seem to not have a core #${end + 1} in your schedule!`);
@@ -793,7 +793,7 @@ async function processqEstimate(message, qEstimate) {
     }
   }
   for (const [letter, value] of Object.entries(qEstimate_statements).filter(el => el[1][2])) {
-    if (qEstimate.moods) {
+    if (qEstimate.moods === "") {
       qEstimate.moods += "\n";
     }
     if (qEstimate.rawAnswer.includes(letter)) {

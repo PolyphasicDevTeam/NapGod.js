@@ -70,6 +70,7 @@ async function freelog(message, dry=false) {
       .setColor(color)
       .setTitle('Freelog')
       .setAuthor(displayName, message.author.avatarURL)
+      .setTimestamp()
       .setDescription(collected.content);
 
     if (dry) {

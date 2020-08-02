@@ -1142,7 +1142,7 @@ function buildLogInstance(username, schedule, attempt, reasonChange, qScheduleFi
     logInstance.entries.logMessage = logMessage;
   }
   if (reasonChange && reasonChange.toLowerCase() !== 'x') {
-    reasonChange: reasonChange;
+    logInstance.data.reasonChange = reasonChange;
   }
   if (qScheduleFirstLog.agreement && qScheduleFirstLog.agreement.answer === 'y') {
     logInstance.data.monoSleep = qScheduleFirstLog.monoSleep.answer;

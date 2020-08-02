@@ -479,7 +479,7 @@ async function log(message, dry=false) {
     let logMessages;
     do {
       logMessages = await logsChannel.fetchMessages({limit: 100});
-      foundLog = logMessages.filter(msg => msg.embeds.length > 0 && msg.embeds[0].author.name === `@${displayName}`
+      foundLog = logMessages.filter(msg => msg.embeds.length > 0 && msg.embeds[0].author.name === displayName
         && msg.embeds[0].title == String.format(titleTemplate, schedule, currentDay)).first();
       if (foundLog) {
         currentDayLogs.forEach(currentdayLog => {

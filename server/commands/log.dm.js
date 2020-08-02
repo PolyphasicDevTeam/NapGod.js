@@ -494,8 +494,22 @@ async function log(message, dry=false) {
         }
 
         const embed = new Discord.RichEmbed(foundLog.embeds[0])
-          .setDescription(description);
+          .setDescription(description)
+          .setTimestamp();
         segments.forEach(segment => embed.addField(segment.title, segment.field));
+
+    message.author.send(embed);
+    let qConfirm = {name: 'log: confirm sending', message: "A preview of how the bot is going to edit the log can be seen below. Write `y` to confirm the edit, or `n` to abort.",
+      parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
+    if (!await processqGeneric(message, qConfirm)) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+      return true;
+    }
+    if (qConfirm.answer.toLowerCase() === 'n') {
+      message.author.send('Aborted.');
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+      return true;
+    }
 
         foundLog.edit(embed);
         if (qSleepTracker.attachment) {
@@ -523,17 +537,18 @@ async function log(message, dry=false) {
       .setTitle(String.format(titleTemplate, schedule, currentDay))
       .setAuthor(displayName, message.author.avatarURL)
       .setDescription(description)
+      .setTimestamp()
       .setThumbnail(cache_url + napchartUrl.split('/').pop() + '.png');
     segments.forEach(segment => embed.addField(segment.title, segment.field));
 
     message.author.send(embed);
-    qConfirm = {name: 'log: confirm sending', message: "A preview of what the bot is going to send can be seen below. Write `y` to send your log, or `n` to abort.",
+    let qConfirm = {name: 'log: confirm sending', message: "A preview of what the bot is going to send can be seen below. Write `y` to send your log, or `n` to abort.",
       parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
     if (!await processqGeneric(message, qConfirm)) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
-    if (qConfirm.answer.toLowerCase() !== 'y') {
+    if (qConfirm.answer.toLowerCase() === 'n') {
       message.author.send('Aborted.');
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
@@ -1013,7 +1028,7 @@ function getGuild(message) {
 }
 
 function hasRole(member, role) {
-  return member.roles.find(role => role.name == role);
+  return member.roles.find(role => role.name === role);
 }
 
 function displayTime(begin, separator) {

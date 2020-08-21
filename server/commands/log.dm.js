@@ -419,8 +419,10 @@ async function log(message, dry=false) {
             currentusers.splice(currentusers.indexof(message.author.id), 1);
             return true;
           }
-          segment.field = qCustomField.answer.toLowerCase() === 'x' ? '' : qCustomField.answer;
-          segments.push(segment);
+          segment.field = qCustomField.answer;
+          if (segment.field.toLowerCase() !== 'x') {
+            segments.push(segment);
+          }
         }
       }
     }
@@ -442,8 +444,10 @@ async function log(message, dry=false) {
             currentusers.splice(currentusers.indexof(message.author.id), 1);
             return true;
           }
-          segment.field = qCustomField.answer.toLowerCase() === 'x' ? '' : qCustomField.answer;
-          segments.push(segment);
+          segment.field = qCustomField.answer;
+          if (segment.field.toLowerCase() !== 'x') {
+            segments.push(segment);
+          }
         }
       }
     }
@@ -498,18 +502,18 @@ async function log(message, dry=false) {
           .setTimestamp();
         segments.forEach(segment => embed.addField(segment.title, segment.field));
 
-    message.author.send(embed);
-    let qConfirm = {name: 'log: confirm sending', message: "A preview of how the bot is going to edit the log can be seen below. Write `y` to confirm the edit, or `n` to abort.",
-      parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
-    if (!await processqGeneric(message, qConfirm)) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-      return true;
-    }
-    if (qConfirm.answer.toLowerCase() === 'n') {
-      message.author.send('Aborted.');
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-      return true;
-    }
+        message.author.send(embed);
+        let qConfirm = {name: 'log: confirm sending', message: "A preview of how the bot is going to edit the log can be seen below. Write `y` to confirm the edit, or `n` to abort.",
+          parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
+        if (!await processqGeneric(message, qConfirm)) {
+          currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+          return true;
+        }
+        if (qConfirm.answer.toLowerCase() === 'n') {
+          message.author.send('Aborted.');
+          currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+          return true;
+        }
 
         foundLog.edit(embed);
         if (qSleepTracker.attachment) {
@@ -808,9 +812,6 @@ async function processqEstimate(message, qEstimate) {
     }
   }
   for (const [letter, value] of Object.entries(qEstimate_statements).filter(el => el[1][2])) {
-    if (qEstimate.moods === "") {
-      qEstimate.moods += "\n";
-    }
     if (qEstimate.rawAnswer.includes(letter)) {
       qEstimate.estimate += value[0];
       qEstimate.moods += ":x: ";
@@ -818,17 +819,19 @@ async function processqEstimate(message, qEstimate) {
     else {
       qEstimate.moods += ":white_check_mark: ";
     }
-    qEstimate.moods += value[1];
+    qEstimate.moods += value[1] + '\n';
   }
-  qEstimate.moods += '```diff\n';
+  let diffMoods = '```diff';
   for (const [letter, value] of Object.entries(qEstimate_statements).filter(el => !el[1][2])) {
     if (qEstimate.rawAnswer.includes(letter)) {
-      qEstimate.moods += "\n";
-      qEstimate.estimate += value[0];
-      qEstimate.moods += value[1];
+      diffMoods += "\n";
+      diffMoods += value[0];
+      diffMoods += value[1];
     }
   }
-  qEstimate.moods += '```\n';
+  if (diffMoods !== '```diff') {
+    qEstimate.moods += diffMoods + '```\n';
+  }
   qEstimate.estimate = Math.max(1, Math.min(7, Math.floor((qEstimate.estimate + 2) / 2)));
   return true;
 }
@@ -1031,8 +1034,9 @@ function hasRole(member, role) {
   return member.roles.find(role => role.name === role);
 }
 
-function displayTime(begin, separator) {
-  return ("00" + Math.floor(begin / 60)).substr(-2) + separator + ("00" + Math.floor(begin % 60)).substr(-2);
+function displayTime(time, separator) {
+  time = time % (24 * 60);
+  return ("00" + Math.floor(time / 60)).substr(-2) + separator + ("00" + Math.floor(time % 60)).substr(-2);
 }
 
 

@@ -4,11 +4,8 @@ const _ = require('lodash');
 module.exports = {
   processSay: function (command, message, args, dry = false) {
     if (command === 'say') {
-      arg = message.content
-        .slice(config.prefix.length + 3, message.content.length)
-        .trim();
       console.log('CMD   : SAY');
-      console.log('ARGS  : ', arg);
+      console.log('ARGS  : ', args);
       let roles = message.member.roles;
       roles = new Set(roles.keys());
       let mods = message.guild.roles.find('name', 'Moderator').id;
@@ -18,18 +15,28 @@ module.exports = {
         permissions = true;
       }
       if (!permissions) {
-        msg =
+        let msg =
           'You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+say`';
         console.log('MSG   : ', msg);
         if (!dry) {
           message.channel.send(msg);
         }
       } else {
-        console.log('ACT   : ', 'Deleting user input message');
-        message.delete().catch((O_o) => {});
-        console.log('MSG   : ', 'Repriting user input');
         if (!dry) {
-          message.channel.send(arg);
+          const split_msg = message.content
+            .replace(/\+say\s*/, '') // hardcoded, later not
+            .split(/(?<=^\S+)\s/);
+          const channelID = split_msg[0].replace(/[^0-9]/g, '');
+          const channel = message.client.channels.get(channelID);
+          if (channel === undefined) {
+            message.channel.send('Invalid channel');
+            console.log('ERROR : Invalid channel ');
+          } else {
+            console.log('ACT   : ', 'Deleting user input message');
+            message.delete().catch((O_o) => {});
+            console.log('MSG   : ', 'Repriting user input');
+            channel.send(split_msg[1].trim());
+          }
         }
       }
       return true;

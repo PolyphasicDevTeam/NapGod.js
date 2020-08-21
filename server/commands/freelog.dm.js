@@ -77,6 +77,19 @@ async function freelog(message, dry=false) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
+
+    message.author.send(embed);
+    let qConfirm = {name: 'log: confirm sending', message: "A preview of how the bot is going to edit the log can be seen below. Write `y` to confirm the edit, or `n` to abort.",
+      parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
+    if (!await processqGeneric(message, qConfirm)) {
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+      return true;
+    }
+    if (qConfirm.answer.toLowerCase() === 'n') {
+      message.author.send('Aborted.');
+      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+      return true;
+    }
     getChannel(message, logsChannelName).send(embed);
     if (qSleepTracker.attachment) {
       getChannel(message, logsChannelName).send(`${message.author} EEG\n` + qSleepTracker.answer, qSleepTracker.attachment);
@@ -111,6 +124,15 @@ async function processqSleepTracker(message, qSleepTracker) {
   }
   qSleepTracker.attachment = collected.attachments.size > 0 ? new Discord.Attachment(collected.attachments.first().url) : null;
   qSleepTracker.answer = collected.content ? collected.content : "";
+  return true;
+}
+
+async function processqGeneric(message, q) {
+  let botMessage = await message.author.send(q.message);
+  if (!(collected = await collectFromUser(message.author, botMessage.channel, q, collected => q.parse(collected.content)))) {
+    return false;
+  }
+  q.answer = collected.content.toLowerCase();
   return true;
 }
 

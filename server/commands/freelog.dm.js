@@ -94,6 +94,7 @@ async function freelog(message, dry=false) {
     if (qSleepTracker.attachment) {
       getChannel(message, logsChannelName).send(`${message.author} EEG\n` + qSleepTracker.answer, qSleepTracker.attachment);
     }
+    message.author.send("Thank you!");
     currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   } else {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');

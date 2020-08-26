@@ -11,6 +11,6 @@
 **To toggle the Events role:** Type `+toggleevents`.
 **To toggle the Marketplace role:** Type `+togglemarketplace`.
 **To toggle the No YT plz role:** Type `+noyt`.
-**To enter change to Forced Productivity state for an ammount of time:** Type `+focus <Time in minutes>`.
+**To enter change to Forced Productivity state for an ammount of time:** Type `+focus <time><m|h|m>`.
 **To leave the Forced Productivity state** Type `+unfocus`.
 -----------------------------------------------

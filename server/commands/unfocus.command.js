@@ -32,8 +32,8 @@ module.exports = {
       console.log('ARGS  : ', args);
       let roles = message.member.roles;
       roles = new Set(roles.keys());
-      let mods = message.guild.roles.find('name', 'Moderator').id;
-      let admins = message.guild.roles.find('name', 'Admins').id;
+      let mods = message.guild.roles.find((d) => d.name === 'Moderator').id;
+      let admins = message.guild.roles.find((d) => d.name === 'Admins').id;
       if (args.length == 1) {
         // one argument = mod only command, for unfocusing someone
         if (roles.has(mods) || roles.has(admins)) {
@@ -140,7 +140,7 @@ async function unfocus_admin(message, args, dry) {
 }
 
 function unsetRole(user, name_role, message, dry) {
-  let role = message.guild.roles.find('name', name_role.trim());
+  let role = message.guild.roles.find((d) => d.name === name_role.trim());
   let roles = user.roles;
   roles = new Set(roles.keys());
   roles.delete(role.id);
@@ -220,7 +220,7 @@ async function unfocus(user, message, dry) {
         });
       }
       if (!dry && message.channel.name != 'botspam') {
-        message.client.channels.find('name', 'botspam').send(msg);
+        message.client.channels.find((d) => d.name === 'botspam').send(msg);
       }
       await deleteMessages(user, message);
     } else {

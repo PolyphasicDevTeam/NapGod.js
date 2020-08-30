@@ -73,7 +73,7 @@ function findRole(roleIdentifier, guild, mentions = new Discord.Collection()) {
   }
 
   const display = 'name';
-  const regexMentions = /<@&|>/g;
+  const regexMentions = /^<@&|>$/g;
   const name = 'Roles';
   return find(
     roleIdentifier,
@@ -124,7 +124,7 @@ function findMember(
 
   const format = guild.member.bind(guild);
   const display = 'displayName';
-  const regexMentions = /<@!|>/g;
+  const regexMentions = /^<@!?|>$/g;
   const name = 'Users';
   return find(
     memberIdentifier,

@@ -35,7 +35,6 @@ module.exports = {
               setTimeout(function () {
                 console.log('MSG   : ', 'RichEmbed[' + nurl.href + ']');
                 msgImg = new Discord.RichEmbed()
-                  .setDescription(nurl.href)
                   .setImage(cacheurl)
                   .setURL(nurl.href);
                 resolve(msgImg);

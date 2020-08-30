@@ -37,20 +37,28 @@ function diffTimeCut(d1, d2 = new Date()) {
   return `${res} ${resUnit}`;
 }
 
-async function sendNapchart(message, res, displayName, dry) {
-  let msg;
-  if (res && res.currentScheduleChart) {
-    let d = new Date(res.updatedAt);
-    let n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    let delta = diffTimeCut(d);
-    msg = `Napchart for **${displayName}** (since ${n}) (${delta}):`;
-    console.log('MSG   : ', msg);
+async function sendNapchart(message, res, member, dry) {
+  console.log(res);
+  if (res && res.currentScheduleChart !== undefined) {
+    const d = new Date(res.updatedAt);
+    const n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    const delta = diffTimeCut(d);
     if (!dry) {
       let emb = await getOrGenImg(res.currentScheduleChart, message, dry);
-      message.channel.send(msg, { embed: emb });
+      emb.setColor(member.displayColor);
+      emb.setAuthor(member.user.tag, member.avatarURL);
+      emb.setDescription(
+        `Napchart for **${member}** (since ${n}) (${delta}):
+ ${emb.url}`
+      );
+      emb.setTimestamp();
+      if (res.currentScheduleName !== undefined) {
+        emb.addField('Schedule', res.currentScheduleName);
+      }
+      message.channel.send({ embed: emb });
     }
   } else {
-    msg = `There is no napchart available for **${displayName}**`;
+    let msg = `There is no napchart available for **${member.displayName}**`;
     console.log('MSG   : ', msg);
     if (!dry) {
       message.channel.send(msg);
@@ -60,7 +68,6 @@ async function sendNapchart(message, res, displayName, dry) {
 
 async function get(args, message, dry) {
   try {
-    console.log(message.content);
     const memberIdentifier = message.content
       .slice(config.prefix.length + 3, message.content.length)
       .trim();
@@ -76,7 +83,7 @@ async function get(args, message, dry) {
       );
     }
     const userDB = await UserModel.findOne({ id: member.user.id });
-    sendNapchart(message, userDB, member.displayName, dry);
+    sendNapchart(message, userDB, member, dry);
   } catch (e) {
     console.log(e);
     message.channel.send(e.toString());

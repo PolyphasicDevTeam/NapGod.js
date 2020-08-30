@@ -52,21 +52,20 @@ function findRole(roleIdentifier, guild, mentions = new Discord.Collection()) {
   const identifierClearRegex = roleIdentifier
     .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
     .replace(/\s/g, '.*');
-
   const regexClear = new RegExp(identifierClearRegex);
   const regexClearI = new RegExp(identifierClearRegex, 'i');
   let fncts = [
-    (r) => r.id !== guild.id && r.name === roleIdentifier,
+    (r) => r.id !== guild.id && r.name === roleIdentifier, // name equal case sensitive
     (r) =>
       r.id !== guild.id &&
-      r.name.toLowerCase() === roleIdentifier.toLowerCase(),
-    (r) => r.id !== guild.id && regexClear.test(r.name),
-    (r) => r.id !== guild.id && regexClearI.test(r.name),
+      r.name.toLowerCase() === roleIdentifier.toLowerCase(), // name equal no case
+    (r) => r.id !== guild.id && regexClear.test(r.name), // name match regexp case sensitive
+    (r) => r.id !== guild.id && regexClearI.test(r.name), // name match regexp no case
   ];
   try {
     const identifierRegexRaw = roleIdentifier.replace(/\s/g, '.*');
-    let regexRaw = new RegExp(identifierRegexRaw);
-    let regexIRaw = new RegExp(identifierRegexRaw, 'i');
+    let regexRaw = new RegExp(identifierRegexRaw); // regexp from raw string case sensitive
+    let regexIRaw = new RegExp(identifierRegexRaw, 'i'); // regexp from raw string, no case
     fncts.push((r) => regexRaw.test(r.name));
     fncts.push((r) => regexIRaw.test(r.name));
   } catch (e) {
@@ -104,21 +103,21 @@ function findMember(
   const regexClear = new RegExp(identifierClearRegex);
   const regexClearI = new RegExp(identifierClearRegex, 'i');
   let fncts = [
-    (m) => compareMember((d) => d === memberIdentifier, m),
+    (m) => compareMember((d) => d === memberIdentifier, m), // identifier equal to username/tag/nickname case sensitive
     (m) =>
       compareMember(
-        (d) => d.toLowerCase() === memberIdentifier.toLowerCase(),
+        (d) => d.toLowerCase() === memberIdentifier.toLowerCase(), // identifier equal to u/t/n no case
         m
       ),
-    (m) => compareMember(regexClear.test.bind(regexClear), m),
-    (m) => compareMember(regexClearI.test.bind(regexClearI), m),
+    (m) => compareMember(regexClear.test.bind(regexClear), m), // identifier match regexp case sensitive
+    (m) => compareMember(regexClearI.test.bind(regexClearI), m), // identifier match regexp no case
   ];
   try {
     const identifierRegexRaw = memberIdentifier.replace(/\s/g, '.*');
     let regexRaw = new RegExp(identifierRegexRaw);
     let regexIRaw = new RegExp(identifierRegexRaw, 'i');
-    fncts.push((m) => compareMember(regexRaw.test.bind(regexRaw), m));
-    fncts.push((m) => compareMember(regexIRaw.test.bind(regexIRaw), m));
+    fncts.push((m) => compareMember(regexRaw.test.bind(regexRaw), m)); // u/t/n match regexp from raw string case sensitive
+    fncts.push((m) => compareMember(regexIRaw.test.bind(regexIRaw), m)); // u/t/n match regexp from raw string no case
   } catch (e) {
     console.log('INFO: wrong syntax to create regexp from raw string');
   }

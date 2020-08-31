@@ -59,7 +59,9 @@ function roleInfo(message, roleIdentifier, dry) {
     }
   } catch (e) {
     console.log(e);
-    message.channel.send(e.toString());
+    if (!dry) {
+      message.channel.send(e.toString());
+    }
   }
 }
 

@@ -86,6 +86,8 @@ async function get(args, message, dry) {
     sendNapchart(message, userDB, member, dry);
   } catch (e) {
     console.log(e);
-    message.channel.send(e.toString());
+    if (!dry) {
+      message.channel.send(e.toString());
+    }
   }
 }

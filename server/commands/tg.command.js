@@ -81,7 +81,9 @@ async function toggle(args, message, dry) {
     }
   } catch (e) {
     console.log(e);
-    message.channel.send(e.toString());
+    if (!dry) {
+      message.channel.send(e.toString());
+    }
   }
 }
 

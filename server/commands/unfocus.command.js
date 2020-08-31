@@ -1,5 +1,7 @@
 const config = require('../../config.json');
 const FocusModel = require('./../models/focus.model');
+const { findMember } = require('./find');
+const { cutAt } = require('./utility');
 
 const days = [
   'Sunday',
@@ -34,12 +36,12 @@ module.exports = {
       roles = new Set(roles.keys());
       let mods = message.guild.roles.find((d) => d.name === 'Moderator').id;
       let admins = message.guild.roles.find((d) => d.name === 'Admins').id;
-      if (args.length == 1) {
+      if (args.length >= 1) {
         // one argument = mod only command, for unfocusing someone
         if (roles.has(mods) || roles.has(admins)) {
           unfocus_admin(message, args, dry);
         } else {
-          msg =
+          let msg =
             'You do not have the privileges to execute this command. Only Moderator or Admins are allowed to unfocus someone';
           console.log('MSG  :', msg);
           if (!dry) {
@@ -49,7 +51,7 @@ module.exports = {
       } else if (args.length == 0) {
         self_unfocus(message, args, dry);
       } else {
-        msg = 'Valid options are `+unfocus`';
+        let msg = 'Valid options are `+unfocus`';
         if (roles.has(mods) || roles.has(admins)) {
           msg += ' or `+unfocus [username]`';
         }
@@ -132,10 +134,19 @@ async function self_unfocus(message, args, dry) {
 }
 
 async function unfocus_admin(message, args, dry) {
-  let msg = '';
-  let member = await find_member(message, args, dry);
-  if (member != null) {
+  try {
+    const memberIdentifier = message.content.replace('+unfocus', '');
+    const member = await findMember(
+      memberIdentifier,
+      message.guild,
+      message.mentions.users
+    );
     unfocus(member, message, dry);
+  } catch (e) {
+    console.log(e);
+    if (!dry) {
+      message.channel.send(e.toString());
+    }
   }
 }
 
@@ -236,120 +247,4 @@ async function unfocus(user, message, dry) {
       message.channel.send('We have a problem here. Contact the admin team. ');
     }
   }
-}
-
-async function find_member(message, args, dry) {
-  //We need to extract the username which can containe arbitrary whitespaces
-  //First use a function who extract it, depending of the command, from the args or the message itself
-  let user = get_username(args, message, dry);
-  let member = await find_uid(user, message, dry);
-  if (member == null) {
-    member = await find_nick(user, message, dry);
-  }
-  return member;
-}
-
-// this function change depending of the command, because it's never the same length of command, or position for arguments
-function get_username(args, message, dry) {
-  let msg = '';
-  //We need to extract the username which can containe arbitrary whitespaces
-  //First get rid of the prefix and 'unfocus' command string (6chars long) and trim
-  message.content = message.content
-    .slice(config.prefix.length + 8, message.content.length)
-    .trim();
-  let split_msg = message.content.split(' ');
-  let user = split_msg.pop();
-  user = user.trim();
-  return user;
-}
-
-async function find_uid(user, message, dry) {
-  let uid = user.replace(/[<@!>]/g, '');
-  if (uid != '') {
-    //Try to get user by id
-    console.log('INFO  : ', 'User mentioned by UID', uid);
-    let member = null;
-    try {
-      member = await message.guild.fetchMember(uid);
-    } catch (err) {
-      console.warn('WARN  : ', 'User could not be fetched by UID', uid);
-    }
-    if (member != null) {
-      //We found a valid user
-      console.log('INFO  : ', 'User was found by UID', member.user.tag);
-      return member;
-    }
-  }
-  return null;
-}
-
-async function fetch_Members(message) {
-  let res = await message.guild.fetchMembers();
-  ms = res.members;
-  ms = ms.array();
-  return ms;
-}
-
-function is_user_found(array, message, user, dry) {
-  if (array.length > 0) {
-    if (array.length == 1) {
-      return array[0];
-    } else {
-      msg = `Multiple users with **${user}** have been found: `;
-      array.forEach((usr) => {
-        msg = msg + usr.user.tag + ' ';
-      });
-      console.log('MSG   : ', msg);
-      if (!dry) {
-        message.channel.send(msg);
-      }
-    }
-  }
-  return null;
-}
-
-async function find_nick(user, message, dry) {
-  let res = await fetch_Members(message);
-
-  nicks = [];
-  unames = [];
-  tags = [];
-
-  for (let i = 0; i < ms.length; i++) {
-    m = ms[i];
-    nickname = m.nickname;
-    if (nickname != null) {
-      ptag_start = nickname.lastIndexOf(' [');
-      if (ptag_start != -1) {
-        nickname = nickname.slice(0, ptag_start);
-      }
-    }
-    if (nickname == user) {
-      nicks.push(m);
-    }
-    if (m.user.username == user) {
-      unames.push(m);
-    }
-    if (m.user.tag == user) {
-      tags.push(m);
-    }
-  }
-
-  usr = is_user_found(nicks, message, user, dry);
-  if (usr == null) {
-    usr = is_user_found(unames, message, user, dry);
-  }
-  if (usr == null) {
-    usr = is_user_found(tags, message, user, dry);
-  }
-  if (usr != null) {
-    console.log('INFO  : ', 'User was found by UID ', usr.user.tag);
-  } else {
-    msg = `Couldn't determine an user with the provided argument **${user}**`;
-    console.log('MSG   : ', msg);
-    if (!dry) {
-      message.channel.send(msg);
-    }
-  }
-  return usr;
 }

@@ -4,7 +4,7 @@ const UserModel = require('./../models/user.model');
 const { getOrGenImg, makeNapChartImageUrl } = require('./../imageCache');
 const config = require('../../config.json');
 const { findMember } = require('./find');
-const { cutAt, executeFunction } = require('./utility');
+const { cutAt, executeFunction, dateToStringSimple } = require('./utility');
 
 module.exports = {
   processGet: function (command, message, args, dry = false) {
@@ -44,20 +44,26 @@ async function sendNapchart(message, res, member, dry) {
     res.currentScheduleChart !== undefined &&
     res.currentScheduleChart !== null
   ) {
-    const d = new Date(res.updatedAt);
-    const n = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    const delta = diffTimeCut(d);
+    const dateChart = new Date(res.updatedAt);
+    const dateChartString = dateToStringSimple(dateChart);
+    const deltaChart = diffTimeCut(dateChart);
     if (!dry) {
       let emb = await getOrGenImg(res.currentScheduleChart, message, dry);
       emb.setColor(member.displayColor);
       emb.setAuthor(member.user.tag, member.avatarURL);
       emb.setDescription(
-        `Napchart for **${member}** (since ${n}) (${delta}):
+        `Napchart for **${member}** (since ${dateChartString}) (${deltaChart}):
  ${emb.url}`
       );
       emb.setTimestamp();
       if (res.currentScheduleName !== undefined) {
-        emb.addField('Schedule', res.currentScheduleName);
+        const dateSchedule = new Date(res.createdAt);
+        const dateSchedulString = dateToStringSimple(dateSchedule);
+        const deltaSchedule = diffTimeCut(dateSchedule);
+        emb.addField(
+          'Schedule',
+          `${res.currentScheduleName} (since ${dateSchedulString}) (${deltaSchedule})`
+        );
       }
       await message.channel.send({ embed: emb });
     }

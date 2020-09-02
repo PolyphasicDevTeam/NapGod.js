@@ -46,7 +46,13 @@ async function executeFunction(fn, message, args, dry = false) {
   }
 }
 
+function dateToStringSimple(date) {
+  const dateISO = date.toISOString();
+  return dateISO.replace('T', ' ').substring(0, dateISO.indexOf('.'));
+}
+
 module.exports = {
   cutAt,
   executeFunction,
+  dateToStringSimple,
 };

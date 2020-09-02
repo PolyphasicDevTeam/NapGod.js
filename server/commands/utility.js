@@ -22,14 +22,18 @@ function buildEmbedError(error) {
 }
 
 async function sendError(error, message, dry = false) {
-  console.log(error);
-  if (!dry) {
-    let channel = message.guild.channels.get(config.logErrorChannelID);
-    if (channel === undefined) {
-      channel = message.channel;
-      await message.channel.send('Log channel not found. Dumping error here');
+  try {
+    console.log(error);
+    if (!dry) {
+      let channel = message.guild.channels.get(config.logErrorChannelID);
+      if (channel === undefined) {
+        channel = message.channel;
+        await message.channel.send('Log channel not found. Dumping error here');
+      }
+      await channel.send(buildEmbedError(error, channel));
     }
-    await channel.send(buildEmbedError(error, channel));
+  } catch (e) {
+    console.log(error);
   }
 }
 

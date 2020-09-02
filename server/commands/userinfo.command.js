@@ -60,7 +60,7 @@ function buildEmbedMember(member) {
   let roles = member.roles.array().join(' ').replace('@everyone', '');
   roles = cutAt(roles, 1000, '<');
   if (roles.length > 0) {
-    embed.addField('Roles', roles);
+    embed.addField(`Roles [${member.roles.size - 1}]`, roles);
   }
   return embed;
 }

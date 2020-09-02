@@ -33,7 +33,7 @@ function buildEmbedRole(role) {
   embed.addField('Managed', role.managed, true);
   embed.addField('Hoist', role.hoist, true);
   embed.addField('Position', role.position, true);
-  embed.addField('Creation Date', role.createdAt.toDateString(), true);
+  embed.addField('Creation Date', role.createdAt.toUTCString(), true);
   embed.addField('Members Count', role.members.size, true);
   const permsEveryone = new Permissions(role.guild.defaultRole.permissions);
   const perms = new Permissions(role.permissions)

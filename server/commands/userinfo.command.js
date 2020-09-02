@@ -30,8 +30,8 @@ function buildEmbedMember(member) {
   embed.setTimestamp();
   embed.setDescription(member);
   embed.setThumbnail(member.user.avatarURL);
-  embed.addField('Join Date', member.joinedAt.toDateString(), true);
-  embed.addField('Register Date', member.user.createdAt.toDateString(), true);
+  embed.addField('Join Date', member.joinedAt.toUTCString(), true);
+  embed.addField('Register Date', member.user.createdAt.toUTCString(), true);
   if (member.user.bot) {
     embed.addField('Bot', true, true);
   }

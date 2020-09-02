@@ -1,6 +1,6 @@
 const config = require('../../config.json');
 const { findMember, findRole } = require('./find');
-const { cutAt } = require('./utility');
+const { cutAt, executeFunction } = require('./utility');
 
 module.exports = {
   processToggle: function (command, message, args, dry = false) {
@@ -11,18 +11,17 @@ module.exports = {
       const permissions = message.member.roles.some((d) =>
         ['Admins', 'Moderators'].includes(d.name)
       );
-      let msg = '';
       if (!permissions) {
-        msg =
+        let msg =
           'You do not have privileges to execute this commands. Only Moderators and Admins are allowed to use `+tg`';
         console.log('MSG   : ', msg);
         if (!dry) {
           message.channel.send(msg);
         }
       } else if (args.length >= 2) {
-        toggle(args, message, dry);
+        executeFunction(toggle, message, args, dry);
       } else {
-        msg = 'Valid options are `+tg [role] [username]`';
+        let msg = 'Valid options are `+tg [role] [username]`';
         console.log('MSG   : ', msg);
         if (!dry) {
           message.channel.send(msg);
@@ -34,66 +33,77 @@ module.exports = {
   },
 };
 
-async function toggle(args, message, dry) {
+async function toggle(msg, args, dry) {
   const memberIdentifier = args.pop();
-  try {
-    let roles = new Set(
-      args.map((d) => findRole(d, message.guild, message.mentions.roles))
-    );
-    const member = findMember(
-      memberIdentifier,
-      message.guild,
-      message.mentions.users
-    );
-    const higherRole = message.guild.me.roles
-      .sort((a, b) => a.position - b.position)
-      .last();
-    console.log(higherRole.position);
-    console.log(message.guild.roles.get('417050245885853706').position);
-    // [0] -> to Remove | [1] -> to Add
-    let rolesToRemove = member.roles.filter(
-      (d) => roles.has(d) && d.position < higherRole.position
-    );
-    roles = Array.from(roles);
-    const rolesToAdd = roles.filter(
-      (d) => !rolesToRemove.has(d.id) && d.position < higherRole.position
-    );
-    const rolesTooHigh = roles.filter((d) => d.position >= higherRole.position);
-    rolesToRemove = rolesToRemove.array();
-    if (!dry) {
-      await member.addRoles(rolesToAdd);
-      await member.removeRoles(rolesToRemove);
-      sendInfoRole(
-        rolesToRemove,
-        `${member.displayName} has lost the role`,
-        message.channel
+  let roles = [];
+  let i = 0;
+  let tmpRole;
+  while (
+    i < args.length && // args[roles.length]
+    (tmpRole = findRole(args[i], msg.guild, msg.mentions.roles)).found
+  ) {
+    roles.push(tmpRole.value);
+    i++;
+  }
+  if (roles.length === args.length) {
+    roles = new Set(roles);
+    let member = findMember(memberIdentifier, msg.guild, msg.mentions.users);
+    if (member.found) {
+      member = member.value;
+      const higherRole = msg.guild.me.roles
+        .sort((a, b) => a.position - b.position)
+        .last();
+      let rolesToRemove = member.roles.filter(
+        (d) => roles.has(d) && d.position < higherRole.position
       );
-      sendInfoRole(
-        rolesToAdd,
-        `${member.displayName} has now the role`,
-        message.channel
+      roles = Array.from(roles);
+      const rolesToAdd = roles.filter(
+        (d) => !rolesToRemove.has(d.id) && d.position < higherRole.position
       );
-      sendInfoRole(
-        rolesTooHigh,
-        "I can't manage the following role",
-        message.channel
+      const rolesTooHigh = roles.filter(
+        (d) => d.position >= higherRole.position
       );
+      rolesToRemove = rolesToRemove.array();
+      if (!dry) {
+        await member.addRoles(rolesToAdd);
+        await member.removeRoles(rolesToRemove);
+        await sendInfoRole(
+          rolesToRemove,
+          `${member.displayName} has lost the role`,
+          msg.channel
+        );
+        await sendInfoRole(
+          rolesToAdd,
+          `${member.displayName} has now the role`,
+          msg.channel
+        );
+        await sendInfoRole(
+          rolesTooHigh,
+          "I can't manage the following role",
+          msg.channel
+        );
+      }
+    } else {
+      console.log(member.msg);
+      if (!dry) {
+        await msg.channel.send(member.msg);
+      }
     }
-  } catch (e) {
-    console.log(e);
+  } else {
+    console.log(tmpRole.msg);
     if (!dry) {
-      message.channel.send(e.toString());
+      await msg.channel.send(tmpRole.msg);
     }
   }
 }
 
-function sendInfoRole(roles, string, channel) {
+async function sendInfoRole(roles, string, channel) {
   if (roles.length > 0) {
     let s = '';
     if (roles.length > 1) {
       s = 's';
     }
-    channel.send(
+    await channel.send(
       `${string}${s} : ${cutAt(
         roles.map((r) => `\`${r.name}\``).join(', '),
         500,

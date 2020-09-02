@@ -1,4 +1,4 @@
-const config = '../../config.json';
+const config = require('../../config.json');
 
 const { RichEmbed } = require('discord.js');
 function cutAt(string, nbMax, limitChar = '') {
@@ -33,10 +33,9 @@ async function sendError(error, message, dry = false) {
   }
 }
 
-async function executeFunction(fn, args, message, dry = false) {
+async function executeFunction(fn, message, args, dry = false) {
   try {
-    console.log(fn);
-    await fn(args, message, dry);
+    await fn(message, args, dry);
   } catch (e) {
     console.log('?');
     await sendError(e, message, dry);

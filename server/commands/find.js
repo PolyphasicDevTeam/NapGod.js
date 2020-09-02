@@ -11,10 +11,11 @@ function find(
   name,
   format = (x) => x
 ) {
-  let found = mentions.get(identifier.replace(regexMentions, ''));
-  if (found === undefined) {
-    found = guildFound.get(identifier);
-    if (found === undefined) {
+  let res = { found: true };
+  res.value = mentions.get(identifier.replace(regexMentions, ''));
+  if (res.value === undefined) {
+    res.value = guildFound.get(identifier);
+    if (res.value === undefined) {
       let i = 0;
       let tmpFounds;
       do {
@@ -26,24 +27,29 @@ function find(
           if (identifier.length > 100) {
             identifier = identifier.slice(0, 100) + '...';
           }
-          throw `Error: no ${name} found with the identifier ${identifier}`;
+          msg = `Error: no ${name} found with the identifier ${identifier}`;
+          return { found: false, msg };
           break;
         case 1:
-          found = tmpFounds.first();
+          res.value = tmpFounds.first();
           break;
         default:
           let listeFoundName = tmpFounds
             .reduce((acc, v) => acc + ', ' + v[display], '')
             .replace(', ', '');
-          throw `Error: too much ${name} match the name ${cutAt(
+          msg = `Error: too much ${name} match the name ${cutAt(
             identifier,
             100
           )}: \`${cutAt(listeFoundName, 200, ',')}\``;
+          return { found: false, msg };
           break;
       }
     }
   }
-  return format(found);
+  if (res.found) {
+    res.value = format(res.value);
+  }
+  return res;
 }
 
 function findRole(roleIdentifier, guild, mentions = new Discord.Collection()) {

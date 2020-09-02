@@ -1,15 +1,12 @@
 const { RichEmbed, Permissions } = require('discord.js');
 const config = require('../../config.json');
 const { findMember } = require('./find');
-const { cutAt } = require('./utility');
+const { cutAt, executeFunction } = require('./utility');
 
+const commandName = 'userinfo';
 function processUserInfo(command, message, args, dry = false) {
-  const commandName = 'userinfo';
   if (command === commandName) {
-    const memberIdentifier = message.content
-      .replace(config.prefix + commandName, '')
-      .trim();
-    userInfo(message, memberIdentifier, dry);
+    executeFunction(userInfo, message, args, dry);
     return true;
   }
   return false;
@@ -68,29 +65,34 @@ function buildEmbedMember(member) {
   return embed;
 }
 
-function userInfo(message, memberIdentifier, dry) {
-  try {
-    console.log('INFO:  memberIdentifier: ', memberIdentifier);
-    let member;
-    if (memberIdentifier === '') {
-      member = message.member;
+async function userInfo(message, args, dry) {
+  const memberIdentifier = message.content
+    .replace(config.prefix + commandName, '')
+    .trim();
+  console.log('INFO:  memberIdentifier: ', memberIdentifier);
+  let member;
+  if (memberIdentifier === '') {
+    member = message.member;
+  } else {
+    member = findMember(
+      memberIdentifier,
+      message.guild,
+      message.mentions.users
+    );
+    if (!member.found) {
+      console.log(member.msg);
+      if (!dry) {
+        await message.channel.send(member.msg);
+      }
+      return;
     } else {
-      member = findMember(
-        memberIdentifier,
-        message.guild,
-        message.mentions.users
-      );
+      member = member.value;
     }
-    console.log(`INFO:  user found ${member.user.tag} -> ${member.id}`);
-    if (!dry) {
-      const embed = buildEmbedMember(member);
-      message.channel.send(embed);
-    }
-  } catch (e) {
-    console.log(e);
-    if (!dry) {
-      message.channel.send(e.toString());
-    }
+  }
+  console.log(`INFO:  user found ${member.user.tag} -> ${member.id}`);
+  if (!dry) {
+    const embed = buildEmbedMember(member);
+    await message.channel.send(embed);
   }
 }
 

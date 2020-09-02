@@ -1,7 +1,7 @@
 const config = require('../../config.json');
 const FocusModel = require('./../models/focus.model');
 const { findMember } = require('./find');
-const { cutAt } = require('./utility');
+const { cutAt, executeFunction } = require('./utility');
 
 const days = [
   'Sunday',
@@ -32,14 +32,13 @@ module.exports = {
     if (command === 'unfocus') {
       console.log('CMD   : UNFOCUS');
       console.log('ARGS  : ', args);
-      let roles = message.member.roles;
-      roles = new Set(roles.keys());
-      let mods = message.guild.roles.find((d) => d.name === 'Moderator').id;
-      let admins = message.guild.roles.find((d) => d.name === 'Admins').id;
+      const permissions = message.member.roles.some((d) =>
+        ['Admins', 'Moderators'].includes(d.name)
+      );
       if (args.length >= 1) {
         // one argument = mod only command, for unfocusing someone
-        if (roles.has(mods) || roles.has(admins)) {
-          unfocus_admin(message, args, dry);
+        if (permissions) {
+          executeFunction(unfocus_admin, message, args, dry);
         } else {
           let msg =
             'You do not have the privileges to execute this command. Only Moderator or Admins are allowed to unfocus someone';
@@ -49,10 +48,10 @@ module.exports = {
           }
         }
       } else if (args.length == 0) {
-        self_unfocus(message, args, dry);
+        executeFunction(self_unfocus, message, args, dry);
       } else {
         let msg = 'Valid options are `+unfocus`';
-        if (roles.has(mods) || roles.has(admins)) {
+        if (permissions) {
           msg += ' or `+unfocus [username]`';
         }
         console.log('MSG   : ', msg);
@@ -134,19 +133,20 @@ async function self_unfocus(message, args, dry) {
 }
 
 async function unfocus_admin(message, args, dry) {
-  try {
-    const memberIdentifier = message.content.replace('+unfocus', '');
-    const member = await findMember(
-      memberIdentifier,
-      message.guild,
-      message.mentions.users
-    );
-    unfocus(member, message, dry);
-  } catch (e) {
-    console.log(e);
+  const memberIdentifier = message.content.replace('+unfocus', '');
+  let member = findMember(
+    memberIdentifier,
+    message.guild,
+    message.mentions.users
+  );
+  if (!member.found) {
+    console.log(member.msg);
     if (!dry) {
-      message.channel.send(e.toString());
+      await message.channel.send(member.msg);
     }
+  } else {
+    member = member.value;
+    unfocus(member, message, dry);
   }
 }
 
@@ -235,7 +235,7 @@ async function unfocus(user, message, dry) {
       }
       await deleteMessages(user, message);
     } else {
-      msg = user.user.tag + " isn't focus in the first place!";
+      let msg = user.user.tag + " isn't focus in the first place!";
       console.log('MSG: ', msg);
       if (!dry) {
         message.channel.send(msg);

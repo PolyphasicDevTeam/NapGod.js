@@ -1,15 +1,12 @@
 const { RichEmbed, Permissions } = require('discord.js');
 const config = require('../../config.json');
 const { findRole } = require('./find');
-const { cutAt } = require('./utility');
+const { cutAt, executeFunction } = require('./utility');
 
+const commandName = 'roleinfo';
 function processRoleInfo(command, message, args, dry = false) {
-  const commandName = 'roleinfo';
   if (command === commandName) {
-    const roleIdentifier = message.content
-      .replace(config.prefix + commandName, '')
-      .trim();
-    if (roleIdentifier === '') {
+    if (args.length === 0) {
       let msg =
         'You need to provide at least one argument to retrieve the role.';
       console.log('INFO:  ', msg);
@@ -17,7 +14,7 @@ function processRoleInfo(command, message, args, dry = false) {
         message.channel.send(msg);
       }
     } else {
-      roleInfo(message, roleIdentifier, dry);
+      executeFunction(roleInfo, message, args, dry);
     }
     return true;
   }
@@ -48,19 +45,27 @@ function buildEmbedRole(role) {
   return embed;
 }
 
-function roleInfo(message, roleIdentifier, dry) {
-  try {
-    console.log('INFO:  roleIdentifier: ', roleIdentifier);
-    let role = findRole(roleIdentifier, message.guild, message.mentions.roles);
+async function roleInfo(message, args, dry) {
+  const roleIdentifier = message.content
+    .replace(config.prefix + commandName, '')
+    .trim();
+  console.log('INFO:  roleIdentifier: ', roleIdentifier);
+  let role = await findRole(
+    roleIdentifier,
+    message.guild,
+    message.mentions.roles
+  );
+  if (!role.found) {
+    console.log(role.msg);
+    if (!dry) {
+      await message.channel.send(role.msg);
+    }
+  } else {
+    role = role.value;
     console.log(`INFO:  role found ${role.name} -> ${role.id}`);
     if (!dry) {
       const embed = buildEmbedRole(role);
-      message.channel.send(embed);
-    }
-  } catch (e) {
-    console.log(e);
-    if (!dry) {
-      message.channel.send(e.toString());
+      await message.channel.send(embed);
     }
   }
 }

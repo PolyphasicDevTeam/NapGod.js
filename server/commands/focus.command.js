@@ -71,7 +71,7 @@ function setRole(user, name_role, message, date, dry) {
 function setPermissionFocus(message) {
   message.guild.channels.forEach((chan) => {
     message.member.setVoiceChannel(null);
-    if (chan.name !== 'focus') {
+    if (chan.name !== 'focus' && chan.manageable) {
       chan.overwritePermissions(message.author, { VIEW_CHANNEL: false });
     }
   });

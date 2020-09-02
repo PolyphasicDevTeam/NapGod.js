@@ -99,7 +99,7 @@ function h_n_m(minutes) {
 
 function setPermissionUnfocus(message, member) {
   message.guild.channels.forEach((chan) => {
-    if (chan.name !== 'focus') {
+    if (chan.name !== 'focus' && chan.manageable) {
       chan.overwritePermissions(member, { VIEW_CHANNEL: null });
     }
   });

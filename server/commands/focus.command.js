@@ -1,5 +1,6 @@
 const config = require('../../config.json');
 const FocusModel = require('./../models/focus.model');
+const { h_n_m } = require('./utility');
 
 const days = [
   'Sunday',
@@ -157,13 +158,6 @@ function formatDate(date) {
         ? '0' + date.getSeconds()
         : date.getSeconds()
     );
-}
-
-function h_n_m(minutes) {
-  minutes = Math.trunc(minutes);
-  const heures = Math.trunc(minutes / 60);
-  minutes = minutes % 60;
-  return heures + 'h ' + minutes + 'm';
 }
 
 // no break, use every case

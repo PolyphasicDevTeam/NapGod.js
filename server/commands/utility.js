@@ -1,6 +1,6 @@
 const config = require('../../config.json');
-
 const { RichEmbed } = require('discord.js');
+
 function cutAt(string, nbMax, limitChar = '') {
   if (string.length > nbMax) {
     string = string.slice(0, nbMax);
@@ -51,8 +51,16 @@ function dateToStringSimple(date) {
   return dateISO.replace('T', ' ').substring(0, dateISO.indexOf('.'));
 }
 
+function h_n_m(minutes) {
+  let minutes = Math.trunc(minutes);
+  const hours = Math.trunc(minutes / 60);
+  minutes = minutes % 60;
+  return hours + 'h ' + minutes + 'm';
+}
+
 module.exports = {
   cutAt,
   executeFunction,
   dateToStringSimple,
+  h_n_m,
 };

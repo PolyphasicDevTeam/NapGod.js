@@ -1,7 +1,7 @@
 const config = require('../../config.json');
 const FocusModel = require('./../models/focus.model');
 const { findMember } = require('./find');
-const { cutAt, executeFunction } = require('./utility');
+const { cutAt, executeFunction, h_n_m } = require('./utility');
 
 const days = [
   'Sunday',
@@ -89,13 +89,6 @@ function formatDate(date) {
         ? '0' + date.getSeconds()
         : date.getSeconds()
     );
-}
-
-function h_n_m(minutes) {
-  minutes = Math.trunc(minutes);
-  heures = Math.trunc(minutes / 60);
-  minutes = minutes % 60;
-  return heures + 'h ' + minutes + 'm';
 }
 
 function setPermissionUnfocus(message, member) {

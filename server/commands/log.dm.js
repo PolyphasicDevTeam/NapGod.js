@@ -5,16 +5,13 @@ const BitSet = require('bitset');
 const client = new Discord.Client();
 const UserModel = require('./../models/user.model');
 const LogModel = require('./../models/log.model');
+require('./log.tools.js')();
 
 const logCMD = 'log';
 const logsChannelName = 'adaptation_logs';
 const flexibleSchedules = ['DUCAMAYL', 'SEVAMAYL', 'SPAMAYL', 'Random'];
 
 // In seconds
-const timeout = 3600;
-const timeoutMessage =
-  'This session has expired. Please restart from the begining.';
-const abortMessage = 'Aborted.';
 const api_url = 'http://thumb.napchart.com:1771/api/';
 const cache_url = 'https://cache.polyphasic.net/cdn/';
 const napMaxLength = 45;
@@ -112,13 +109,13 @@ const qAdhere_message =
 const qAdhere_sanity = 'Please answer with either `y` or `n`.';
 
 const qSleepTimes_name = 'sleep times';
-const qSleepTimes_message = `At what times did you sleep since your previously logged session? For example, if your last logged nap was at 07:00-07:20, and you slept at 08:00-09:00, 10:00-10:10 and 15:00-15:20 since then, write out all sleeps (even oversleeps) and separate them with the “,”-sign, like this:
-\`08:00-09:00,10:00-10:10,15:00-15:20.\`
+const qSleepTimes_message = `At what times did you sleep since your previously logged session? For example, if you slept at \`08:00-09:00\`, \`10:00-10:10\` and \`15:00-15:20\`, write out all sleeps (even oversleeps) and separate them with a whitespace, like this:
+\`08:00-09:00 10:00-10:10 15:00-15:20\`
 Please do not use the AM/PM format.`;
 const qSleepTimes_sanity =
-  'Please write the times according to the following format, hh.mm-hh.mm,hh.mm-hh.mm… or hhmm-hhmm,hhmm-hhmm... (range is 00.00-23.59)';
-const qSleepTimes_regex = /^([0-9]{1,2}[.:h]?[0-9]{2}-[0-9]{1,2}[.:h]?[0-9]{2}[,; ]?)+$/;
-const rangesSeparators = /[,; ]/;
+  'Please write the times according to the following format, `hh:mm-hh:mm hh:mm-hh:mm`... or `hhmm-hhmm hhmm-hhmm`... (range is 00:00-23:59)';
+const qSleepTimes_regex = /^([0-9]{1,2}[.:h]?[0-9]{2}-[0-9]{1,2}[.:h]?[0-9]{2} ?)+$/;
+const rangesSeparators = /[ ,;]/;
 const rangeSeparators = /-/;
 const hourSeparators = /[.:h]/;
 
@@ -142,6 +139,7 @@ P = was semi-conscious but in a dream-like state outside scheduled sleep times
 Q = deviated from normal sleep hygiene procedures (dark period, fasting, routine before sleep etc)
 R = could not properly accomplish desired activities
 S = switched to alternate activities to stay awake
+T = feelings of soreness or lingering pain after exercise
 X = none of the above`;
 const qEstimate_sanity = 'Please stick to the letters above.';
 const qEstimate_regex = /^[A-SX]+$/;
@@ -179,6 +177,7 @@ const qEstimate_statements = {
   ],
   R: [0, '- I could not properly accomplish desired activities.', false],
   S: [1, '- I switched to alternate activities to stay awake.', false],
+  T: [0, '- I had feelings of soreness or lingering pain after exercising.', false],
 };
 
 const qStayAwake_name = 'stay awake';
@@ -197,10 +196,6 @@ const qStayAwake_recap = [
 
 const qCustomInfo_name = 'custom info';
 const qCustomInfo_message = `If you have anything else to add please write it here, otherwise write “X”.`;
-
-const qSleepTracker_name = 'sleep tracker';
-const qSleepTracker_message =
-  'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.';
 
 const end = 'Thank you!';
 
@@ -553,7 +548,7 @@ async function log(message, dry = false) {
   //TODO: setcompare
   let qCustomInfo = { name: qCustomInfo_name, answer: '' };
   let qSleepTracker = {
-    name: qSleepTracker_name,
+    name: 'sleep tracker',
     answer: '',
     attachment: null,
   };
@@ -990,22 +985,6 @@ async function processqDay(message, qDay) {
   return true;
 }
 
-async function processqGeneric(message, q) {
-  let botMessage = await message.author.send(q.message);
-  if (
-    !(collected = await collectFromUser(
-      message.author,
-      botMessage.channel,
-      q,
-      (collected) => q.parse(collected.content)
-    ))
-  ) {
-    return false;
-  }
-  q.answer = collected.content.toLowerCase();
-  return true;
-}
-
 function formatMinute(time) {
   if (time % 60 === 0) {
     return '00';
@@ -1286,8 +1265,7 @@ async function processqCustomInfo(message, qCustomInfo) {
     !(collected = await collectFromUser(
       message.author,
       botMessage.channel,
-      qCustomInfo,
-      (collected) => ''
+      qCustomInfo
     ))
   ) {
     return false;
@@ -1295,53 +1273,6 @@ async function processqCustomInfo(message, qCustomInfo) {
   qCustomInfo.answer =
     collected.content.toLowerCase() === 'x' ? '' : collected.content;
   return true;
-}
-
-async function processqSleepTracker(message, qSleepTracker) {
-  let botMessage = await message.author.send(qSleepTracker_message);
-  if (
-    !(collected = await collectFromUser(
-      message.author,
-      botMessage.channel,
-      qSleepTracker,
-      (collected) => ''
-    ))
-  ) {
-    return false;
-  }
-  qSleepTracker.attachment =
-    collected.attachments.size > 0
-      ? new Discord.Attachment(collected.attachments.first().url)
-      : null;
-  qSleepTracker.answer = collected.content ? '\n' + collected.content : '';
-  return true;
-}
-
-async function collectFromUser(author, channel, step, checkInput) {
-  try {
-    while (true) {
-      let collected = await channel.awaitMessages(
-        (x) => x.author.id === author.id,
-        { maxMatches: 1, time: timeout * 1000, errors: ['time'] }
-      );
-      if (collected.first().content.toLowerCase() === 'abort') {
-        author.send(abortMessage);
-        return null;
-      }
-      let wrongInput = checkInput(collected.first());
-      if (!wrongInput) {
-        return collected.first();
-      }
-      author.send(wrongInput);
-    }
-  } catch (e) {
-    console.log(
-      'WARN\t: ',
-      `Timeout waiting for answer from ${author.username} during step ${step.name}`
-    );
-    author.send(timeoutMessage);
-    return null;
-  }
 }
 
 function insertSort(arr, el) {
@@ -1492,26 +1423,6 @@ async function getNapchart(username, napchartUrl) {
 
 // Helpers
 // =======
-
-function getMember(message) {
-  const guild = getGuild(message);
-  const userId = message.author.id;
-  return guild.members.find((member) => member.user.id === userId);
-}
-
-function getChannel(message, channelName) {
-  const guild = getGuild(message);
-  return guild.channels.find((channel) => channel.name === channelName);
-}
-
-function getGuild(message) {
-  return message.client.guilds.first();
-}
-
-function hasRole(member, role) {
-  return member.roles.find((role) => role.name == role);
-}
-
 
 function displayTime(time, separator) {
   time = time % (24 * 60);

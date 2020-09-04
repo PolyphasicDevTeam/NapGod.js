@@ -92,7 +92,7 @@ const qSFLpolyNDep_regex = /^[a-c]$/;
 
 const qDay_name = 'day';
 const qDay_message =
-  'Which day do you want to log about? Please write out the number.';
+  'Which day do you want to log about? Please write out the number. A schedule begins from day 0, not 1.';
 const qDay_sanity = 'Please write a valid integer.';
 const qDay_n =
   'Please pick a day before the default one, {0}. If the day you are intending to log about is later than the day displayed please contact a moderator.';
@@ -313,12 +313,12 @@ async function log(message, dry = false) {
     schedule: schedule,
     attempt: attempt,
   });
-  let currentDayLogs = currentScheduleLogs
+  let currentDayLogs = (currentScheduleLogs && currentScheduleLogs.entries)
     ? currentScheduleLogs.entries.filter((e) => e.day === currentDay)
     : null;
 
   let qScheduleFirstLog = {};
-  if (!currentDayLogs && currentDay == 0) {
+  if (!currentScheduleLogs) {
     qScheduleFirstLog.agreement = {
       name: 'sfl: agreement',
       message: qSFLagreement_message,
@@ -432,7 +432,7 @@ async function log(message, dry = false) {
     parse: (c) => '',
     answer: null,
   };
-  if (historicLogged && currentDay === 0 && !currentDayLogs) {
+  if (historicLogged && !currentScheduleLogs) {
     if (!(await processqGeneric(message, qReasonChange))) {
       currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
@@ -980,7 +980,7 @@ async function processqDay(message, qDay) {
     ) {
       return false;
     }
-    qDay.day = collected.content;
+    qDay.day = Number(collected.content);
   }
   return true;
 }

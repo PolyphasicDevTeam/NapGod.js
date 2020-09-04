@@ -83,7 +83,10 @@ async function get(message, args, dry) {
   console.log('INFO:  memberIdentifier: ', memberIdentifier);
   let member;
   if (memberIdentifier === '') {
-    member = message.member;
+    member = { value: message.member, found: true };
+    console.log(
+      `INFO:  user is the author message ${member.value.user.tag} -> ${member.value.id}`
+    );
   } else {
     member = findMember(
       memberIdentifier,
@@ -95,12 +98,14 @@ async function get(message, args, dry) {
       if (!dry) {
         await message.channel.send(member.msg);
       }
-      return;
     } else {
-      member = member.value;
+      console.log(
+        `INFO:  user found ${member.value.user.tag} -> ${member.value.id}`
+      );
     }
   }
-  console.log(`INFO:  user found ${member.user.tag} -> ${member.id}`);
-  const userDB = await UserModel.findOne({ id: member.user.id });
-  await sendNapchart(message, userDB, member, dry);
+  if (member.found) {
+    const userDB = await UserModel.findOne({ id: member.value.user.id });
+    await sendNapchart(message, userDB, member.value, dry);
+  }
 }

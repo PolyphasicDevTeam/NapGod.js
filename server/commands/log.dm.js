@@ -1246,8 +1246,8 @@ async function processqEstimate(message, qEstimate) {
     (el) => !el[1][2]
   )) {
     if (qEstimate.rawAnswer.includes(letter)) {
+      qEstimate.estimate += value[0];
       diffMoods += '\n';
-      diffMoods += value[0];
       diffMoods += value[1];
     }
   }
@@ -1509,8 +1509,9 @@ function getGuild(message) {
 }
 
 function hasRole(member, role) {
-  return member.roles.find((role) => role.name === role);
+  return member.roles.find((role) => role.name == role);
 }
+
 
 function displayTime(time, separator) {
   time = time % (24 * 60);
@@ -1559,33 +1560,22 @@ function processTimeRoles(
     member.addRole(loggerRole).catch(console.error);
   }
 
-  if (currentScheduleMaxLogged + historicLogged > 365) {
-    if (!member.roles.has(oneYearRole.id)) {
+  if (!member.roles.has(oneYearRole.id)) {
+    if (currentScheduleMaxLogged + historicLogged > 365) {
       member.addRole(oneYearRole).catch(console.error);
-    }
-    if (member.roles.has(sixMonthsRole.id)) {
-      member.removeRole(sixMonthsRole).catch(console.error);
-    }
-  }
-  if (currentScheduleMaxLogged + historicLogged > 182) {
-    if (!member.roles.has(sixMonthsRole.id)) {
-      member.addRole(sixMonthsRole).catch(console.error);
-    }
-    if (member.roles.has(threeMonthsRole.id)) {
-      member.removeRole(threeMonthsRole).catch(console.error);
-    }
-  }
-  if (currentScheduleMaxLogged + historicLogged > 91) {
-    if (!member.roles.has(threeMonthsRole.id)) {
-      member.addRole(threeMonthsRole).catch(console.error);
-    }
-    if (member.roles.has(oneMonthRole.id)) {
-      member.removeRole(oneMonthRole).catch(console.error);
-    }
-  }
-  if (currentScheduleMaxLogged + historicLogged > 30) {
-    if (!member.roles.has(oneMonthRole.id)) {
-      member.addRole(oneMonthRole).catch(console.error);
+      if (member.roles.has(sixMonthsRole.id)) { member.removeRole(sixMonthsRole).catch(console.error); }
+    } else if (!member.roles.has(sixMonthsRole.id)) {
+      if (currentScheduleMaxLogged + historicLogged > 182) {
+        member.addRole(sixMonthsRole).catch(console.error);
+        if (member.roles.has(threeMonthsRole.id)) { member.removeRole(threeMonthsRole).catch(console.error); }
+      } else if (!member.roles.has(threeMonthsRole.id)) {
+        if (currentScheduleMaxLogged + historicLogged > 91) {
+          member.addRole(threeMonthsRole).catch(console.error);
+          if (member.roles.has(oneMonthRole.id)) { member.removeRole(oneMonthRole).catch(console.error); }
+        } else if (currentScheduleMaxLogged + historicLogged > 30) {
+          if (!member.roles.has(oneMonthRole.id)) { member.addRole(oneMonthRole).catch(console.error); }
+        }
+      }
     }
   }
 }

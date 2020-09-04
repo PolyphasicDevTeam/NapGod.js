@@ -20,8 +20,9 @@ module.exports = {
   }
 };
 
-async function logEeg(message, dry=false) {
+async function logEeg(message, dry = false) {
   console.log(`CMD   : ${logEegCMD.toUpperCase()}`);
+
   const member = getMember(message);
   if (member) {
     if (currentUsers.includes(message.author.id)) {

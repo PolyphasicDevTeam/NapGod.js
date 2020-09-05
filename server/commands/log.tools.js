@@ -1,3 +1,5 @@
+const Discord = require('discord.js');
+
 module.exports = function() {
   this.timeout = 3600;
   this.timeoutMessage = 'This session has expired. Please restart from the begining.';

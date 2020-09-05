@@ -1,16 +1,14 @@
 const config = require("../../config.json");
 const Discord = require('discord.js');
-const _ = require("lodash");
+require('./log.tools.js')();
 
 let currentUsers = [];
 
-const timeout = 3600;
-const timeoutMessage = 'Timeout: the process was aborted.';
-const abortMessage = 'Process was aborted.';
 const freelogCMD = 'freelog';
 const logsChannelName = 'adaptation_logs';
 
-const qSleepTracker_message = 'If you have an EEG graph you want to include, please post it now, otherwise write ”X”.';
+const qSFLagreement_sanity = 'Please answer with either `y` or `n`.';
+const qSFLagreement_regex = /^[yYnN]$/;
 
 module.exports = {
   processFreelog: function(command, message, args, dry=false) {
@@ -100,58 +98,4 @@ async function freelog(message, dry=false) {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
   }
   return true;
-}
-
-async function collectFromUser(author, channel, step) {
-  try {
-    let collected = await channel.awaitMessages(x => x.author.id === author.id, { maxMatches: 1, time: timeout * 1000, errors: ['time'] });
-    if (collected.first().content.toLowerCase() === 'abort') {
-      author.send('Aborted.');
-      return null;
-    }
-    return collected.first();
-  }
-  catch (e) {
-    console.log("WARN\t: ", `Timeout waiting for answer from ${author.username} during step ${step.name}`);
-    author.send(timeoutMessage);
-    return null;
-  }
-}
-
-async function processqSleepTracker(message, qSleepTracker) {
-  let botMessage = await message.author.send(qSleepTracker_message);
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, qSleepTracker))) {
-    return false;
-  }
-  qSleepTracker.attachment = collected.attachments.size > 0 ? new Discord.Attachment(collected.attachments.first().url) : null;
-  qSleepTracker.answer = collected.content ? collected.content : "";
-  return true;
-}
-
-async function processqGeneric(message, q) {
-  let botMessage = await message.author.send(q.message);
-  if (!(collected = await collectFromUser(message.author, botMessage.channel, q, collected => q.parse(collected.content)))) {
-    return false;
-  }
-  q.answer = collected.content.toLowerCase();
-  return true;
-}
-
-function getMember(message) {
-  const guild = getGuild(message);
-  const userId = message.author.id;
-  return guild.members.find(member => member.user.id === userId);
-}
-
-function getChannel(message, channelName) {
-  const guild = getGuild(message);
-  return guild.channels.find(channel => channel.name === channelName);
-}
-
-function getGuild(message) {
-  return message.client.guilds.first();
-}
-
-function hasRole(member, role) {
-  return member.roles.find(role => role.name == role);
 }

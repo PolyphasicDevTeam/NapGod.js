@@ -52,7 +52,7 @@ function dateToStringSimple(date) {
 }
 
 function h_n_m(minutes) {
-  let minutes = Math.trunc(minutes);
+  minutes = Math.trunc(minutes);
   const hours = Math.trunc(minutes / 60);
   minutes = minutes % 60;
   return hours + 'h ' + minutes + 'm';
@@ -62,5 +62,6 @@ module.exports = {
   cutAt,
   executeFunction,
   dateToStringSimple,
+  sendError,
   h_n_m,
 };

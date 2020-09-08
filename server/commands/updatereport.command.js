@@ -38,18 +38,19 @@ async function report(args, message, dry) {
   ) {
     // default value 5 mins
     msg +=
-      'The last report is too recent, it is available at <https://cache.polyphasic.net/report.json> and <https://cache.polyphasic.net/report.html>.';
+      'The last report is too recent, it is available at <https://cache.polyphasic.net/report.json>,  <https://cache.polyphasic.net/reportDiscord.json> and <https://cache.polyphasic.net/report.html>.';
   } else if (
     report !== null &&
     new Date(report.updatedAt) > new Date(report.lastSetAt)
   ) {
     msg +=
-      'The last report was up to date, and is available at <https://cache.polyphasic.net/report.json> and <https://cache.polyphasic.net/report.html>.';
+      'The last report was up to date, and is available at <https://cache.polyphasic.net/report.json>, <https://cache.polyphasic.net/reportDiscord.json> and <https://cache.polyphasic.net/report.html>.';
   } else {
     msg += 'Generating the report!';
     let users = await UserModel.find({});
     generateHTML(message, users, dry);
     generateJSON(message, users, dry);
+    generateJSONDiscord(message, users, dry);
     ReportModel.create({
       lastSetAt: report !== null ? report.lastSetAt : Date.now(),
     })
@@ -62,26 +63,36 @@ async function report(args, message, dry) {
   }
 }
 
-function generateJSON(message, users, dry = false) {
-  let a = fs.writeFile(
-    '/napcharts/report.json',
-    JSON.stringify(users),
-    (err) => {
-      let msg = '';
+async function generateJSONFile(channel, toWrite, msg, nameFile, dry = false) {
+  let a = await fs.writeFile(
+    `/napcharts/${nameFile}`,
+    JSON.stringify(toWrite),
+    async (err) => {
       if (err) {
-        msg += err;
+        msg = err;
         console.log('ERR>>>: ', err);
       } else {
-        msg +=
-          'Report has been updated and is available at <https://cache.polyphasic.net/report.json>.';
         console.log('MSG   : ', msg);
       }
       if (!dry) {
-        message.channel.send(msg);
+        await channel.send(msg);
       }
     }
   );
   return a;
+}
+
+async function generateJSONDiscord(message, users, dry = false) {
+  users = users.filter((u) => message.guild.members.has(u.id));
+  const nameFile = 'reportDiscord.json';
+  const msg = `Report has been updated and is available at <https://cache.polyphasic.net/${nameFile}>.`;
+  return await generateJSONFile(message.channel, users, msg, nameFile, dry);
+}
+
+async function generateJSON(message, users, dry = false) {
+  const nameFile = 'report.json';
+  const msg = `Report has been updated and is available at <https://cache.polyphasic.net/${nameFile}>.`;
+  return await generateJSONFile(message.channel, users, msg, nameFile, dry);
 }
 
 function generateHTML(message, users, dry) {

@@ -126,7 +126,10 @@ async function self_unfocus(message, args, dry) {
 }
 
 async function unfocus_admin(message, args, dry) {
-  const memberIdentifier = message.content.replace('+unfocus', '');
+  const memberIdentifier = message.content.replace(
+    config.prefix + 'unfocus',
+    ''
+  );
   let member = findMember(
     memberIdentifier,
     message.guild,

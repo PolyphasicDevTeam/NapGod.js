@@ -38,7 +38,9 @@ module.exports = {
 async function adapt(message, args, dry) {
   let scheduleIdentifier = args[0];
   let { is_schedule, schedn, schedfull } = checkIsSchedule(scheduleIdentifier);
-  let memberIdentifier = message.content.replace('+adapted', '').trim();
+  let memberIdentifier = message.content
+    .replace(config.prefix + 'adapted', '')
+    .trim();
   if (is_schedule) {
     console.log('INFO  : ', 'Schedule1 is ', schedules[schedn].name);
     memberIdentifier = memberIdentifier

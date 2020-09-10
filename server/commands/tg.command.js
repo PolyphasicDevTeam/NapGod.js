@@ -5,7 +5,10 @@ const { cutAt, executeFunction } = require('./utility');
 module.exports = {
   processToggle: function (command, message, args, dry = false) {
     if (command === 'tg') {
-      args = message.content.replace('+tg', '').trim().split(',');
+      args = message.content
+        .replace(config.prefix + 'tg', '')
+        .trim()
+        .split(',');
       console.log('CMD   : TOGGLE');
       console.log('ARGS  : ', args);
       const permissions = message.member.roles.some((d) =>

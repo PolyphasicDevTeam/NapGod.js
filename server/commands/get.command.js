@@ -4,7 +4,7 @@ const UserModel = require('./../models/user.model');
 const { getOrGenImg, makeNapChartImageUrl } = require('./../imageCache');
 const config = require('../../config.json');
 const { findMember } = require('./find');
-const { cutAt, executeFunction, dateToStringSimple } = require('./utility');
+const { executeFunction, dateToStringSimple } = require('./utility');
 
 module.exports = {
   processGet: function (command, message, args, dry = false) {

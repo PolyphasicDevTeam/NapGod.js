@@ -264,7 +264,7 @@ async function log(message, dry = false) {
   let napchart = await getNapchart(displayName, napchartUrl);
   if (napchart == null || napchart.sleeps === '') {
     message.author
-      .send('Error retrieving napchart data from API, or invalid napchart.')
+      .send('Error retrieving napchart data from API, or invalid napchart. Please make sure that sleep is labeled in red, and that it is located in the innermost ring of the chart.')
       .catch(console.warn);
     return true;
   }

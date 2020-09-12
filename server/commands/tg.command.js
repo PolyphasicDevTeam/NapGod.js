@@ -50,6 +50,10 @@ async function toggle(msg, args, dry) {
   }
   if (roles.length === args.length) {
     roles = new Set(roles);
+    if (roles.has(msg.guild.defaultRole)) {
+      roles.delete(msg.guild.defaultRole);
+      await msg.channel.send('`@everyone` role is not manageable');
+    }
     let member = findMember(memberIdentifier, msg.guild, msg.mentions.users);
     if (member.found) {
       member = member.value;

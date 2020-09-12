@@ -57,7 +57,9 @@ async function sendNapchart(message, res, member, dry) {
       );
       emb.setTimestamp();
       if (res.currentScheduleName !== undefined) {
-        const dateSchedule = new Date(res.createdAt);
+        const dateSchedule = new Date(
+          res.historicSchedules[res.historicSchedules.length - 1].setAt
+        );
         const dateSchedulString = dateToStringSimple(dateSchedule);
         const deltaSchedule = diffTimeCut(dateSchedule);
         emb.addField(

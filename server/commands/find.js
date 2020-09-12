@@ -61,12 +61,10 @@ function findRole(roleIdentifier, guild, mentions = new Discord.Collection()) {
   const regexClear = new RegExp(identifierClearRegex);
   const regexClearI = new RegExp(identifierClearRegex, 'i');
   let fncts = [
-    (r) => r.id !== guild.id && r.name === roleIdentifier, // name equal case sensitive
-    (r) =>
-      r.id !== guild.id &&
-      r.name.toLowerCase() === roleIdentifier.toLowerCase(), // name equal no case
-    (r) => r.id !== guild.id && regexClear.test(r.name), // name match regexp case sensitive
-    (r) => r.id !== guild.id && regexClearI.test(r.name), // name match regexp no case
+    (r) => r.name === roleIdentifier, // name equal case sensitive
+    (r) => r.name.toLowerCase() === roleIdentifier.toLowerCase(), // name equal no case
+    (r) => regexClear.test(r.name), // name match regexp case sensitive
+    (r) => regexClearI.test(r.name), // name match regexp no case
   ];
   try {
     const identifierRegexRaw = roleIdentifier.replace(/\s/g, '.*');

@@ -41,7 +41,7 @@ module.exports = {
         }
         let roles = message.member.roles;
         roles = new Set(roles.keys());
-        let mods = message.guild.roles.find('name', 'Moderators').id;
+        let mods = message.guild.roles.find('name', 'Moderator').id;
         let admins = message.guild.roles.find('name', 'Admins').id;
         if (roles.has(mods) || roles.has(admins)) {
           permissions = true;

@@ -11,7 +11,7 @@ module.exports = {
       console.log('CMD   : ADAPTED');
       console.log('ARGS  : ', args);
       const permissions = message.member.roles.some((d) =>
-        ['Admins', 'Moderators'].includes(d.name)
+        ['Admins', 'Moderator'].includes(d.name)
       );
       if (!permissions) {
         let msg =

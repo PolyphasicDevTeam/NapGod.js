@@ -57,7 +57,11 @@ function buildEmbedMember(member) {
   if (perms.length > 0) {
     embed.addField('Permissions', perms.join(', '));
   }
-  let roles = member.roles.array().join(' ').replace('@everyone', '');
+  let roles = member.roles
+    .array()
+    .sort((a, b) => b.position - a.position)
+    .join(' ')
+    .replace('@everyone', '');
   roles = cutAt(roles, 1000, '<');
   if (roles.length > 0) {
     embed.addField(`Roles [${member.roles.size - 1}]`, roles);

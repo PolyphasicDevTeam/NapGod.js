@@ -1,7 +1,7 @@
 const { RichEmbed, Permissions } = require('discord.js');
 const config = require('../../config.json');
 const { findRole } = require('./find');
-const { cutAt, executeFunction } = require('./utility');
+const { cutAt, executeFunction, toReadableString } = require('./utility');
 
 const commandName = 'roleinfo';
 function processRoleInfo(command, message, args, dry = false) {
@@ -24,12 +24,15 @@ function processRoleInfo(command, message, args, dry = false) {
 function buildPermissionsRoles(role) {
   let perms;
   if (role === role.guild.defaultRole) {
-    perms = new Permissions(role.guild.defaultRole.permissions).toArray();
+    perms = new Permissions(role.guild.defaultRole.permissions)
+      .toArray()
+      .map((p) => toReadableString(p));
   } else {
     const permsEveryone = new Permissions(role.guild.defaultRole.permissions);
     perms = new Permissions(role.permissions)
       .toArray()
-      .filter((p) => !permsEveryone.has(p));
+      .filter((p) => !permsEveryone.has(p))
+      .map((p) => toReadableString(p));
   }
   return cutAt(perms.join(', '), 1500, ',');
 }

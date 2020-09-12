@@ -1,7 +1,7 @@
 const { RichEmbed, Permissions } = require('discord.js');
 const config = require('../../config.json');
 const { findMember } = require('./find');
-const { cutAt, executeFunction } = require('./utility');
+const { cutAt, executeFunction, toReadableString } = require('./utility');
 
 const commandName = 'userinfo';
 function processUserInfo(command, message, args, dry = false) {
@@ -51,11 +51,14 @@ function buildEmbedMember(member) {
   embed.addField('Presence', getStatusPresence(member.presence.status), true);
   // missing not working
   const permsEveryone = new Permissions(member.guild.defaultRole.permissions);
-  const perms = member.permissions
+  let perms = member.permissions
     .toArray()
-    .filter((p) => !permsEveryone.has(p));
+    .filter((p) => !permsEveryone.has(p))
+    .map((p) => toReadableString(p))
+    .join(', ');
+  cutAt(perms, 1500, ',');
   if (perms.length > 0) {
-    embed.addField('Permissions', perms.join(', '));
+    embed.addField('Permissions', perms);
   }
   let roles = member.roles
     .array()

@@ -12,6 +12,20 @@ function cutAt(string, nbMax, limitChar = '') {
   return string;
 }
 
+// https://stackoverflow.com/a/1026087/8040287
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function toReadableString(string, sep = '_') {
+  return string
+    .trim()
+    .toLowerCase()
+    .split(sep)
+    .map((d) => capitalizeFirstLetter(d))
+    .join(' ');
+}
+
 function buildEmbedError(error) {
   let embed = new RichEmbed();
   embed.setTitle(error.name);
@@ -64,4 +78,5 @@ module.exports = {
   dateToStringSimple,
   sendError,
   h_n_m,
+  toReadableString,
 };

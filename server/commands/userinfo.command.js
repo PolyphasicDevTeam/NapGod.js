@@ -41,6 +41,7 @@ function buildEmbedMember(member) {
   embed.addField(
     'Joined Position',
     member.guild.members
+      .clone()
       .sort(
         (memberA, memberB) => memberA.joinedTimestamp - memberB.joinedTimestamp
       )

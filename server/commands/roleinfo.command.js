@@ -21,6 +21,19 @@ function processRoleInfo(command, message, args, dry = false) {
   return false;
 }
 
+function buildPermissionsRoles(role) {
+  let perms;
+  if (role === role.guild.defaultRole) {
+    perms = new Permissions(role.guild.defaultRole.permissions).toArray();
+  } else {
+    const permsEveryone = new Permissions(role.guild.defaultRole.permissions);
+    perms = new Permissions(role.permissions)
+      .toArray()
+      .filter((p) => !permsEveryone.has(p));
+  }
+  return cutAt(perms.join(', '), 1500, ',');
+}
+
 function buildEmbedRole(role) {
   let embed = new RichEmbed();
   embed.setTitle(role.name);
@@ -35,12 +48,9 @@ function buildEmbedRole(role) {
   embed.addField('Position', role.position, true);
   embed.addField('Creation Date', role.createdAt.toUTCString(), true);
   embed.addField('Members Count', role.members.size, true);
-  const permsEveryone = new Permissions(role.guild.defaultRole.permissions);
-  const perms = new Permissions(role.permissions)
-    .toArray()
-    .filter((p) => !permsEveryone.has(p));
+  const perms = buildPermissionsRoles(role);
   if (perms.length > 0) {
-    embed.addField('Permissions', perms.join(', '));
+    embed.addField('Permissions', perms);
   }
   return embed;
 }

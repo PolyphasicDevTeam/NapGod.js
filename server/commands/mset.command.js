@@ -9,7 +9,7 @@ module.exports = {
   processMset: function (command, message, args, dry = false) {
     if (command === 'mset') {
       const permissions = message.member.roles.some((d) =>
-        ['Admins', 'Moderators'].includes(d.name)
+        ['Admins', 'Moderator'].includes(d.name)
       );
       if (!permissions) {
         const msg =

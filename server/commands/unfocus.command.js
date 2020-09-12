@@ -33,7 +33,7 @@ module.exports = {
       console.log('CMD   : UNFOCUS');
       console.log('ARGS  : ', args);
       const permissions = message.member.roles.some((d) =>
-        ['Admins', 'Moderators'].includes(d.name)
+        ['Admins', 'Moderator'].includes(d.name)
       );
       if (args.length >= 1) {
         // one argument = mod only command, for unfocusing someone

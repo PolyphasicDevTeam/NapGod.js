@@ -48,7 +48,11 @@ function buildEmbedRole(role) {
   embed.addField('Mentionable', role.mentionable, true);
   embed.addField('Managed', role.managed, true);
   embed.addField('Hoist', role.hoist, true);
-  embed.addField('Position', role.position, true);
+  embed.addField(
+    'Position',
+    `${role.position}/${role.guild.roles.size - 1}`,
+    true
+  );
   embed.addField('Creation Date', role.createdAt.toUTCString(), true);
   embed.addField('Members Count', role.members.size, true);
   const perms = buildPermissionsRoles(role);

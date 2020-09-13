@@ -38,18 +38,18 @@ function buildEmbedMember(member) {
   if (member.premiumSince !== null) {
     embed.addField('Premium Date', member.premiumSince, true);
   }
-  embed.addField(
-    'Joined Position',
-    Array.from(
-      member.guild.members
-        .sort(
-          (memberA, memberB) =>
-            memberA.joinedTimestamp - memberB.joinedTimestamp
-        )
-        .keys()
-    ).indexOf(member.id) + 1,
-    true
-  );
+  // embed.addField(
+  //   'Joined Position',
+  //   Array.from(
+  //     member.guild.members
+  //       .sort(
+  //         (memberA, memberB) =>
+  //           memberA.joinedTimestamp - memberB.joinedTimestamp
+  //       )
+  //       .keys()
+  //   ).indexOf(member.id) + 1,
+  //   true
+  // );
   embed.addField('Presence', getStatusPresence(member.presence.status), true);
   // missing not working
   const permsEveryone = new Permissions(member.guild.defaultRole.permissions);

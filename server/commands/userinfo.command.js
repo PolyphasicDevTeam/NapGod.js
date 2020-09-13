@@ -40,13 +40,14 @@ function buildEmbedMember(member) {
   }
   embed.addField(
     'Joined Position',
-    member.guild.members
-      .clone()
-      .sort(
-        (memberA, memberB) => memberA.joinedTimestamp - memberB.joinedTimestamp
-      )
-      .keyArray()
-      .indexOf(member.id) + 1,
+    Array.from(
+      member.guild.members
+        .sort(
+          (memberA, memberB) =>
+            memberA.joinedTimestamp - memberB.joinedTimestamp
+        )
+        .keys()
+    ).indexOf(member.id) + 1,
     true
   );
   embed.addField('Presence', getStatusPresence(member.presence.status), true);

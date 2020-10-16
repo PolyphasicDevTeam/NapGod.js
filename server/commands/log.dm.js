@@ -605,8 +605,7 @@ async function log(message, dry = false) {
             answer: null,
           };
           if (!(await processqGeneric(message, qCustomField))) {
-            currentusers.splice(currentusers.indexof(message.author.id), 1);
-            return true;
+            return { description: null, segments: null };
           }
           segment.field = qCustomField.answer;
           if (segment.field.toLowerCase() !== 'x') {
@@ -653,8 +652,7 @@ async function log(message, dry = false) {
             answer: null,
           };
           if (!(await processqGeneric(message, qCustomField))) {
-            currentusers.splice(currentusers.indexof(message.author.id), 1);
-            return true;
+            return { description: null, segments: null };
           }
           segment.field = qCustomField.answer;
           if (segment.field.toLowerCase() !== 'x') {

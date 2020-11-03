@@ -12,7 +12,7 @@ const logsChannelName = 'adaptation_logs';
 const flexibleSchedules = ['DUCAMAYL', 'SEVAMAYL', 'SPAMAYL', 'Random'];
 
 // In seconds
-const api_url = 'http://thumb.napchart.com:1771/api/';
+const { nc_endpoint } = require('../../config.json');
 const cache_url = 'https://cache.polyphasic.net/cdn/';
 const napMaxLength = 45;
 
@@ -1380,7 +1380,7 @@ function getNapchartPromise(napchartUrl) {
   return new Promise((resolve, reject) => {
     request(
       {
-        url: api_url + 'get?chartid=' + napchartUrl.split('/').pop(),
+        url: nc_endpoint + '/get?chartid=' + napchartUrl.split('/').pop(),
         json: true,
         headers: { 'User-Agent': 'request' },
       },

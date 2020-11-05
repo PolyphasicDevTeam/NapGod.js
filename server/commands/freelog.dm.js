@@ -69,6 +69,7 @@ async function freelog(message, dry=false) {
       .setTitle('Freelog')
       .setAuthor(displayName, message.author.avatarURL)
       .setTimestamp()
+      .setFooter(`ID: ${member.id}`)
       .setDescription(collected.content);
 
     if (dry) {

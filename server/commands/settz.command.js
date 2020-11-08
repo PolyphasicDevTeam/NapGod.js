@@ -1,5 +1,5 @@
 const UserModel = require("./../models/user.model");
-const { minToTZ } = require('./utility');
+const { minToTZ, bold } = require('./utility');
 
 module.exports = {
   processSetTZ: (async function(command, message, args, dry=false) {
@@ -28,13 +28,6 @@ Example: `+settz 60` for `UTC+01:00`. Use negative numbers for the Western Hemis
 
 };
 
-function pad(number) {
-  return ("0" + number).slice(-2);
-}
-
-function bold(s){
-  return "**" + s + "**";
-}
 
 function buildUserInstance(args, author) {
   let userUpdate = {
@@ -45,9 +38,6 @@ function buildUserInstance(args, author) {
   return userUpdate;
 }
 
-//Returns true if both schedule and napchart are set
-//silent supresses dicord text output only, changes still take place
-//(provided dry=false)
 async function settz(args, message, dry, author, member, silent) {
   complete = true;
   let msg = "";

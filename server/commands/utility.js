@@ -79,6 +79,10 @@ function bold(s){
   return "**" + s + "**";
 }
 
+function tick(s){
+  return "`" + s + "`";
+}
+
 function minToTZ(tzmin){
   let sign = tzmin < 0 ? "-" : "+";
   tzmin = Math.abs(tzmin);
@@ -96,5 +100,6 @@ module.exports = {
   toReadableString,
   pad,
   bold,
+  tick,
   minToTZ
 };

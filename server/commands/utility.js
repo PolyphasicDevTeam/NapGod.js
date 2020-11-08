@@ -71,6 +71,21 @@ function h_n_m(minutes) {
   minutes = minutes % 60;
   return hours + 'h ' + minutes + 'm';
 }
+function pad(number) {
+  return ("0" + number).slice(-2);
+}
+
+function bold(s){
+  return "**" + s + "**";
+}
+
+function minToTZ(tzmin){
+  let sign = tzmin < 0 ? "-" : "+";
+  tzmin = Math.abs(tzmin);
+  hours = Math.floor(tzmin / 60);
+  minutes = tzmin - hours * 60;
+  return "UTC" + sign + pad(hours) + ":" + pad(minutes)
+}
 
 module.exports = {
   cutAt,
@@ -79,4 +94,7 @@ module.exports = {
   sendError,
   h_n_m,
   toReadableString,
+  pad,
+  bold,
+  minToTZ
 };

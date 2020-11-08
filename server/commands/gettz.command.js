@@ -13,7 +13,6 @@ module.exports = {
     return false;
   },
 };
-console.log("GETTZ IS HERE")
 
 async function get(message, args, dry) {
   const memberIdentifier = message.content

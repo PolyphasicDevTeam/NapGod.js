@@ -1,23 +1,23 @@
 const UserModel = require('./../models/user.model');
 const config = require('../../config.json');
 const { findMember } = require('./find');
-const { executeFunction, minToTZ, bold } = require('./utility');
+const { executeFunction, dateToStringSimple, minToTZ, bold } = require('./utility');
 
 module.exports = {
   processGetTZ: function (command, message, args, dry = false) {
-    if (command === 'gettz') {
-      console.log('GETTZ', args);
+    if (command === 'status') {
+      console.log('STATUS', args);
       executeFunction(get, message, args, dry);
       return true;
     }
     return false;
   },
 };
-console.log("GETTZ IS HERE")
+
 
 async function get(message, args, dry) {
   const memberIdentifier = message.content
-    .slice(config.prefix.length + 'gettz'.length , message.content.length)
+    .slice(config.prefix.length + 'status'.length , message.content.length)
     .trim();
   console.log('INFO:  memberIdentifier: ', memberIdentifier);
   let member;
@@ -46,10 +46,10 @@ async function get(message, args, dry) {
   }
   const userDB = await UserModel.findOne({ id: member.value.user.id });
   if(userDB && userDB.timezone){
-  let tzmin = userDB.timezone;
-    message.channel.send("Timezone for " +
-      bold(member.value.displayName) + " is `"
-      + minToTZ(tzmin) + "`");
+    let tzmin = userDB.timezone;
+    date = new Date(new Date().getTime() + tzmin * 60000)
+    message.channel.send("Time for "  +
+      bold(member.value.displayName) + " is `"+ dateToStringSimple(date) + " " + minToTZ(tzmin) + "`");
   }
   else{
     message.channel.send("Error: User " + bold(member.value.displayName) + " has not set a timezone.")

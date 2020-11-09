@@ -127,7 +127,7 @@ function getNapchartPromise(napchartUrl) {
 function getNextSleep(sleeps, now){
   let nextSleeps = [];
   sleeps.forEach(sleep => {
-    let d = new Date();
+    let d = new Date(now);
     d.setHours(sleep.slice(0,2));
     d.setMinutes(sleep.slice(2,4));
     d.setSeconds("0");
@@ -143,7 +143,7 @@ function getNextSleep(sleeps, now){
 function getNextWake(sleeps, now){
   let nextWakes = [];
   sleeps.forEach(sleep => {
-    let d = new Date();
+    let d = new Date(now);
     d.setHours(sleep.slice(5,7));
     d.setMinutes(sleep.slice(7,9));
     d.setSeconds("0");

@@ -59,15 +59,21 @@ async function get(message, args, dry) {
       let url = userDB.currentScheduleChart;
       let nc = await getNapchart(member.value.user.tag, url);
       let sleeps = nc.sleeps.split(",");
-      let nextSleep = getNextSleep(sleeps, now)
-      remaining = (nextSleep - now) / 60000;
-      msg += "\nNext sleep:   " + dateToStringSimple(nextSleep).slice(11,16);
-      msg += "\nIn:           " + h_n_m(remaining);
+      if(isAsleep(sleeps, now)){
+        let nextWake = getNextWake(sleeps, now);
+        remaining = (nextWake - now) / 60000;
+        msg += "\nThis user is sleeping.";
+        msg += "\nWaking in:    " + h_n_m(remaining);
+      } else {
+        let nextSleep = getNextSleep(sleeps, now);
+        remaining = (nextSleep - now) / 60000;
+        msg += "\nNext sleep:   " + dateToStringSimple(nextSleep).slice(11,16);
+        msg += "\nIn:           " + h_n_m(remaining);
+      }
+      }
       msg += "\n```";
-
+      message.channel.send(msg);
     }
-    message.channel.send(msg);
-  }
   else{
     message.channel.send("Error: User " + bold(member.value.displayName) + " has not set a timezone.")
   }
@@ -119,9 +125,9 @@ function getNapchartPromise(napchartUrl) {
 }
 
 function getNextSleep(sleeps, now){
-  nextSleeps = [];
+  let nextSleeps = [];
   sleeps.forEach(sleep => {
-    d = new Date();
+    let d = new Date();
     d.setHours(sleep.slice(0,2));
     d.setMinutes(sleep.slice(2,4));
     d.setSeconds("0");
@@ -132,4 +138,58 @@ function getNextSleep(sleeps, now){
   })
   nextSleep = new Date(Math.min.apply(null,nextSleeps));
   return nextSleep;
+}
+
+function getNextWake(sleeps, now){
+  let nextWakes = [];
+  sleeps.forEach(sleep => {
+    let d = new Date();
+    d.setHours(sleep.slice(5,7));
+    d.setMinutes(sleep.slice(7,9));
+    d.setSeconds("0");
+    if (d < now){
+      d.setDate(d.getDate() + 1)
+    }
+    nextWakes.push(d)
+  })
+  nextWake = new Date(Math.min.apply(null,nextWakes));
+  return nextWake;
+}
+
+function isAsleep(sleeps, now){
+  let starts = [];
+  let ends = [];
+  let oneDay = 24 * 60 * 60 * 1000;
+  sleeps.forEach(sleep => {
+    let d = new Date(now);
+    d.setHours(sleep.slice(0,2));
+    d.setMinutes(sleep.slice(2,4));
+    d.setSeconds("0");
+    let thisSleep = new Date(d);
+    if (thisSleep > now){
+      thisSleep.setDate(thisSleep.getDate() - 1);
+    }
+    d.setHours(sleep.slice(5,7));
+    d.setMinutes(sleep.slice(7,9));
+    d.setSeconds("0");
+    let thisWake = new Date(d);
+
+    if ((thisWake - thisSleep) > oneDay){
+      thisWake.setDate(thisWake.getDate() - 1);
+    }
+    if (thisSleep > thisWake){
+      thisWake.setDate(thisWake.getDate() + 1);
+    }
+
+    starts.push(thisSleep);
+    ends.push(thisWake);
+  });
+  console.log(starts);
+  console.log(ends);
+  for(i=0;i<starts.length;i++){
+    if(starts[i] < now && ends[i] > now){
+      return true;
+    }
+  }
+  return false;
 }

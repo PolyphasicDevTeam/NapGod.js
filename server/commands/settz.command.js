@@ -2,7 +2,7 @@ const UserModel = require("./../models/user.model");
 const { minToTZ, bold } = require('./utility');
 
 module.exports = {
-  processSetTZ: (async function(command, message, args, dry=false) {
+  processSetTZ: (function(command, message, args, dry=false) {
     if (command === "settz") {
       if (args.length == 1) {
 	        author = message.author;
@@ -11,7 +11,7 @@ module.exports = {
 	           console.log("WARN>>: ", "Member or author no longer exists");
 	           return false;
 	        }
-	        await settz(args, message, dry, author, member, false);
+	        settz(args, message, dry, author, member, false);
         }
         else {
 	        msg = "Bad input format. Use `+settz [offset from UTC in minutes]`\n\

@@ -87,10 +87,10 @@ async function get(message, args, dry) {
         message.channel.send("This user has not set a napchart, so Nap God cannot know when they will sleep next.");
       }
     }
+  }
   else{
     message.channel.send("Error: User " + bold(member.value.displayName) + " has not set a timezone.")
   }
-}
 }
 
 
@@ -198,8 +198,6 @@ function isAsleep(sleeps, now){
     starts.push(thisSleep);
     ends.push(thisWake);
   });
-  console.log(starts);
-  console.log(ends);
   for(i=0;i<starts.length;i++){
     if(starts[i] < now && ends[i] > now){
       return true;

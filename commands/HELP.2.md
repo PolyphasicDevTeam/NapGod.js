@@ -2,6 +2,9 @@
 **To set your napchart:** Type `+set` followed by the napchart link. For example, `+set https://napchart.com/ro1mi`. To remove your chart instead, use none in place of a link.
 **To set both at the same time:** Just specify both. For example, `+set DC1 https://napchart.com/ro1mi`
 (Please note that if you change schedules without also setting a napchart, any existing napchart you have will be automatically removed.)
+**To set your timezone:** Type `+settz [timezone]`. For example, `+settz UTC+1` or `+settz UTC-4` or `+settz UTC+5:30`
+**To look up a user's sleep status**: Type `+status` followed by the username. Defaults to yourself if not specified.
+**To check a user's timezone**: Type `+gettz` followed by the username. Defaults to yourself if not specified.
 **To look up a napchart link**: Type `+nc` followed by the napchart link.
 **To look up your own napchart:** Type `+get`.
 **To look up someone else's napchart:** Type `+get` followed by the name of the user. Any of the following name formats will work: `+get Username`, `+get Username#0001`. Mentions should be avoided though as these will ping the user in question.

@@ -61,7 +61,9 @@ async function settz(args, message, dry, author, member, silent) {
       result = await UserModel.findOneAndUpdate(query, userUpdate, options);
     } catch (error) {
       console.log("error searching for User: ", error);
-      if(!dry&&!silent){message.channel.send("Something broke.  Call the fire brigade");}
+      if (!dry&&!silent) {
+        message.channel.send("Something broke.  Call the fire brigade");
+      }
       return;
     }
     let tzmin = parseTZstr(args[0]);
@@ -70,8 +72,7 @@ async function settz(args, message, dry, author, member, silent) {
       minToTZ(tzmin) + "`");
 
     return result;
-
-    result.save();
+    //result.save();
 
   }
 }

@@ -1,4 +1,4 @@
-{ 
+{
   "token"  : "DISCORD_API_TOKEN",
   "mongo"  : "mongodb://yourmongohost:PORT/database_to_be_used",
   "prefix" : "+",
@@ -7,6 +7,6 @@
   "modonly": true,
   "reportInterval": 2,
   "maxTimeFocus": 6000,
-  "nc_endpoint": "http://thumb.napchart.com:1771/api"
+  "nc_endpoint": "http://thumb.napchart.com:1771/api",
+  "cachePath": "/napchart"
 }
-

@@ -6,4 +6,4 @@
 
 **To post an EEG log:** Type `+logeeg` and send the bot your eeg screenshot in a private missage.
 
-**Video how to use the log bot** https://www.youtube.com/watch?v=Syq388GeoPY
+**Video how to use the log bot** <https://www.youtube.com/watch?v=Syq388GeoPY>

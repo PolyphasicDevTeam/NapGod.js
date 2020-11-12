@@ -72,12 +72,11 @@ async function settz(args, message, dry, author, member, silent) {
       minToTZ(tzmin) + "`");
 
     return result;
-    //result.save();
 
   }
 }
 
-function isValidTZ(tzmin){
+function isValidTZ(tzmin) {
   if (tzmin <= 840 && tzmin >= -720){
     return true;
   }

@@ -71,6 +71,63 @@ function h_n_m(minutes) {
   minutes = minutes % 60;
   return hours + 'h ' + minutes + 'm';
 }
+function pad(number) {
+  return ("0" + number).slice(-2);
+}
+
+function bold(s){
+  return "**" + s + "**";
+}
+
+function tick(s){
+  return "`" + s + "`";
+}
+
+function minToTZ(tzmin){
+  let sign = tzmin < 0 ? "-" : "+";
+  tzmin = Math.abs(tzmin);
+  hours = Math.floor(tzmin / 60);
+  minutes = tzmin - hours * 60;
+  return "UTC" + sign + pad(hours) + ":" + pad(minutes)
+}
+
+function parseTZstr(s){
+  let tzhours;
+  let tzsign = 1;
+  let tzhm = null;
+  if (s.includes("UTC") || s.includes("utc")){
+    s = s.slice(3);
+  }
+  if (s.includes("Z") || s.includes("z")){
+    s = s.slice(1);
+  }
+  if (s.startsWith("+")){
+    s = s.slice(1);
+  }
+  else if(s.startsWith("-")){
+    tzsign = -1;
+    s = s.slice(1);
+  }
+
+  if (s.includes(":")){
+    tzhm = s.split(":");
+  }
+  else if (s.length == 4){
+    tzhm = [s.slice(0,2), s.slice(2,4)];
+  }
+  else if (s.length == 3){
+    tzhm = [s.slice(0,1), s.slice(1,3)];
+  }
+
+  if (tzhm){
+    tzhours = parseInt(tzhm[0]);
+    tzhours += parseInt(tzhm[1]) / 60;
+  }
+  else{
+    tzhours = parseInt(s);
+  }
+  return 60 * (tzhours * tzsign);
+}
 
 module.exports = {
   cutAt,
@@ -79,4 +136,9 @@ module.exports = {
   sendError,
   h_n_m,
   toReadableString,
+  pad,
+  bold,
+  tick,
+  minToTZ,
+  parseTZstr
 };

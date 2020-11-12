@@ -22,7 +22,8 @@ let schema = {
     }
   ],
   createdAt: {type: Date, default: Date.now},
-  updatedAt: {type: Date, default: Date.now}
+  updatedAt: {type: Date, default: Date.now},
+  timezone: { type: Number, default: null},
 };
 
 module.exports = mongoose.model('User', schema);

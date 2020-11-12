@@ -720,6 +720,7 @@ async function log(message, dry = false) {
 
         const embed = new Discord.RichEmbed(foundLog.embeds[0])
           .setDescription(description)
+          .setFooter(`ID: ${member.id}`)
           .setTimestamp();
         segments.forEach((segment) =>
           embed.addField(segment.title, segment.field)
@@ -787,6 +788,7 @@ async function log(message, dry = false) {
     const embed = new Discord.RichEmbed()
       .setColor(color)
       .setTitle(String.format(titleTemplate, schedule, currentDay))
+      .setFooter(`ID: ${member.id}`)
       .setAuthor(displayName, message.author.avatarURL)
       .setDescription(description)
       .setTimestamp()

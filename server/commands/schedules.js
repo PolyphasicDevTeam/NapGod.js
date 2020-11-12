@@ -23,12 +23,12 @@ module.exports = {
     bix: {
       name: "BiphasicX",
       category: "Biphasic",
-      chart: "",
+      chart: "https://napchart.com/a0thn",
     },
     biphasicx: {
       name: "BiphasicX",
       category: "Biphasic",
-      chart: "",
+      chart: "https://napchart.com/a0thn",
     },
     e2: {
       name: "E2",
@@ -140,8 +140,24 @@ module.exports = {
       category: "Nap only",
       chart: "http://napchart.com/t4pyp",
     },
+    qc0: { 
+      name: "QC0",
+      category: "Experimental",
+      chart: "https://napchart.com/t0pkj"
+    },
+    camayl: { 
+      name: "CAMAYL",
+      category: "Experimental",
+      chart: "https://napchart.com/wccok"
+    },
+    ducamayl: { 
+      name: "DUCAMAYL", 
+      category: "Experimental", 
+      chart: "http://napchart.com/f7fw0" 
+    },
     experimental: { name: "Experimental", category: "Experimental", chart: "" },
-    qc0: { name: "QC0", category: "Experimental", chart: "" },
+
+
     random: { name: "Random", category: "Random", chart: "" },
   },
   modifiers: {

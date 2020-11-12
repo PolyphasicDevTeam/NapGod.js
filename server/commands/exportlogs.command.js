@@ -20,10 +20,10 @@ module.exports = {
         }
         return false;
     },
-    testTables: {
-        exportJson: exportJson
-    }
 };
+if (process.env.NODE_ENV === "test") {
+    module.exports.exportJson = exportJson;
+}
 
 async function exportJson(message) {
     const permissions = message.member.roles.some((d) =>

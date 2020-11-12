@@ -3,9 +3,7 @@ const dbHandler = require('./db-handler');
 const rewire = require('rewire');
 const LogModel = require('../server/models/log.model.js');
 
-const { testTables } = require('../server/commands/exportlogs.command.js');
-const { exportJson } = testTables;
-
+const { exportJson } = require('../server/commands/exportlogs.command.js');
 const target = rewire('../server/commands/exportlogs.command.js');
 
 async function exportNoPerm() {

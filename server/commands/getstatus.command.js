@@ -6,6 +6,8 @@ const { executeFunction, dateToStringSimple, minToTZ, bold, h_n_m, tick } = requ
 
 const api_url = config.nc_endpoint;
 
+let align = arg => { return arg.padEnd('Next sleep'.length + 4, ' ') };
+
 module.exports = {
   processGetTZ: function (command, message, args, dry = false) {
     if (command === 'status') {
@@ -46,16 +48,15 @@ async function get(message, args, dry) {
     }
   }
   const userDB = await UserModel.findOne({ id: member.value.user.id });
-  if (userDB && userDB.timezone) {
+  if (userDB && userDB.timezone != null) {
     let tzmin = userDB.timezone;
     let schedule = userDB.currentScheduleName;
     let now = new Date(new Date().getTime() + tzmin * 60000)
     let msg = "Status for " + bold(member.value.displayName) + "\n";
-    let msg2 = "";
 
-    msg += "```\n"
-    msg += "Date:         "  + dateToStringSimple(now).slice(0,10);
-    msg += "\nTime now:    "  + dateToStringSimple(now).slice(10,16);
+    msg += "```"
+    msg += "\n" + align("Date:") + dateToStringSimple(now).slice(0,10);
+    msg += "\n" + align("Time now:")  + dateToStringSimple(now).slice(11,16);
     if (userDB.currentScheduleChart) {
       let url = userDB.currentScheduleChart;
       let nc = await getNapchart(member.value.user.tag, url);
@@ -68,23 +69,23 @@ async function get(message, args, dry) {
       } else {
         let nextSleep = getNextSleep(sleeps, now);
         remaining = (nextSleep - now) / 60000;
-        msg += "\nNext sleep:   " + dateToStringSimple(nextSleep).slice(11,16);
-        msg += "\nIn:           " + h_n_m(remaining);
+        msg += "\n" + align("Next sleep:") + dateToStringSimple(nextSleep).slice(11,16);
+        msg += "\n" + align("In:") + h_n_m(remaining);
       }
       }
       msg += "\n```";
-      message.channel.send(msg);
       if (!userDB.currentScheduleChart) {
         if (schedule.includes("Random")) {
-        message.channel.send("Eww! This user is on " + bold(schedule) + " schedule!\nNot even Nap God knows when they will sleep next.");
-      }
+        msg += "Eww! This user is on " + bold(schedule) + " schedule!\nNot even Nap God knows when they will sleep next.";
+        }
         else if (schedule.includes("MAYL") || schedule.includes("X")) {
-        message.channel.send("Wow! This user is on " + bold(schedule) + " schedule!\nNot even Nap God knows when they will sleep next.");
+        msg += "Wow! This user is on " + bold(schedule) + " schedule!\nNot even Nap God knows when they will sleep next.";
+        }
+        else {
+        msg += "This user has not set a napchart, so Nap God cannot know when they will sleep next.";
+        }
       }
-      else {
-        message.channel.send("This user has not set a napchart, so Nap God cannot know when they will sleep next.");
-      }
-    }
+      message.channel.send(msg);
   }
   else {
     message.channel.send("Error: User " + bold(member.value.displayName) + " has not set a timezone.")
@@ -148,8 +149,7 @@ function getNextSleep(sleeps, now){
     }
     nextSleeps.push(d)
   })
-  nextSleep = new Date(Math.min.apply(null,nextSleeps));
-  return nextSleep;
+  return new Date(Math.min.apply(null,nextSleeps));
 }
 
 function getNextWake(sleeps, now){
@@ -164,14 +164,13 @@ function getNextWake(sleeps, now){
     }
     nextWakes.push(d)
   })
-  nextWake = new Date(Math.min.apply(null,nextWakes));
-  return nextWake;
+  return new Date(Math.min.apply(null,nextWakes));
 }
 
 function isAsleep(sleeps, now){
   let starts = [];
   let ends = [];
-  let oneDay = 24 * 60 * 60 * 1000;
+  const oneDay = 24 * 60 * 60 * 1000;
   sleeps.forEach(sleep => {
     let d = new Date(now);
     d.setHours(sleep.slice(0,2));

@@ -6,6 +6,7 @@ let schema = {
   id: { type: String, required: true, index: true },
   currentScheduleName: { type: String},
   currentScheduleChart: { type: String },
+  currentScheduleSleeps: { type: String },
   currentScheduleMaxLogged: { type: Number },
   historicSchedules: [
     {
@@ -21,9 +22,14 @@ let schema = {
       setAt: { type: Date, requried: true }
     }
   ],
-  createdAt: {type: Date, default: Date.now},
-  updatedAt: {type: Date, default: Date.now},
-  timezone: { type: Number, default: null},
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  timezone: { type: Number, default: null },
+  logOptions: {
+        enableSegment: { type: Boolean, default: true },
+        enableSegmentField: { type: Boolean, default: true },
+        enableSegmentFieldGap: { type: Boolean, default: true }
+  },
 };
 
 module.exports = mongoose.model('User', schema);

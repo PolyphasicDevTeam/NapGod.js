@@ -13,20 +13,37 @@ const qSFLagreement_regex = /^[yYnN]$/;
 module.exports = {
   processFreelog: function(command, message, args, dry=false) {
     if (command === freelogCMD) {
-      freelog(message, dry);
+      executeFreelog(message);
       return true;
     }
     return false;
   }
 };
 
-async function freelog(message, dry=false) {
+async function executeFreelog(message) {
+    if (currentUsers.includes(message.author.id)) {
+        return;
+    }
+    currentUsers.push(message.author.id);
+    try {
+        await freelog(message);
+    }
+    catch (err) {
+        await message.author.send(
+            `Error while logging, send this to Ninichat:
+            ${err}`
+        );
+        console.error(`ERR\t: ${err}`);
+    }
+    finally {
+        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
+    }
+}
+
+async function freelog(message) {
   console.log(`CMD   : ${freelogCMD.toUpperCase()}`);
   const member = getMember(message);
   if (member) {
-    if (currentUsers.includes(message.author.id)) {
-      return true;
-    }
     let collected;
 
 
@@ -42,17 +59,14 @@ async function freelog(message, dry=false) {
       return true;
     }
 
-    currentUsers.push(message.author.id);
 
     if (!(collected = await collectFromUser(message.author, botMessage.channel, "freelog"))) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
 
     let qSleepTracker = {name: "sleep tracker", answer: "", attachment: null};
     if (hasRole(member, 'Sleep Tracker')) {
       if (!await processqSleepTracker(message, qSleepTracker)) {
-        currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
         return true;
       }
     }
@@ -72,29 +86,24 @@ async function freelog(message, dry=false) {
       .setFooter(`ID: ${member.id}`)
       .setDescription(collected.content);
 
-    if (dry) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
-      return true;
-    }
-
     message.author.send(embed);
     let qConfirm = {name: 'log: confirm sending', message: "A preview of how the bot is going to edit the log can be seen below. Write `y` to confirm the edit, or `n` to abort.",
       parse: c => qSFLagreement_regex.test(c) ? "" : qSFLagreement_sanity, answer: ""};
     if (!await processqGeneric(message, qConfirm)) {
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
     if (qConfirm.answer.toLowerCase() === 'n') {
       message.author.send('Aborted.');
-      currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
       return true;
     }
     getChannel(message, logsChannelName).send(embed);
     if (qSleepTracker.attachment) {
-      getChannel(message, logsChannelName).send(`${message.author} EEG\n` + qSleepTracker.answer, qSleepTracker.attachment);
+      getChannel(message, logsChannelName).send(
+          `${message.author} EEG\n` + qSleepTracker.answer,
+          qSleepTracker.attachment
+      );
     }
     message.author.send("Thank you!");
-    currentUsers.splice(currentUsers.indexOf(message.author.id), 1);
   } else {
     message.author.send('You must join the Polyphasic Sleeping server if you want to post adaptation logs.');
   }

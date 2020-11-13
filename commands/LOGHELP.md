@@ -4,6 +4,8 @@
 
 **To log using the bot's help:** Type `+log` and follow the bot instructions sent to you in a private message on Discord.
 
+**To customize logging:** Type `+logoption` to check what options are available to make logging faster or more personalized.
+
 **To post an EEG log:** Type `+logeeg` and send the bot your eeg screenshot in a private missage.
 
 **Video how to use the log bot** <https://www.youtube.com/watch?v=Syq388GeoPY>

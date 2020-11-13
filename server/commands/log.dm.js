@@ -833,6 +833,7 @@ async function log(message) {
       totalSleepTime,
       qSleepTimes.oversleepMinutes,
       qSleepTimes.naps,
+      segments,
       qCustomInfo.answer
         ? qCustomInfo.answer + qSleepTracker.answer
         : qSleepTracker.answer,
@@ -1542,6 +1543,7 @@ function buildLogInstance(
   sleepTime,
   oversleepTime,
   napsNumber,
+  segments,
   logMessage,
   attachment
 ) {
@@ -1558,6 +1560,7 @@ function buildLogInstance(
       moods: moods,
       awakeDifficulty: awakeDifficulty,
       sleepTime: sleepTime,
+      segments: segments,
     },
   };
 

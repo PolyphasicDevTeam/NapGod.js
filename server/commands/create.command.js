@@ -28,13 +28,16 @@ async function create(args, message, dry) {
   try {
     args.forEach((arg)=>{
       let times = arg.split('-');
-      let hm1 = times[0].split(':');
-      let hm2 = times[1].split(':');
-      s = parseInt(hm1[0])*60 + parseInt(hm1[1]);
-      e = parseInt(hm2[0])*60 + parseInt(hm2[1]);
+      s = parseTime(times[0]);
+      e = parseTime(times[1]);
+      if (s > 1440 || e > 1440){
+        message.channel.send("You're dumb.");
+        throw new Error();
+      }
+
       timeelems.push({
-	start: s, 
-	end: e, 
+	start: s,
+	end: e,
 	id: i++,
 	lane: 0,
 	text: "",
@@ -66,4 +69,27 @@ async function create(args, message, dry) {
   nurl = await createChart(data);
   emb = await getOrGenImg(nurl,message,dry);
   if(!dry){message.channel.send(emb);}
+}
+function parseTime(s) {
+  let hours;
+  let hm = null;
+
+  if (s.includes(":")){
+    hm = s.split(":");
+  }
+  else if (s.length == 4){
+    hm = [s.slice(0,2), s.slice(2,4)];
+  }
+  else if (s.length == 3){
+    hm = [s.slice(0,1), s.slice(1,3)];
+  }
+
+  if (hm){
+    hours = parseInt(hm[0]);
+    hours += parseInt(hm[1]) / 60;
+  }
+  else{
+    hours = parseInt(s);
+  }
+  return 60 * hours;
 }

@@ -114,7 +114,7 @@ async function get(message, args, dry, cmd) {
 	    .setTimestamp()
       .addField("Schedule", schedules.slice(start, end), true)
       .addField("Start Date", schedule_starts.slice(start, end), true)
-      .addField(full ? "Adapted" : "Adapt Date", adapted.slice(start, end), true);
+      .addField("Adapted", adapted.slice(start, end), true);
 
     message.channel.send(embed);
   }

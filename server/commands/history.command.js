@@ -97,7 +97,7 @@ async function get(message, args, dry, cmd) {
     let start = (page - 1) * per_page;
     let end = page * per_page;
     console.log("Page " + page)
-    if (start >= schedules.length) {
+    if (start >= schedules.length || page < 1) {
       message.channel.send("No data on page " + page + ". There are only " + n_pages + " pages in total.");
       console.log("Page out of bound")
       return;

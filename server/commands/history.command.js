@@ -63,10 +63,13 @@ async function get(message, args, dry, cmd) {
 
     // Do not use logic to simplify history if in full mode:
     if (full){
+      let i = 0;
       userDB.historicSchedules.forEach(schedule => {
-            schedules.push(schedule.name);
+            console.log(i);
+            schedules.push(tick(i) + ' ' + schedule.name);
             schedule_starts.push(dateToStringSimple(schedule.setAt).slice(0,10));
             adapted.push(schedule.adapted ? "Yes" : "No");
+            i += 1;
         });
     }
     else {

@@ -69,7 +69,7 @@ async function adapt(message, args, dry) {
           scheduleIdentifier
         ));
         if (!is_schedule) {
-          message.channel.sen('Error in the database. Contact admins.');
+          message.channel.send('Error in the database. Contact admins.');
           throw new CustomError(
             'DataError',
             `Incorrect schedule stored in databasse: ${scheduleIdentifier}`
@@ -123,12 +123,25 @@ async function adaptOne(member, userDB, schedule, changeDB, message, dry) {
   let rolesToAdd = [];
   let rolesToDelete = [];
   if (changeDB) {
+    const adapted = true;
+    const userUpdate = buildUserInstance(member.user, message, schedule);
+    const result = await saveUserSchedule(
+      message,
+      userUpdate,
+      member.user,
+      dry,
+      adapted
+    );
+    const msg = `${member.user.tag} is now adapted`;
+    console.log('INFO:  ', msg);
+    console.log('Save User Schedule result:', result);
+    await message.channel.send(msg);
     rolesToAdd.push(findArrayMember(member.guild.roles, 'Currently Adapted'));
   }
   rolesToDelete.push(
-    findArrayMember(member.guild.roles, 'Attempted-' + schedule)
+    findArrayMember(member.guild.roles, 'Attempted-' + schedule.split("-")[0])
   );
-  rolesToAdd.push(findArrayMember(member.guild.roles, 'Adapted-' + schedule));
+  rolesToAdd.push(findArrayMember(member.guild.roles, 'Adapted-' + schedule.split("-")[0]));
   let rolesToAddMsg = rolesToAdd.map((r) => r[0]).join(', ');
   let rolesToDeleteMsg = rolesToDelete.map((r) => r[0]).join(', ');
   if (
@@ -168,21 +181,7 @@ async function adaptOne(member, userDB, schedule, changeDB, message, dry) {
         throw e;
       }
     }
-    if (changeDB) {
-      const adapted = true;
-      const userUpdate = buildUserInstance(member.user, message, schedule);
-      const result = await saveUserSchedule(
-        message,
-        userUpdate,
-        member.user,
-        dry,
-        adapted
-      );
-      const msg = `${member.user.tag} is now adapted`;
-      console.log('INFO:  ', msg);
-      console.log('Save User Schedule result:', result);
-      await message.channel.send(msg);
-    }
+
   }
 }
 

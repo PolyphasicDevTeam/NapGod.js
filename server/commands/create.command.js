@@ -31,7 +31,7 @@ async function create(args, message, dry) {
       s = parseTime(times[0]);
       e = parseTime(times[1]);
       if (s > 1440 || e > 1440){
-        message.channel.send("You're dumb.");
+        message.channel.send("Please don't try to break the bot. It's hard work.");
         throw new Error();
       }
 

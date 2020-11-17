@@ -5,6 +5,7 @@ const ReportModel = require("./../models/report.model");
 const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
 const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
+const { getNapchart } = require('./napchart.js');
 
 const napchartPathRegex = /^\w{5}$/
 
@@ -58,23 +59,33 @@ module.exports = {
 //silent supresses dicord text output only, changes still take place
 //(provided dry=false)
 async function set(args, message, dry, author, member, silent) {
-  console.log(author);
-  complete = true;
-  let msg = "";
-  let urlPossible = args.length === 2 ? args[1] : args[0];
-  let schedulePossible = args[0];
-  let { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
-  let { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
-  displayname = member.nickname;
-  if (!displayname) {
-    displayname = author.username;
-  }
-
-  console.log("CMD   : SET");
-  console.log("ARGS  : ", args);
+    complete = true;
+    let msg = "";
+    let urlPossible = args.length === 2 ? args[1] : args[0];
+    let schedulePossible = args[0];
+    let { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
+    let { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);
+    displayname = member.nickname;
+    if (!displayname) {
+        displayname = author.username;
+    }
 
   //DONE GET URL, GET User Name
   //TODO HANDLE doubles
+    console.log("CMD   : SET");
+    console.log("ARGS  : ", args);
+
+    let napchart;
+    try {
+        if (is_nurl) {
+            napchart = await getNapchart(displayname, urlPossible);
+        }
+    }
+    catch (err) {
+        console.log(`ERR\t: Could not get napchart ${urlPossible + err}`);
+        message.author.send(`Invalid napchart ${urlPossible}, or napchart API bugged`);
+        return false;
+    }
 
   //If schedule only, wipe chart
   if (args[0] === "none" && args.length == 1) {
@@ -87,8 +98,6 @@ async function set(args, message, dry, author, member, silent) {
     if(!dry&&!silent){message.channel.send(msg);}
     return false;
   }
-
-
 
   //console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
   if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||
@@ -108,11 +117,9 @@ async function set(args, message, dry, author, member, silent) {
     }
   }
 
-
   let userUpdate = buildUserInstance();
 
   let result = await saveUserSchedule(message, userUpdate);
-
 
   fullmsg = "";
   msgopt = {};
@@ -167,9 +174,7 @@ async function set(args, message, dry, author, member, silent) {
       }
     });
     roles.add(role.id);
-    console.log(schedules[schedn].name);
     if(schedules[schedn].name !== "Naptation" && schedules[schedn].name !== "Mono" && schedules[schedn].name !== "Experimental") {
-      console.log(role, attempt_role);
       roles.add(attempt_role.id);
     }
     console.log("ACT   : ", "Change role for " +author.tag + " to "+newRole);
@@ -201,9 +206,6 @@ async function set(args, message, dry, author, member, silent) {
   if(!dry&&!silent){message.channel.send(fullmsg, msgopt);}
   return complete;
 
-
-
-
   function buildUserInstance() {
     let userUpdate = {
       tag: author.tag,
@@ -214,6 +216,7 @@ async function set(args, message, dry, author, member, silent) {
       userUpdate.currentScheduleName = schedfull;
     }
     if (is_nurl) {
+      userUpdate.currentScheduleSleeps = napchart.sleeps;
       userUpdate.currentScheduleChart = urlPossible;
     }
     return userUpdate;

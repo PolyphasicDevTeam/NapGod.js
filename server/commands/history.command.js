@@ -60,6 +60,7 @@ async function get(message, args, dry, cmd) {
     let prev_adapted = false;
     let title = (full ? "Full" : "Summarised") + " schedule history for ";
 
+    let title2 = "**This schedule history is " + (userDB.scheduleVerified ? "" : "NOT ") + "verified.**"
 
     // Do not use logic to simplify history if in full mode:
     if (full){
@@ -111,7 +112,7 @@ async function get(message, args, dry, cmd) {
 
     let embed = new Discord.RichEmbed()
 	    .setColor(member.value.displayColor)
-      .setDescription("Page " + page + " of " + n_pages)
+      .setDescription(title2 + "\nPage " + page + " of " + n_pages)
       .setFooter(`ID: ${member.value.user.id}`)
 	    .setTitle(title + member.value.user.tag)
 	    .setTimestamp()

@@ -67,8 +67,8 @@ async function get(message, args, dry, cmd) {
       userDB.historicSchedules.forEach(schedule => {
             console.log(i);
             schedules.push(tick(i) + ' ' + schedule.name);
-            schedule_starts.push(dateToStringSimple(schedule.setAt).slice(0,10));
-            adapted.push(schedule.adapted ? "Yes" : "No");
+            schedule_starts.push(tick(dateToStringSimple(schedule.setAt).slice(0,10)));
+            adapted.push(tick(schedule.adapted ? "Yes" : "No"));
             i += 1;
         });
     }
@@ -90,7 +90,7 @@ async function get(message, args, dry, cmd) {
         else if (!prev_adapted && schedule.adapted) {
             adapted[adapted.length - 1 ] = dateToStringSimple(schedule.setAt).slice(0,10);
         }
-        prev_adapted = schedule.adapted;
+        prev_adapted = full ? tick(schedule.adapted) : schedule.adapted;
         // Merge consecutive non-adapted identical schedules.
       });
     }

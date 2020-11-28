@@ -91,12 +91,18 @@ async function add(message, args, dry, cmd, permissions) {
   console.log("CMD   : HISTADD");
   console.log("ARGS  : ", args);
 
+  let msg = "Schedule history for " + bold(member.value.displayName) + " has been edited.";
+  msg += "\nAdded: " + tick(history.findIndex(scheduleMatch) + " " + item.name + " " + dateToStringSimple(item.setAt).slice(0,10));
 
+  if (userDB.scheduleVerified) {
+    msg += "\nSchedule history for " + bold(member.value.displayName) + " is no longer verified. Contact a moderator to have it verified again."
+  }
   // +histadd
   let userUpdate = {
     tag: member.value.user.tag,
     userName: member.value.user.username,
-    historicSchedules: history
+    historicSchedules: history,
+    scheduleVerified: false
   };
   let result = await saveUserHistory(message, userUpdate);
 
@@ -114,8 +120,7 @@ async function add(message, args, dry, cmd, permissions) {
       }
       return;
     }
-    message.channel.send("Schedule history for " + bold(member.value.displayName) + " has been edited.\n" + "Added: " +
-      tick(history.findIndex(scheduleMatch) + " " + item.name + " " + dateToStringSimple(item.setAt).slice(0,10)));
+    message.channel.send();
 
     return result;
 

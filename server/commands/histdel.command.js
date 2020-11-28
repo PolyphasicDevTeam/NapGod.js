@@ -70,12 +70,19 @@ async function del(message, args, dry, cmd, permissions) {
   console.log("CMD   : HISTDEL");
   console.log("ARGS  : ", args);
 
+  let msg = "Schedule history for " + bold(member.value.displayName) + " has been edited.";
+  msg += "\nRemoved: " + tick(index + " " + deleted.name + " " + dateToStringSimple(new Date(deleted.setAt)).slice(0,10));
+
+  if (userDB.scheduleVerified) {
+    msg += "\nSchedule history for " + bold(member.value.displayName) + " is no longer verified. Contact a moderator to have it verified again.";
+  }
 
   // +histadd
   let userUpdate = {
     tag: member.value.user.tag,
     userName: member.value.user.username,
-    historicSchedules: history
+    historicSchedules: history,
+    scheduleVerified: false
   };
 
   let result = await saveUserHistory(message, userUpdate);
@@ -94,8 +101,7 @@ async function del(message, args, dry, cmd, permissions) {
       }
       return;
     }
-    message.channel.send("Schedule history for " + bold(member.value.displayName) + " has been edited.\n" + "Deleted: " +
-      tick(index + " " + deleted.name + " " + dateToStringSimple(new Date(deleted.setAt)).slice(0,10)));
+    message.channel.send(msg);
 
     return result;
 

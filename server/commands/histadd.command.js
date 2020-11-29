@@ -120,7 +120,7 @@ async function add(message, args, dry, cmd, permissions) {
       }
       return;
     }
-    message.channel.send();
+    message.channel.send(msg);
 
     return result;
 

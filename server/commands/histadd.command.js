@@ -5,6 +5,8 @@ const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
 const { tick, bold, dateToStringSimple, isValidDate } = require('./utility');
 
+const { prefix } = require('../../config.json');
+
 const cmds = ["histadd"];
 
 module.exports = {
@@ -13,7 +15,13 @@ module.exports = {
       const permissions = message.member.roles.some((d) =>
         ['Admins', 'Moderator'].includes(d.name)
       );
-      add(message, args, dry, cmd = command, permissions);
+      if (args.length == 2) {
+        add(message, args, dry, cmd = command, permissions);
+      }
+      else {
+        message.channel.send("Correct usage: " +
+          tick(prefix + "histadd [schedule-name] [yyyy-mm-dd]"));
+      }
       return true;
     }
     return false;

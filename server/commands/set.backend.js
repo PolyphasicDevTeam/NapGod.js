@@ -286,9 +286,7 @@ async function set(args, message, dry, author, member, silent) {
       if ('currentScheduleName' in userUpdate) {
         result.historicSchedules.push({
           name: userUpdate.currentScheduleName,
-          setAt: new Date(message.createdTimestamp),
-          adapted: false,
-          maxLogged: result.currentScheduleMaxLogged || 0
+          setAt: new Date(message.createdTimestamp)
         });
       }
       if ('currentScheduleChart' in userUpdate && userUpdate.currentScheduleChart != null) {
@@ -297,7 +295,6 @@ async function set(args, message, dry, author, member, silent) {
           setAt: new Date(message.createdTimestamp)
         });
       }
-      result.currentScheduleMaxLogged = 0;
       result.save();
     }
   }

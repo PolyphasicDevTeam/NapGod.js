@@ -5,6 +5,8 @@ const UserModel = require('./../models/user.model');
 const { cutAt, executeFunction, sendError } = require('./utility');
 const CustomError = require('./error');
 
+const { last } = require('./array.js');
+
 module.exports = {
   processAdapted: function (command, message, args, dry = false) {
     if (command === 'adapted') {
@@ -75,8 +77,7 @@ async function adapt(message, args, dry) {
             `Incorrect schedule stored in databasse: ${scheduleIdentifier}`
           );
         } else {
-          run = !userDB.historicSchedules[userDB.historicSchedules.length - 1]
-            .adapted;
+          run = !last(userDB.historicSchedules).adaptDate;
           if (!run) {
             const msg = `${member.displayName} is already adapted to ${userDB.currentScheduleName}`;
             message.channel.send(msg);
@@ -123,14 +124,12 @@ async function adaptOne(member, userDB, schedule, changeDB, message, dry) {
   let rolesToAdd = [];
   let rolesToDelete = [];
   if (changeDB) {
-    const adapted = true;
     const userUpdate = buildUserInstance(member.user, message, schedule);
     const result = await saveUserSchedule(
       message,
       userUpdate,
       member.user,
-      dry,
-      adapted
+      dry
     );
     const msg = `${member.user.tag} is now adapted`;
     console.log('INFO:  ', msg);
@@ -195,23 +194,17 @@ function buildUserInstance(user, message, sch) {
   return userUpdate;
 }
 
-async function saveUserSchedule(message, userUpdate, author, dry, adapted) {
+async function saveUserSchedule(message, userUpdate, author, dry) {
   const query = { id: author.id },
     options = { upsert: true, new: true, setDefaultsOnInsert: true };
   let result = null;
   try {
     result = await UserModel.findOneAndUpdate(query, userUpdate, options);
     if (result) {
-      result.historicSchedules.push({
-        name: userUpdate.currentScheduleName,
-        setAt: new Date(message.createdTimestamp),
-        adapted: adapted,
-      });
+      last(result.historicSchedules).adaptDate = new Date(message.createdTimestamp);
       await result.save();
-      return result;
-    } else {
-      return null;
     }
+    return result;
   } catch (error) {
     console.log('error seraching for User: ', error);
     if (!dry) {

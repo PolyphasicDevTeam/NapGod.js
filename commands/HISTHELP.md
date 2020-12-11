@@ -1,7 +1,7 @@
 **History Commands**
 If [user] is omitted, these commands default to you.
-**Look up someone's schedule history** `+hist [user]`
-**Look up someone's full schedule history** `+histfull [user]`
+**Look up someone's schedule history** `+hist [user] [page]`
+**Look up someone's full schedule history** `+histfull [user] [page]`
 Full history does not merge any attempts and shows indices.
 You need these indices to edit past schedules.
 

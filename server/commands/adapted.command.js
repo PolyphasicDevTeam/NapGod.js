@@ -168,7 +168,7 @@ async function adaptOne(member, userDB, schedule, changeDB, message, dry) {
         roles.set(role[1].id, role[1]);
       }
       await member.setRoles(roles);
-      const msg = `${member.user.tag} had gained the ${rolesToAddMsg} role(s) (if he didn't have them) and lost the ${rolesToDeleteMsg} role(s) (if he had them)`;
+      const msg = `${member.user.tag} has gained the ${rolesToAddMsg} role(s) (if they didn't have them) and lost the ${rolesToDeleteMsg} role(s) (if they had them)`;
       console.log(msg);
       await message.channel.send(msg);
     } catch (e) {

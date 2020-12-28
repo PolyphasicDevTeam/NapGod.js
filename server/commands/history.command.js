@@ -14,7 +14,7 @@ module.exports = {
   processHistory: function (command, message, args, dry = false) {
     if (cmds.includes(command)) {
       console.log(command, args);
-      get(message, args, dry, cmd = command);
+      hist(message, args, cmd = command);
       return true;
     }
     return false;
@@ -22,7 +22,7 @@ module.exports = {
 };
 
 
-async function get(message, args, dry, cmd) {
+async function hist(message, args, cmd) {
   let full = cmd.includes("full");
 
   // If the first arg is not empty, and is not a number, it is a member name.
@@ -43,9 +43,7 @@ async function get(message, args, dry, cmd) {
     console.log('INFO:  memberIdentifier: ', memberIdentifier);
     if (!member.found) {
       console.log(member.msg);
-      if (!dry) {
-        await message.channel.send(member.msg);
-      }
+      await message.channel.send(member.msg);
       return;
     } else {
       console.log(`INFO:  user found ${member.value.user.tag} -> ${member.value.id}`);
@@ -60,6 +58,7 @@ async function get(message, args, dry, cmd) {
     let prev_adapted = false;
     let title = (full ? "Full" : "Summarised") + " schedule history for ";
 
+    let title2 = "**This schedule history is " + (userDB.scheduleVerified ? "" : "NOT ") + "verified.**"
 
     // Do not use logic to simplify history if in full mode:
     if (full){
@@ -67,8 +66,9 @@ async function get(message, args, dry, cmd) {
       userDB.historicSchedules.forEach(schedule => {
             console.log(i);
             schedules.push(tick(i) + ' ' + schedule.name);
-            schedule_starts.push(dateToStringSimple(schedule.setAt).slice(0,10));
-            adapted.push(schedule.adapted ? "Yes" : "No");
+            schedule_starts.push(tick(dateToStringSimple(schedule.setAt).slice(0,10)));
+            adapted.push(tick(schedule.adaptDate ?
+              dateToStringSimple(schedule.adaptDate).slice(0,10) : "No"));
             i += 1;
         });
     }
@@ -77,20 +77,17 @@ async function get(message, args, dry, cmd) {
         // If this schedule is not the same as the previous, add it.
         if (schedule.name != schedules[schedules.length - 1]) {
           schedules.push(schedule.name);
-          schedule_starts.push(dateToStringSimple(schedule.setAt).slice(0,10));
-          adapted.push(schedule.adapted ? "Yes" : "No");
+          schedule_starts.push(tick(dateToStringSimple(schedule.setAt).slice(0,10)));
+          adapted.push(tick(schedule.adaptDate ?
+            dateToStringSimple(schedule.adaptDate).slice(0,10) : "No"));
         }
         // If the previous schedule is adapted and this one is not, add the new attempt.
         else if (prev_adapted && !schedule.adapted) {
             schedules.push(schedule.name);
-            schedule_starts.push(dateToStringSimple(schedule.setAt).slice(0,10));
-            adapted.push("No");
+            schedule_starts.push(tick(dateToStringSimple(schedule.setAt).slice(0,10)));
+            adapted.push(tick("No"));
         }
-        // If the previous schedule is not adapted and this one is, add the date of adaptation to the previous one.
-        else if (!prev_adapted && schedule.adapted) {
-            adapted[adapted.length - 1 ] = dateToStringSimple(schedule.setAt).slice(0,10);
-        }
-        prev_adapted = schedule.adapted;
+        prev_adapted = schedule.adaptDate;
         // Merge consecutive non-adapted identical schedules.
       });
     }
@@ -111,7 +108,7 @@ async function get(message, args, dry, cmd) {
 
     let embed = new Discord.RichEmbed()
 	    .setColor(member.value.displayColor)
-      .setDescription("Page " + page + " of " + n_pages)
+      .setDescription(title2 + "\nPage " + page + " of " + n_pages)
       .setFooter(`ID: ${member.value.user.id}`)
 	    .setTitle(title + member.value.user.tag)
 	    .setTimestamp()

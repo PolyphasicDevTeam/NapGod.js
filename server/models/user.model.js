@@ -4,16 +4,17 @@ let schema = {
   tag: { type: String, required: true },
   userName: { type: String, required: true },
   id: { type: String, required: true, index: true },
+  scheduleVerified: { type: Boolean, required: true, default: false },
   currentScheduleName: { type: String},
   currentScheduleChart: { type: String },
   currentScheduleSleeps: { type: String },
-  currentScheduleMaxLogged: { type: Number },
   historicSchedules: [
     {
       name: { type: String, required: true },
       setAt: { type: Date, requried: true },
-      adapted: { type: Boolean, required: true },
-      maxLogged: { type: Number, required: true, default: 0 }
+      adapted: { type: Boolean, default: false }, // TODO: remove after fixedHistLogs was run and removed
+      adaptDate: { type: Date, required: false },
+      maxLogged: { type: Number, default: 0 }
     }
   ],
   historicScheduleCharts: [

@@ -11,8 +11,6 @@ const { processHelpCommands } = require('./server/help_command.ctrl');
 const { processDMCommands } = require('./server/dm_command.ctrl');
 const { processDevCommands } = require('./server/devCommand.ctrl')(client);
 
-const { fixHistLogs } = require('./server/fixHistScheds.js');
-
 console.log('NapGod.js is starting...');
 
 const logsChannelName = 'adaptation_logs';
@@ -131,7 +129,4 @@ client.on('guildDelete', (guild) => {
   client.user.setGame(`on ${client.guilds.size} servers`);
 });
 
-// TODO: remove fixHistLogs (not client.login) after executed once
-fixHistLogs().then(
-  client.login(config.token)
-);
+client.login(config.token);

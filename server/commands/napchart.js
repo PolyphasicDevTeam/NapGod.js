@@ -32,14 +32,9 @@ async function getNapchart(username, napchartUrl) {
     const data = await getNapchartPromise(napchartUrl);
     data.chartData.elements.forEach((element) => {
       if (element.color === 'red' && element.lane === 0) {
-        if (element.start >= 24 * 60 || element.end >= 24 * 60) {
-          throw "Invalid napchart.";
-        }
         if (napchart.sleeps) {
           napchart.sleeps += ',';
         }
-        element.start = Math.floor(element.start);
-        element.end = Math.floor(element.end);
         napchart.sleeps +=
             `${('00' + Math.floor(element.start / 60)).substr(-2)}${
             ('00' + (element.start % 60)).substr(-2)}-`;

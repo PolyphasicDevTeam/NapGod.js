@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 
 let schema = {
-  userName: { type: String },
-  userId: { type: String, required: true },
+  userName: { type: String, required: true },
   schedule: { type: String, required: true },
-  attempt: { type: Number, required: false },
-  historicId: { type: String, required: true },
+  attempt: { type: Number, required: true },
 
   monoSleep: { type: String },
   experience: { type: String },

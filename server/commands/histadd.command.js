@@ -15,7 +15,7 @@ module.exports = {
       const permissions = message.member.roles.some((d) =>
         ['Admins', 'Moderator'].includes(d.name)
       );
-      if (args.length == 2) {
+      if (arg.length == 2 || args.length == 3) {
         add(message, args, dry, cmd = command, permissions);
       }
       else {

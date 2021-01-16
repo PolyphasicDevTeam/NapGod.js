@@ -65,10 +65,10 @@ async function hist(message, args, cmd) {
       let i = 0;
       userDB.historicSchedules.forEach(schedule => {
             console.log(i);
-            schedules.push(tick(i) + ' ' + schedule.name);
-            schedule_starts.push(tick(dateToStringSimple(schedule.setAt).slice(0,10)));
-            adapted.push(tick(schedule.adaptDate ?
-              dateToStringSimple(schedule.adaptDate).slice(0,10) : "No"));
+            schedules.push(i + ' ' + schedule.name);
+            schedule_starts.push(dateToStringSimple(schedule.setAt).slice(0,10));
+            adapted.push(schedule.adaptDate ?
+              dateToStringSimple(schedule.adaptDate).slice(0,10) : "No");
             i += 1;
         });
     }

@@ -7,7 +7,7 @@ const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
 const { getNapchart } = require('./napchart.js');
 
-const napchartPathRegex = /^\w{5}$/
+const napchartPathRegex = /^\w{5,6}$/
 
 
 module.exports = {

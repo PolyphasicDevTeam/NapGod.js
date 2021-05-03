@@ -13,7 +13,12 @@ module.exports = {
       const permissions = message.member.roles.some((d) =>
         ['Admins', 'Moderator'].includes(d.name)
       );
-      del(message, args, dry, cmd = command, permissions);
+      if (arg.length == 1 || args.length == 2) {
+        del(message, args, dry, cmd = command, permissions);
+      } else {
+        message.channel.send("Correct usage: " +
+          tick(prefix + "histdel index"));
+      }      
       return true;
     }
     return false;

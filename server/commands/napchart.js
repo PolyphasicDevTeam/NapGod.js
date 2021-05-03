@@ -32,7 +32,7 @@ async function getNapchart(username, napchartUrl) {
     const data = await getNapchartPromise(napchartUrl);
     data.chartData.elements.forEach((element) => {
       if (element.color === 'red' && element.lane === 0) {
-        if (element.start >= 24 * 60 || element.end >= 24 * 60) {
+        if (element.start > 24 * 60 || element.end > 24 * 60) {
           throw "Invalid napchart.";
         }
         if (napchart.sleeps) {

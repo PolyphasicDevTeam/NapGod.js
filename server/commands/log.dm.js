@@ -2,9 +2,10 @@ const BitSet = require('bitset');
 const Discord = require('discord.js');
 const LogModel = require('../models/log.model');
 const UserModel = require('../models/user.model');
+const client = new Discord.Client();
+const config = require('../../config.json');
 require('./log.tools.js')();
 
-const { last } = require('./array.js');
 const { getNapchart } = require('./napchart.js');
 
 const logCMD = 'log';
@@ -269,7 +270,7 @@ async function log(message) {
     schedule,
     napchartUrl,
     currentDay,
-    historicId,
+    attempt,
     dateSet,
     historicLogged,
     currentScheduleSleeps,
@@ -307,9 +308,9 @@ async function log(message) {
   currentDay = qDay.day;
 
   let currentScheduleLogs = await getLogs(true, {
-    userId: message.author.id,
+    userName: displayName,
     schedule: schedule,
-    historicId: historicId,
+    attempt: attempt,
   });
   let currentDayLogs = (currentScheduleLogs && currentScheduleLogs.entries)
     ? currentScheduleLogs.entries.filter((e) => e.day === currentDay)
@@ -820,9 +821,9 @@ async function log(message) {
     // Saving the log
     message.author.send(end);
     logInstance = buildLogInstance(
-      message.author.id,
+      displayName,
       schedule,
-      historicId,
+      attempt,
       qReasonChange.answer,
       qScheduleFirstLog,
       currentDay,
@@ -839,13 +840,13 @@ async function log(message) {
       qSleepTracker.attachment ? qSleepTracker.attachment.file : null
     );
 
-    await saveLogInstance(logInstance);
+    await saveLogInstance(logInstance, message.author.id);
 
     // Updating consecutive logging of schedule
     currentScheduleLogs = await getLogs(true, {
-      userId: message.author.id,
+      userName: displayName,
       schedule: schedule,
-      historicId: historicId,
+      attempt: attempt,
     });
     let currentScheduleLoggedDays = currentScheduleLogs.entries.map(
       (e) => e.day
@@ -868,14 +869,14 @@ async function log(message) {
       return max;
     };
 
-    last(memberData.historicSchedules).maxLogged =
+    memberData.currentScheduleMaxLogged =
       Math.max(...currentScheduleLoggedDays) + 1;
     if (!currentScheduleSleeps) {
         memberData.currentScheduleSleeps = napchart.sleeps;
     }
     memberData.save();
 
-    let userLogs = await getLogs(false, { userId: message.author.id });
+    let userLogs = await getLogs(false, { userName: displayName });
     let totalDailyLogs = userLogs.reduce(
       (acc, logs) => acc + new Set(logs.entries.map((e) => e.day)).size,
       0
@@ -883,7 +884,7 @@ async function log(message) {
     processTimeRoles(
       message,
       member,
-      last(memberData.historicSchedules).maxLogged,
+      memberData.currentScheduleMaxLogged,
       longestSequence(currentScheduleLoggedDays),
       historicLogged,
       totalDailyLogs
@@ -1492,8 +1493,9 @@ async function getMemberData(message) {
       (d.getHours() > today.getHours() ? 1 : 0);
     let schedule = res.currentScheduleName;
     let napchartUrl = res.currentScheduleChart;
+    let attempt = res.historicSchedules.filter((s) => s.name === schedule)
+      .length;
 
-    const historicId = last(res.historicSchedules)._id;
     let historicLogged = res.historicSchedules.reduce(
       (acc, sched) => acc + sched.maxLogged,
       0
@@ -1503,7 +1505,7 @@ async function getMemberData(message) {
       schedule,
       napchartUrl,
       currentDay,
-      historicId,
+      attempt,
       dateSet,
       historicLogged,
       currentScheduleSleeps: res.currentScheduleSleeps,
@@ -1529,9 +1531,9 @@ async function getLogs(first, filter) {
 }
 
 function buildLogInstance(
-  userId,
+  username,
   schedule,
-  historicId,
+  attempt,
   reasonChange,
   qScheduleFirstLog,
   day,
@@ -1547,9 +1549,9 @@ function buildLogInstance(
 ) {
   let logInstance = {
     filter: {
-      userId: userId,
+      userName: username,
       schedule: schedule,
-      historicId: historicId,
+      attempt: attempt,
     },
     data: {},
     entries: {
@@ -1599,7 +1601,7 @@ function buildLogInstance(
   return logInstance;
 }
 
-async function saveLogInstance(logInstance) {
+async function saveLogInstance(logInstance, userId) {
   await LogModel.updateOne(
     logInstance.filter,
     {

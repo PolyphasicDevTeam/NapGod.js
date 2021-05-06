@@ -2,7 +2,6 @@ __**Nap God Commands**__
 **Schedule list** `+schedules`
 **Tips and tricks** `!help`
 **Adaptation log help** `+loghelp`
-**History help** `+histhelp`
 -----------------------------------------------
 **Set your sleep schedule** `+set [schedule-name]`
 **Set your napchart** `+set [napchart-link]`

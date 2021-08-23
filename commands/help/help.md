@@ -1,53 +1,40 @@
-!adapt-methods 
-!adapt-success 
-!adaptation 
-!alarms 
-!alcohol 
-!beforeyoustart 
-!bestschedule 
-!caffeine 
-!cannabis
-!circadian 
-!compression 
-!darkperiod 
-!dayblock 
-!diet 
-!discipline 
-!drugs 
-!dst 
-!dualcore 
-!everyman 
-!exercise
-!experiments
-!eyestrain 
-!fallasleep 
-!flexing 
-!genetics
-!graveyard 
-!howtobegin 
-!latecore 
-!memory 
-!melatonin 
-!nap-eat 
-!naplength 
-!napspot 
-!nicotine 
-!nightshift 
-!ns 
-!oss
-!polyprep 
-!prematurewake 
-!products
-!recovery 
-!repartition 
-!secondwind 
-!sickness 
-!skipnap 
-!sleepdebt 
-!sleeptracker
-!smartalarm
-!stayawake 
-!sugar
-!tankphasic
-!travelling
+**General Polyphasic Info**```
+!beforeyoustart  !jumpintoschedule
+!ns              !products
+!polyprep        !recovery
 !underage
+```
+**Scheduling**```
+!bestschedule    !dayblock
+!dualcore        !everyman
+!graveyard       !latecore
+!naplength
+```
+**Adaptation Information**```
+!adaptation      !adapt-methods
+!adapt-success   !alarms
+!discipline      !dst
+!exercise        !eyestrain
+!fallasleep      !flexing
+!howtobegin      !microsleep
+!napspot         !nightshift
+!oss             !prematurewake
+!repartition     !sickness
+!skipnap         !stayawake
+!travelling
+```
+**Sleep Science**```
+!circadian       !compression
+!darkperiod      !experiments
+!genetics        !melatonin
+!memory          !secondwind
+!sleepdebt       !sleepstages
+!sleeptracker    !smartalarm
+!tankphasic
+```
+**Substances**```
+!alcohol         !caffeine
+!cannabis        !diet
+!drugs           !nap-eat
+!nicotine        !sugar
+```

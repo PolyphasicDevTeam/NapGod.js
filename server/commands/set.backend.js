@@ -8,6 +8,7 @@ const modifiers = require("./schedules").modifiers;
 const { getNapchart } = require('./napchart.js');
 
 const napchartPathRegex = /^\w{5,6}$/
+//const napchartPathRegex = /^\w{5,6}$|^snapshot\/[a-zA-Z0-9]{9}$|^[a-zA-Z0-9]{6,30}\/.*\-[a-zA-Z0-9]{6,9}$/
 
 
 module.exports = {
@@ -42,9 +43,9 @@ module.exports = {
 	}
 	await set(args, message, dry, author, member, false);
       } else {
-	msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
-	console.log("MSG   : ", msg);
-	if(!dry){message.channel.send(msg);}
+      msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
+      console.log("MSG   : ", msg);
+	  if(!dry){message.channel.send(msg);}
       }
       return true;
     } else {
@@ -102,8 +103,9 @@ async function set(args, message, dry, author, member, silent) {
   //console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
   if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||
       (!is_nurl && !is_schedule)) {
-    msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details.";
-    console.log("MSG   : ", msg);
+      //msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details.";
+      msg = ":warning: Sorry! The `+set [napchart]` option is under construction right now. :warning:\nWe're sorry about the inconvenience, and we're working to get it fixed!\nIn the meantime, you can set your schedule using `+set [schedule name]`. ";
+      console.log("MSG   : ", msg);
     if(!dry&&!silent){message.channel.send(msg);}
     console.error("ERR>>>: ", "Set command was rejected with args", args);
     return false;

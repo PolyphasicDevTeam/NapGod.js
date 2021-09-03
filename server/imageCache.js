@@ -60,7 +60,7 @@ module.exports = {
   },
   makeNapChartImageUrl: makeNapChartImageUrl,
   createChart: function (data) {
-    let url = `${nc_endpoint}/create`;
+    let url = `${nc_endpoint}createChart`;
     console.log('url', url);
     return new Promise(function (resolve, reject) {
       axios
@@ -80,7 +80,7 @@ module.exports = {
 
 function makeNapChartImageUrl(nurl) {
   let napChartId = nurl.pathname.substring(1);
-  let imgurl = `${nc_endpoint}/getImage/?width=600&shape=circle&height=600&chartid=${napChartId}`;
+  let imgurl = `${nc_endpoint}getImage/${napChartId}?hr=1`;
   return { napChartId, imgurl };
 }
 

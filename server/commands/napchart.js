@@ -7,9 +7,12 @@ module.exports = {
 
 function getNapchartPromise(napchartUrl) {
   return new Promise((resolve, reject) => {
+    nurl = napchartUrl.substring(napchartUrl.indexOf(".com/") + 5, napchartUrl.length);
+    if (nurl.includes("/") && nurl.includes("-")) nurl = nurl.split("-").pop();
+    else if (nurl.includes("/")) nurl = nurl.split("/").pop();
     request(
       {
-        url: nc_endpoint + '/get?chartid=' + napchartUrl.split('/').pop(),
+        url: nc_endpoint + 'getChart/' + nurl,
         json: true,
         headers: { 'User-Agent': 'request' },
       },
@@ -29,8 +32,8 @@ function getNapchartPromise(napchartUrl) {
 async function getNapchart(username, napchartUrl) {
   let napchart = { url: napchartUrl, sleeps: '' };
   try {
-    const data = await getNapchartPromise(napchartUrl);
-    data.chartData.elements.forEach((element) => {
+      const data = await getNapchartPromise(napchartUrl);
+      data.chartDocument.chartData.elements.forEach((element) => {
       if (element.color === 'red' && element.lane === 0) {
         if (element.start >= 24 * 60 || element.end >= 24 * 60) {
           throw "Invalid napchart.";

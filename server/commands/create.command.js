@@ -24,7 +24,6 @@ async function create(args, message, dry) {
   console.log("CMD   : CREATE");
   console.log("ARGS  : ", args);
   timeelems = [];
-  i = 0;
   try {
     args.forEach((arg)=>{
       let times = arg.split('-');
@@ -36,12 +35,11 @@ async function create(args, message, dry) {
       }
 
       timeelems.push({
-	start: s,
 	end: e,
-	id: i++,
 	lane: 0,
 	text: "",
-	color: "red"
+	color: "red",
+	start: s
       });
     });
   } catch (err) {
@@ -51,19 +49,44 @@ async function create(args, message, dry) {
     if(!dry){message.channel.send(msg);}
     return;
   }
-  let data = {
-    data:JSON.stringify({
-      chartData:{
-	elements: timeelems,
-	shape: "circle",
-	lanes: 1
-      },
-      metaInfo:{
-	title:"",
-	description:""
-      }
-    })
-  };
+ // let data = {
+ //   data:JSON.stringify({
+ //     chartData:{
+	//elements: timeelems,
+	//shape: "circle",
+	//lanes: 1
+ //     },
+ //     metaInfo:{
+	//title:"",
+	//description:""
+ //     }
+ //   })
+ //   };
+    let data = {
+        data:JSON.stringify({
+            chartDocument: {
+                chartData: {
+                    lanes: 1,
+                    shape: "circle",
+                    elements: timeelems,
+                    colorTags: [],
+                    lanesConfig: {
+                        1: {
+                            locked: false
+                        }
+                    }
+                },
+                chartid: "",
+                title: null,
+                description: null,
+                username: null,
+                lastUpdated: "",
+                isSnapshot: true,
+                isPrivate: false
+            },
+            publicLink: ""
+        })
+    };
   //data = JSON.stringify(data)
   console.log("INFO  : ","Napchart payload", data);
   nurl = await createChart(data);

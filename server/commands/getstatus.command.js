@@ -97,7 +97,7 @@ async function getNapchart(username, napchartUrl) {
   let napchart = { url: napchartUrl, sleeps: '' };
   try {
     const data = await getNapchartPromise(napchartUrl);
-    data.chartData.elements.forEach((element) => {
+    data.chartDocument.chartData.elements.forEach((element) => {
       if (element.color === 'red' && element.lane === 0) {
         if (napchart.sleeps) {
           napchart.sleeps += ',';
@@ -118,9 +118,12 @@ async function getNapchart(username, napchartUrl) {
 }
 function getNapchartPromise(napchartUrl) {
   return new Promise((resolve, reject) => {
+    nurl = napchartUrl.substring(napchartUrl.indexOf(".com/") + 5, napchartUrl.length);
+    if (nurl.includes("/") && nurl.includes("-")) nurl = nurl.split('-').pop();
+    else if (nurl.includes("/")) nurl = nurl.split('/').pop();
     request(
       {
-        url: api_url + '/get?chartid=' + napchartUrl.split('/').pop(),
+        url: api_url + 'getChart/' + nurl,
         json: true,
         headers: { 'User-Agent': 'request' },
       },

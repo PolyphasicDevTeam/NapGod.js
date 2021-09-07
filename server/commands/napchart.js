@@ -58,7 +58,7 @@ async function getNapchart(username, napchartUrl) {
 }
 
 function getNapchartId(napchartUrl) {
-    let napchartId = napchartUrl.substring(napchartUrl.indexOf(".com/") + 5, napchartUrl.length);
+    let napchartId = napchartUrl.substring(napchartUrl.indexOf(".com/") + 5);
     if (napchartId.includes("/") && napchartId.includes("-")) napchartId = napchartId.split('-').pop();
     else if (napchartId.includes("/")) napchartId = napchartId.split('/').pop();
     return napchartId;

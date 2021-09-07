@@ -37,7 +37,7 @@ module.exports = {
                 console.log('MSG   : ', 'RichEmbed[' + nurl.href + ']');
                 msgImg = new Discord.RichEmbed()
                   .setImage(imgurl)
-                  .setURL(imgurl);
+                  .setURL(nurl.href);
                 resolve(msgImg);
               }, 200);
             }
@@ -48,7 +48,7 @@ module.exports = {
         msgImg = new Discord.RichEmbed()
           .setDescription(nurl.href)
           .setImage(cacheurl)
-          .setURL(cacheurl);
+          .setURL(nurl.href);
         resolve(msgImg);
       }
 

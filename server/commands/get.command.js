@@ -31,7 +31,7 @@ function diffTimeCut(d1, d2 = new Date()) {
     i++;
   }
   let resUnit = timeCut[Math.min(i, timeCut.length - 1)].k;
-  if (res > 1) {
+  if (res > 1 || res === 0) {
     resUnit += 's';
   }
   return `${res} ${resUnit}`;

@@ -2,7 +2,7 @@ const url = require("url");
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const ReportModel = require("./../models/report.model");
-const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
+const { getOrGenImg, makeNapchartImageUrl } = require("./../imageCache");
 const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
 const { getNapchart } = require('./napchart.js');
@@ -46,8 +46,8 @@ module.exports = {
 	await set(args, message, dry, author, member, false);
       } else {
       msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
-      console.log("MSG   : ", msg);
-	  if(!dry){message.channel.send(msg);}
+console.log("MSG   : ", msg);
+	if(!dry){message.channel.send(msg);}
       }
       return true;
     } else {
@@ -103,15 +103,15 @@ async function set(args, message, dry, author, member, silent) {
     return false;
   }
 
- //console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
+  //console.log("INFO  : ", is_nurl, is_schedule, args, args.length)
   if ((args.length === 2 && (!is_schedule || !(is_nurl || args[1] === "none"))) ||
       (!is_nurl && !is_schedule)) {
-      msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details.";
-      console.log("MSG   : ", msg);
+    msg = "Invalid `+set` format, use `+set [url]`, `+set [schedule]`, `+set [schedule] [url]` or see +help for details.";
+    console.log("MSG   : ", msg);
     if(!dry&&!silent){message.channel.send(msg);}
     console.error("ERR>>>: ", "Set command was rejected with args", args);
     return false;
-    }
+  }
   //Delete napchart for monos and randoms
   if(!is_nurl && is_schedule && (schedules[schedn].name == "Random" || schedules[schedn].name == "Mono")) {
     if (args.length == 2) {
@@ -128,7 +128,7 @@ async function set(args, message, dry, author, member, silent) {
   fullmsg = "";
   msgopt = {};
   // We received Schedule change, process it:
-    if (is_schedule) {
+  if (is_schedule) {
     ptag = ` [${schedfull}]`;
     if (member.nickname == null) {
       new_username = author.username;
@@ -227,13 +227,13 @@ async function set(args, message, dry, author, member, silent) {
   }
 
   function checkIsUrlAndGet(urlPossible) {
-      try {
-        let nurl = url.parse(urlPossible);
-        if ((nurl.host == "napchart.com" || nurl.host == "www.napchart.com") && (napchartPathRegex.test(nurl.pathname.substr(1)))) {
+    try {
+      let nurl = url.parse(urlPossible);
+      if ((nurl.host == "napchart.com" || nurl.host == "www.napchart.com") && (napchartPathRegex.test(nurl.pathname.substr(1)))) {
 	return { is_nurl: true, nurl: nurl };
       }
     } catch (err) {
-       // console.log("set image error: " + err);
+      // console.log("set image error: " + err);
       return { is_nurl: false };
     }
     return { is_nurl: false };

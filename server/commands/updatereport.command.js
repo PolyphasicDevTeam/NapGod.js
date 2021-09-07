@@ -1,7 +1,7 @@
 const config = require('../../config.json');
 const UserModel = require('./../models/user.model');
 const ReportModel = require('./../models/report.model');
-const { getOrGenImg, makeNapChartImageUrl } = require('./../imageCache');
+const { getOrGenImg, makeNapchartImageUrl } = require('./../imageCache');
 const { URL } = require('url');
 const fs = require('fs');
 const _ = require('lodash');
@@ -125,7 +125,7 @@ function generateHTML(message, users, dry) {
           napchart = 'No napchart is currently set<br/>';
         } else {
           napchart = `Current napchart: <a href="${user.currentScheduleChart}">${user.currentScheduleChart}</a><br/>`;
-          let { napChartId, imgurl } = makeNapChartImageUrl(
+          let { napchartId, imgurl } = makeNapchartImageUrl(
             new URL(user.currentScheduleChart)
           );
           napchartimg = `<p><a href="${user.currentScheduleChart}"><img src="${imgurl}" /></a></p>`;
@@ -158,7 +158,7 @@ function generateHTML(message, users, dry) {
 <html lang="en">\n\
   <head>\n\
 	 <meta charset="utf-8">\n\
-	 <title>Nap God Report ${n}</title>\n\
+	 <title>NapGod Report ${n}</title>\n\
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110338868-3"></script>
 <script>
@@ -170,7 +170,7 @@ function generateHTML(message, users, dry) {
 </script>
   </head>\n\
   <body>\n\
-	<h1>Nap God Report ${n}</h1>\n\
+	<h1>NapGod Report ${n}</h1>\n\
 	 ${body}\n\
   </body>\n\
 </html>`;

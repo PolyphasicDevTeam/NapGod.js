@@ -1,4 +1,4 @@
---- Nap God Adaptation Logging ---
+--- NapGod Adaptation Logging ---
 
 **To log in a free format:** Type `+freelog` then write your adaptation log in the private message the bot sent you.
 

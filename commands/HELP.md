@@ -1,4 +1,4 @@
-__**Nap God Commands**__
+__**NapGod Commands**__
 **Schedule list** `+schedules`
 **Tips and tricks** `!help`
 **Adaptation log help** `+loghelp`
@@ -17,6 +17,6 @@ If `[username]` is omitted, the commands default to yourself.
 -----------------------------------------------
 **Create a new napchart** `+create [time-ranges]`
 **Show a napchart** `+nc [napchart-link]`
-**Generate Nap God report** `+report`
+**Generate NapGod report** `+report`
 **Enter Forced Productivity** `+focus [duration]`
 **Leave Forced Productivity** `+unfocus`

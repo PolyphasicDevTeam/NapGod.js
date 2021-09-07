@@ -7,11 +7,11 @@ module.exports = {
 }
 
 function getNapchartPromise(napchartUrl) {
-  return new Promise((resolve, reject) => {
-    napChartId = getNapchartId(napchartUrl);
+    return new Promise((resolve, reject) => {
+    napchartId = getNapchartId(napchartUrl);
     request(
       {
-        url: nc_endpoint + 'getChart/' + napChartId,
+        url: nc_endpoint + 'getChart/' + napchartId,
         json: true,
         headers: { 'User-Agent': 'request' },
       },
@@ -31,8 +31,8 @@ function getNapchartPromise(napchartUrl) {
 async function getNapchart(username, napchartUrl) {
   let napchart = { url: napchartUrl, sleeps: '' };
   try {
-      const data = await getNapchartPromise(napchartUrl);
-      data.chartDocument.chartData.elements.forEach((element) => {
+    const data = await getNapchartPromise(napchartUrl);
+    data.chartDocument.chartData.elements.forEach((element) => {
       if (element.color === 'red' && element.lane === 0) {
         if (element.start >= 24 * 60 || element.end >= 24 * 60) {
           throw "Invalid napchart.";
@@ -57,9 +57,9 @@ async function getNapchart(username, napchartUrl) {
   }
 }
 
-function getNapchartId(nurl) {
-    let napChartId = nurl.pathname.substring(1);
-    if (napChartId.includes("/") && napChartId.includes("-")) napChartId = napChartId.split('-').pop();
-    else if (napChartId.includes("/")) napChartId = napChartId.split('/').pop();
-    return napChartId;
+function getNapchartId(napchartUrl) {
+    let napchartId = napchartUrl.substring(napchartUrl.indexOf(".com/") + 5, napchartUrl.length);
+    if (napchartId.includes("/") && napchartId.includes("-")) napchartId = napchartId.split('-').pop();
+    else if (napchartId.includes("/")) napchartId = napchartId.split('/').pop();
+    return napchartId;
 }

@@ -5,6 +5,7 @@ const fs = require('fs');
 const { URL } = require('url');
 const axios = require('axios');
 const { nc_endpoint } = require('../config.json');
+const { getNapchartId } = require('./commands/napchart');
 
 module.exports = {
   getOrGenImg: function (nurl, message, dry = false) {
@@ -32,23 +33,23 @@ module.exports = {
             res,
             'binary',
             (err) => {
-              setTimeout(function () {
-                console.log('MSG   : ', 'RichEmbed[' + nurl.href + ']');
+                setTimeout(function () {
+                console.log('MSG   : ', 'RichEmbed[' + imgurl + ']');
                 msgImg = new Discord.RichEmbed()
-                  .setImage(cacheurl)
-                  .setURL(nurl.href);
+                .setImage(imgurl)
+                .setURL(imgurl);
                 resolve(msgImg);
               }, 200);
             }
           );
         });
       } else {
-        console.log('MSG   : ', 'RichEmbed[' + nurl.href + ']');
+        console.log('MSG   : ', 'RichEmbed[' + cacheurl + ']');
         msgImg = new Discord.RichEmbed()
           .setDescription(nurl.href)
           .setImage(cacheurl)
-          .setURL(nurl.href);
-        resolve(msgImg);
+          .setURL(cacheurl);
+          resolve(msgImg);
       }
 
       //})
@@ -60,14 +61,14 @@ module.exports = {
   },
   makeNapChartImageUrl: makeNapChartImageUrl,
   createChart: function (data) {
-    let url = `${nc_endpoint}createChart`;
+    let url = `${nc_endpoint}createSnapshot`;
     console.log('url', url);
     return new Promise(function (resolve, reject) {
       axios
         .post(url, data)
         .then((res) => {
           console.log('INFO  : ', 'Chart created', res);
-          let nurl = 'http://napchart.com/' + res.data.chartid;
+          let nurl = 'http://napchart.com/' + res.data.chartDocument.chartid;
           resolve(nurl);
         })
         .catch((error) => {
@@ -79,7 +80,7 @@ module.exports = {
 };
 
 function makeNapChartImageUrl(nurl) {
-  let napChartId = nurl.pathname.substring(1);
+  let napChartId = getNapchartId(nurl);
   let imgurl = `${nc_endpoint}getImage/${napChartId}?hr=1`;
   return { napChartId, imgurl };
 }

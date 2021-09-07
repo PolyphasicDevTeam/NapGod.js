@@ -49,43 +49,17 @@ async function create(args, message, dry) {
     if(!dry){message.channel.send(msg);}
     return;
   }
- // let data = {
- //   data:JSON.stringify({
- //     chartData:{
-	//elements: timeelems,
-	//shape: "circle",
-	//lanes: 1
- //     },
- //     metaInfo:{
-	//title:"",
-	//description:""
- //     }
- //   })
- //   };
+
     let data = {
-        data:JSON.stringify({
-            chartDocument: {
-                chartData: {
-                    lanes: 1,
-                    shape: "circle",
-                    elements: timeelems,
-                    colorTags: [],
-                    lanesConfig: {
-                        1: {
-                            locked: false
-                        }
-                    }
-                },
-                chartid: "",
-                title: null,
-                description: null,
-                username: null,
-                lastUpdated: "",
-                isSnapshot: true,
-                isPrivate: false
-            },
-            publicLink: ""
-        })
+        chartData: {
+            elements: timeelems,
+            colorTags: [],
+            lanes: 1,
+            shape: "circle",
+            lanesConfig: {}
+        },
+        title: "Custom Napchart for " + message.member.user.username,
+        description: ""
     };
   //data = JSON.stringify(data)
   console.log("INFO  : ","Napchart payload", data);

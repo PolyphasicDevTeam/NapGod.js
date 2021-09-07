@@ -2,17 +2,16 @@ const { nc_endpoint } = require('../../config.json');
 const request = require('request');
 
 module.exports = {
-    getNapchart: getNapchart
+    getNapchart: getNapchart,
+    getNapchartId: getNapchartId
 }
 
 function getNapchartPromise(napchartUrl) {
   return new Promise((resolve, reject) => {
-    nurl = napchartUrl.substring(napchartUrl.indexOf(".com/") + 5, napchartUrl.length);
-    if (nurl.includes("/") && nurl.includes("-")) nurl = nurl.split("-").pop();
-    else if (nurl.includes("/")) nurl = nurl.split("/").pop();
+    napChartId = getNapchartId(napchartUrl);
     request(
       {
-        url: nc_endpoint + 'getChart/' + nurl,
+        url: nc_endpoint + 'getChart/' + napChartId,
         json: true,
         headers: { 'User-Agent': 'request' },
       },
@@ -56,4 +55,11 @@ async function getNapchart(username, napchartUrl) {
     console.error(`ERR\t: Fetching ${username}'s napchart: ${error}`);
     return null;
   }
+}
+
+function getNapchartId(nurl) {
+    let napChartId = nurl.pathname.substring(1);
+    if (napChartId.includes("/") && napChartId.includes("-")) napChartId = napChartId.split('-').pop();
+    else if (napChartId.includes("/")) napChartId = napChartId.split('/').pop();
+    return napChartId;
 }

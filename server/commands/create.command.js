@@ -1,7 +1,7 @@
 const { URL } = require("url");
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
-const { getOrGenImg, makeNapChartImageUrl, createChart } = require("./../imageCache");
+const { getOrGenImg, makeNapchartImageUrl, createChart } = require("./../imageCache");
 
 
 module.exports = {
@@ -49,18 +49,17 @@ async function create(args, message, dry) {
     if(!dry){message.channel.send(msg);}
     return;
   }
-
-    let data = {
-        chartData: {
-            elements: timeelems,
-            colorTags: [],
-            lanes: 1,
-            shape: "circle",
-            lanesConfig: {}
-        },
-        title: "Custom Napchart for " + message.member.user.username,
-        description: ""
-    };
+  let data = {
+    chartData: {
+      elements: timeelems,
+      colorTags: [],
+      lanes: 1,
+      shape: "circle",
+      lanesConfig: {}
+    },
+    title: "Custom Napchart for " + message.member.user.username,
+    description: ""
+  };
   //data = JSON.stringify(data)
   console.log("INFO  : ","Napchart payload", data);
   nurl = await createChart(data);

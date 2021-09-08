@@ -45,8 +45,8 @@ module.exports = {
 	}
 	await set(args, message, dry, author, member, false);
       } else {
-          msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
-          console.log("MSG   : ", msg);
+    msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
+    console.log("MSG   : ", msg);
 	if(!dry){message.channel.send(msg);}
       }
       return true;

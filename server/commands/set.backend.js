@@ -227,9 +227,9 @@ async function set(args, message, dry, author, member, silent) {
   }
 
   function checkIsUrlAndGet(urlPossible) {
-  try {
-    let nurl = url.parse(urlPossible);
-    if ((nurl.host == "napchart.com" || nurl.host == "www.napchart.com") && napchartPathRegex.test(nurl.pathname.substr(1))) {
+    try {
+      let nurl = url.parse(urlPossible);
+      if ((nurl.host == "napchart.com" || nurl.host == "www.napchart.com") && napchartPathRegex.test(nurl.pathname.substr(1))) {
 	return { is_nurl: true, nurl: nurl };
       }
     } catch (err) {

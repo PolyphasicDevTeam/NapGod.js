@@ -1,7 +1,7 @@
 Most products claiming to track your sleep are not accurate, since they are based only on body movement. This includes most fitness trackers and apps. Generally, anything that's not on your head won't be able to produce a reliable result. 
 
-Sleeptrackers that the users here are experienced with are the Olimex openEEG (+-200$); and the Zeo. 
-The Olimex is a semi-DIY solution that produces great results; the Zeo is an out-of the box solution but only available secondhand. Expect to pay 60-100$ for a Zeo. The Zeo is less accurate than the Olimex.
+Sleep trackers that the users here are experienced with include the Olimex openEEG (+-200$); and the Zeo. 
+The Olimex is a semi-DIY solution that produces great results; the Zeo is an out-of the box solution but only available secondhand. Expect to pay 40-100$ for a Zeo. The Zeo is less accurate than the Olimex.
 Other head-mounted solutions may or may not provide the right results; when in doubt, ask in #sleep_tech for more information!
 
 

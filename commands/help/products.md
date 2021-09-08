@@ -1,7 +1,8 @@
 More information regarding products can be found on: <https://polyphasic.net/polyphasic-sleep/adaptation/products/>
 
-We do not endorse any specific products from specific sellers! For alternatives, ask in #sleep_tech!
-Amazon requires that the following sentance is mentioned:
+We do not endorse any specific products from specific sellers! For alternatives, ask in #sleep_tech.
+
+*Amazon requires that the following sentance is mentioned:*
 As an Amazon Associate I earn from qualifying purchases.
 
 Some fellow polyphasers now offer redistributions of items with long shipping times, or exclusive items. Check here: <https://docs.google.com/spreadsheets/d/1w8uIIdOcAymnsmBfHd-gENqZWczCChmku9LaEKHJrOo/edit?usp=sharing>

@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const _ = require('lodash');
 const UserModel = require('./../models/user.model');
-const { getOrGenImg, makeNapChartImageUrl } = require('./../imageCache');
+const { getOrGenImg, makeNapchartImageUrl } = require('./../imageCache');
 const config = require('../../config.json');
 const set = require('./set.backend').setInternalPromise;
 

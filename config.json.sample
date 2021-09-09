@@ -7,6 +7,6 @@
   "modonly": true,
   "reportInterval": 2,
   "maxTimeFocus": 6000,
-  "nc_endpoint": "http://thumb.napchart.com:1771/api",
+  "nc_endpoint": "http://api.napchart.com/v1/",
   "cachePath": "/napchart"
 }

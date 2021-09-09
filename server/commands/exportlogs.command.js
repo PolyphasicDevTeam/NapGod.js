@@ -1,7 +1,7 @@
 const LogModel = require("./../models/log.model");
 const schedules = require("./schedules").schedules;
 const { URL } = require("url");
-const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
+const { getOrGenImg, makeNapchartImageUrl } = require("./../imageCache");
 const { promisify } = require('util');
 
 const writeFileAsync = promisify(require('fs').writeFile);

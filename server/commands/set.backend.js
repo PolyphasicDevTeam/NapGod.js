@@ -2,12 +2,15 @@ const url = require("url");
 const _ = require("lodash");
 const UserModel = require("./../models/user.model");
 const ReportModel = require("./../models/report.model");
-const { getOrGenImg, makeNapChartImageUrl } = require("./../imageCache");
+const { getOrGenImg, makeNapchartImageUrl } = require("./../imageCache");
 const schedules = require("./schedules").schedules;
 const modifiers = require("./schedules").modifiers;
 const { getNapchart } = require('./napchart.js');
 
-const napchartPathRegex = /^\w{5,6}$/
+//const ncRegex_OldScheme = /^(([a-z]|\d){5,6})$/
+//const ncRegex_Snapshot = /^snapshot\/((\w|\d){9})$/
+//const ncRegex_UserChart = /^\w{6,100}\/.*\-\w{6,9}$/
+const napchartPathRegex = /^(([a-z]|\d){5,6})$|^snapshot\/((\w|\d){9})$|^\w{6,100}\/.*\-\w{6,9}$/
 
 
 module.exports = {
@@ -42,8 +45,8 @@ module.exports = {
 	}
 	await set(args, message, dry, author, member, false);
       } else {
-	msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
-	console.log("MSG   : ", msg);
+    msg = "Bad input format: Use `+set [schedule-name]` or `+set [napchart-link]`. Use `+set none` to remove your chart without changing schedule.";
+    console.log("MSG   : ", msg);
 	if(!dry){message.channel.send(msg);}
       }
       return true;
@@ -62,6 +65,7 @@ async function set(args, message, dry, author, member, silent) {
     complete = true;
     let msg = "";
     let urlPossible = args.length === 2 ? args[1] : args[0];
+    if (urlPossible.slice(-1) === "/") urlPossible = urlPossible.toString().substring(0, urlPossible.length - 1);
     let schedulePossible = args[0];
     let { is_nurl, nurl } = checkIsUrlAndGet(urlPossible);
     let { is_schedule, schedn, schedfull } = checkIsSchedule(schedulePossible);

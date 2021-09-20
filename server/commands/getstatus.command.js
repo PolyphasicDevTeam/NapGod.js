@@ -3,6 +3,7 @@ const config = require('../../config.json');
 const { findMember } = require('./find');
 const request = require('request');
 const { executeFunction, dateToStringSimple, minToTZ, bold, h_n_m, tick } = require('./utility');
+const { getNapchartId } = require('./napchart');
 
 const api_url = config.nc_endpoint;
 
@@ -76,19 +77,19 @@ async function get(message, args, dry) {
       msg += "\n```";
       if (!userDB.currentScheduleChart) {
         if (schedule.includes("Random")) {
-        msg += "Eww! This user is on " + bold(schedule) + " schedule!\nNot even Nap God knows when they will sleep next.";
+        msg += "Eww! This user is on " + bold(schedule) + " schedule!\nNot even NapGod knows when they will sleep next.";
         }
         else if (schedule.includes("MAYL") || schedule.includes("X")) {
-        msg += "Wow! This user is on " + bold(schedule) + " schedule!\nNot even Nap God knows when they will sleep next.";
+        msg += "Wow! This user is on " + bold(schedule) + " schedule!\nNot even NapGod knows when they will sleep next.";
         }
         else {
-        msg += "This user has not set a napchart, so Nap God cannot know when they will sleep next.";
+        msg += "This user has not set a napchart, so NapGod cannot know when they will sleep next.";
         }
       }
       message.channel.send(msg);
   }
   else {
-    message.channel.send("Error: User " + bold(member.value.displayName) + " has not set a timezone. You can set a timezone with `+settz [timezone]`")
+    message.channel.send("`Error:` User " + bold(member.value.displayName) + " has not set a timezone. You can set a timezone with `+settz [timezone]`")
   }
 }
 
@@ -97,7 +98,7 @@ async function getNapchart(username, napchartUrl) {
   let napchart = { url: napchartUrl, sleeps: '' };
   try {
     const data = await getNapchartPromise(napchartUrl);
-    data.chartData.elements.forEach((element) => {
+    data.chartDocument.chartData.elements.forEach((element) => {
       if (element.color === 'red' && element.lane === 0) {
         if (napchart.sleeps) {
           napchart.sleeps += ',';
@@ -118,9 +119,10 @@ async function getNapchart(username, napchartUrl) {
 }
 function getNapchartPromise(napchartUrl) {
   return new Promise((resolve, reject) => {
+    nurl = getNapchartId(napchartUrl);
     request(
       {
-        url: api_url + '/get?chartid=' + napchartUrl.split('/').pop(),
+        url: api_url + 'getChart/' + nurl,
         json: true,
         headers: { 'User-Agent': 'request' },
       },

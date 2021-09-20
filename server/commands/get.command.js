@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const _ = require('lodash');
 const UserModel = require('./../models/user.model');
-const { getOrGenImg, makeNapChartImageUrl } = require('./../imageCache');
+const { getOrGenImg, makeNapchartImageUrl } = require('./../imageCache');
 const config = require('../../config.json');
 const { findMember } = require('./find');
 const { executeFunction, dateToStringSimple } = require('./utility');
@@ -31,7 +31,7 @@ function diffTimeCut(d1, d2 = new Date()) {
     i++;
   }
   let resUnit = timeCut[Math.min(i, timeCut.length - 1)].k;
-  if (res > 1) {
+  if (res > 1 || res === 0) {
     resUnit += 's';
   }
   return `${res} ${resUnit}`;

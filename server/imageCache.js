@@ -5,6 +5,7 @@ const fs = require('fs');
 const { URL } = require('url');
 const axios = require('axios');
 const { nc_endpoint } = require('../config.json');
+const { getNapchartId } = require('./commands/napchart');
 
 module.exports = {
   getOrGenImg: function (nurl, message, dry = false) {
@@ -13,29 +14,29 @@ module.exports = {
         nurl = new URL(nurl);
       }
       nurl.protocol = 'http:';
-      let { napChartId, imgurl } = makeNapChartImageUrl(nurl);
-      console.log(napChartId, '----', imgurl);
-      let is_cached = fs.existsSync('/napcharts/cdn/' + napChartId + '.png');
-      let cacheurl = 'http://cache.polyphasic.net/cdn/' + napChartId + '.png';
+      let { napchartId, imgurl } = makeNapchartImageUrl(nurl);
+      console.log(napchartId, '----', imgurl);
+      let is_cached = fs.existsSync('/napcharts/cdn/' + napchartId + '.png');
+      let cacheurl = 'http://cache.polyphasic.net/cdn/' + napchartId + '.png';
       console.log('INFO  : ', 'Image search res', is_cached);
       let msgImg = null;
       if (!is_cached) {
         console.log(
           'INFO  : ',
-          'Downloading napchart: ' + napChartId,
+          'Downloading napchart: ' + napchartId,
           ' -- IMGURL:',
           imgurl
         );
         request.get({ url: imgurl, encoding: 'binary' }, (err, _, res) => {
           fs.writeFile(
-            '/napcharts/cdn/' + napChartId + '.png',
+            '/napcharts/cdn/' + napchartId + '.png',
             res,
             'binary',
             (err) => {
               setTimeout(function () {
                 console.log('MSG   : ', 'RichEmbed[' + nurl.href + ']');
                 msgImg = new Discord.RichEmbed()
-                  .setImage(cacheurl)
+                  .setImage(imgurl)
                   .setURL(nurl.href);
                 resolve(msgImg);
               }, 200);
@@ -58,16 +59,16 @@ module.exports = {
       //});
     });
   },
-  makeNapChartImageUrl: makeNapChartImageUrl,
+  makeNapchartImageUrl: makeNapchartImageUrl,
   createChart: function (data) {
-    let url = `${nc_endpoint}/create`;
+    let url = `${nc_endpoint}createSnapshot`;
     console.log('url', url);
     return new Promise(function (resolve, reject) {
       axios
         .post(url, data)
         .then((res) => {
           console.log('INFO  : ', 'Chart created', res);
-          let nurl = 'http://napchart.com/' + res.data.chartid;
+          let nurl = 'http://napchart.com/' + res.data.chartDocument.chartid;
           resolve(nurl);
         })
         .catch((error) => {
@@ -78,10 +79,10 @@ module.exports = {
   },
 };
 
-function makeNapChartImageUrl(nurl) {
-  let napChartId = nurl.pathname.substring(1);
-  let imgurl = `${nc_endpoint}/getImage/?width=600&shape=circle&height=600&chartid=${napChartId}`;
-  return { napChartId, imgurl };
+function makeNapchartImageUrl(nurl) {
+  let napchartId = getNapchartId(nurl.href);
+  let imgurl = `${nc_endpoint}getImage/${napchartId}?hr=1`;
+  return { napchartId, imgurl };
 }
 
 async function sleepBlock(ms) {

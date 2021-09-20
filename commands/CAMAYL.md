@@ -10,3 +10,4 @@ CAMAYL (Core As Much As You Like)
 **Adaptation difficulty**: Hard
 **Ideal scheduling**: 3-4 core sleeps on average from day to day, with 1-2 core sleeps around graveyard hours. Core spacing and placement should take into account natural periods of tiredness. In the afternoon 6+ hour wake gaps are common,  whereas alertness may wane after 2-4 hours awake in the morning. One core sleep at night may be extended by 90m after adapted when one core has to be skipped or after a long extended wake period.
 -----------------------------------------------
+More information about CAMAYL can be found at <https://www.polyphasic.net/camayl/>

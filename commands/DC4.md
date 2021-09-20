@@ -11,3 +11,4 @@ DC4 (Dual Core 4)
 **Ideal scheduling**: Sleeps are scheduled to start every 4 hours which resembles Uberman. Transition step to E5 or Uberman and also useful as a fallback from E5 or Uberman should adaptation fail. Generally inferior to DC3 unless keeping Uberman rhythm is useful (the extra nap leads to slower sleep onset). Cycle length on this schedule is likely to hit around 65m, so the second core might be shortenable to increase REM quantity in naps (although this is untested)
 -----------------------------------------------
 More information about Uberman and related transitional schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/uberman/>
+More information about DC4 can be found at <https://www.polyphasic.net/dual-core-4/>

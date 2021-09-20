@@ -10,3 +10,4 @@ SPAMAYL (Sleep Polyphasically As Much As You Like)
 **Adaptation difficulty**: Insanely hard
 **Ideal scheduling**: Most naps should be spread during graveyard hours to avoid the need to nap during the day with work, social life, etc
 -----------------------------------------------
+More information about SPAMAYL can be found at <https://www.polyphasic.net/spamayl/>

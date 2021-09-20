@@ -194,6 +194,10 @@ async function set(args, message, dry, author, member, silent) {
     console.log("MSG   : ", msg);
     fullmsg += msg + "\n";
     rembed = await getOrGenImg(nurl, message, dry);
+    rembed.setColor(message.member.displayColor);
+    rembed.setAuthor(author.tag, author.avatarURL);
+    rembed.setDescription(fullmsg);
+    fullmsg = "";
     msgopt = { embed: rembed };
   } else if (args.length === 2 && args[1] === "none") {
     console.log("ACT   : ", "Remove napchart from database for " +author.username);

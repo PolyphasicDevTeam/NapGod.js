@@ -21,9 +21,7 @@ To view information about a sleep schedule, type `+[schedule-name]` (e.g. `+DC1`
 
 **Nap-only schedules:**
 `Uberman` `Naptation` `Tesla` `Dymaxion` `SPAMAYL`
-
 -----------------------------------------------
-
 Supported schedule variants are `shortened` `extended` `flipped` `modified` and `recovery`.
 
 Use `+set` followed by a schedule name to set a schedule (e.g. `+set DC1`).

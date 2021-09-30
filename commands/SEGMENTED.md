@@ -8,3 +8,4 @@ Segmented (Segmented)
 **Adaptation difficulty**: Easy
 **Ideal scheduling**: 1 core around 21:00, should not be later than 22:00ish, 1 core till morning
 -----------------------------------------------
+More information about Segmented can be found at <https://www.polyphasic.net/segmented-sleep/>

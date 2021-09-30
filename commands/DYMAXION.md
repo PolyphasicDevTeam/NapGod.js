@@ -11,3 +11,4 @@ Dymaxion (Dymaxion)
 **Adaptation difficulty**: Insanely hard
 **Ideal scheduling**: Arranging naps to fit in 4 aforementioned circadian needs to rest
 -----------------------------------------------
+More information about Dymaxion can be found at <https://www.polyphasic.net/dymaxion/>

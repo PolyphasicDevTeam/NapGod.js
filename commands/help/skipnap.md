@@ -1,5 +1,5 @@
-During adaptation (first month), it's best to follow your schedule strictly, and avoid oversleeping and skipping nap or changing your sleep schedule around continuously.
-If you're going to miss sleep it's best to skip rather than to move, since moving counts as an oversleep (any sleep outside of schedule), which sets you back.
+During adaptation (first month), it's imperative to follow your schedule strictly and avoid oversleeping and skipping naps or changing your sleep schedule at all.
+If you cannot avoid missing a sleep it's best to skip rather than to move, since moving counts as an oversleep (any sleep outside of schedule), which sets you back.
 
 Losing a nap means you'll increase the risk of an oversleep later, so be sure you're prepared for this. Set up extra alarms or ask someone to check on you to make sure you're awake.
 

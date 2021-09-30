@@ -1,1 +1,1 @@
-The graveyard hours typically lasts from midnight to 8 AM. The need to rest during this period is very high, and so it's generally best to have a lot of sleep in these hours, for health benefits. 
+The graveyard hours typically lasts from midnight to 08:00. The need to rest during this period is greater than during the day, so it's generally best to have the majority of your sleep in these hours, which can also have benefits of improved health. 

@@ -117,7 +117,7 @@ async function mset(args, message, dry) {
               args[0] +
               '`.\n';
             msg +=
-              'Nap Chart set for ' + member.user.tag + ' to ' + args[1] + '.';
+              'Napchart set for ' + member.user.tag + ' to ' + args[1] + '.';
             if (!dry) {
               message.channel.send(msg);
             }
@@ -207,7 +207,7 @@ async function mset(args, message, dry) {
       }
     } else {
       msg = 'Schedule set for ' + usr.user.tag + ' to `' + args[0] + '`.\n';
-      msg += 'Nap Chart set for ' + usr.user.tag + ' to ' + args[1] + '.';
+      msg += 'Napchart set for ' + usr.user.tag + ' to ' + args[1] + '.';
       if (!dry) {
         message.channel.send(msg);
       }

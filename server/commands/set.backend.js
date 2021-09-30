@@ -97,7 +97,7 @@ async function set(args, message, dry, author, member, silent) {
     upd = buildUserInstance();
     upd.currentScheduleChart = null;
     await saveUserSchedule(message, upd);
-    msg = "Nap Chart has been removed for **" + displayname + "**.";
+    msg = "Napchart has been removed for **" + displayname + "**.";
     console.log("MSG   : ", msg);
     if(!dry&&!silent){message.channel.send(msg);}
     return false;
@@ -190,17 +190,21 @@ async function set(args, message, dry, author, member, silent) {
   // We received Napchart, process it:
   if (is_nurl) {
     // Include http(s) when specifying URLs
-    msg = "Nap Chart set for " + author.tag + " to " + nurl.href + ".";
+    msg = "Napchart set for " + author.tag + " to " + nurl.href + ".";
     console.log("MSG   : ", msg);
     fullmsg += msg + "\n";
     rembed = await getOrGenImg(nurl, message, dry);
+    rembed.setColor(message.member.displayColor);
+    rembed.setAuthor(author.tag, author.avatarURL);
+    rembed.setDescription(fullmsg);
+    fullmsg = "";
     msgopt = { embed: rembed };
   } else if (args.length === 2 && args[1] === "none") {
     console.log("ACT   : ", "Remove napchart from database for " +author.username);
     upd = buildUserInstance();
     upd.currentScheduleChart = null;
     await saveUserSchedule(message, upd);
-    msg = "Nap Chart has been removed for **" + displayname + "**.";
+    msg = "Napchart has been removed for **" + displayname + "**.";
     console.log("MSG   : ", msg);
     fullmsg += msg + "\n";
     if (args.length == 1) { complete = false; }

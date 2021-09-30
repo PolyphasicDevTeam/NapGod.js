@@ -11,3 +11,4 @@ QC0 (Quad Core 0)
 **Adaptation difficulty**: Hard
 **Ideal scheduling**: One core sleep around or before midnight, the next 2 cores are ~2.5-3h apart from each other and the last core is in early/mid afternoon with a longer wake gap.
 -----------------------------------------------
+More information about QC0 can be found at <https://www.polyphasic.net/quad-core-0/>

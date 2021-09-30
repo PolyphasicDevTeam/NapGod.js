@@ -11,3 +11,4 @@ Bimaxion (Bimaxion)
 **Adaptation difficulty**: Hard
 **Ideal scheduling**: The whole schedule's sleep distribution looks like Dymaxion, with one core before midnight, one core around dawn, one noon nap, one afternoon/evening nap.
 -----------------------------------------------
+More information about Bimaxion can be found at <https://www.polyphasic.net/bimaxion/>

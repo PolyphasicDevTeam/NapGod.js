@@ -10,3 +10,4 @@ SEVAMAYL (Sleep EVeryman As Much As You Like)
 **Adaptation difficulty**: Variable
 **Ideal scheduling**: Around a 4-4.5 hour core (3 x 80-90 mins) with about 2-6 naps of 10-20 minutes in length. Favor natural wakes. Cycles may naturally compress to 80m with frequent sleeps, like E3; plan for 90m cycles until there are many early natural wakes. Nap spacing should take into account natural periods of tiredness. In the evening 6 hour gaps are common,  whereas alertness may wane after 3-4 hours awake in the morning. Some longer pronaps of <45m might be plausible during REM peak (6-9am) if all SWS has already been accounted for. The core might be flexed and/or varied max 90m in length, as optional variables after adapted to a base schedule.
 -----------------------------------------------
+More information about SEVAMAYL can be found at <https://www.polyphasic.net/sevamayl/>

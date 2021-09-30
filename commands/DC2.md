@@ -8,4 +8,4 @@ DC2 (Dual Core 2)
 **Adaptation difficulty**: Somewhat hard
 **Ideal scheduling**: First core around 22:00, second core around 05:40, noon nap and afternoon nap
 -----------------------------------------------
-More information about Dual Core schedules can be found at <https://polyphasic.net/index.php/polyphasic-sleep/schedules/dual-core/>
+More information about DC2 can be found at <https://www.polyphasic.net/dual-core-2/>

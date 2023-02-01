@@ -24,7 +24,7 @@
     "discord.js": "^11.5.1",
     "flat": "^4.1.0",
     "lodash": "^4.17.5",
-    "mongoose": "^5.3.14",
+    "mongoose": "^5.13.15",
     "request": "^2.88.0",
     "require-all": "^3.0.0"
   },
